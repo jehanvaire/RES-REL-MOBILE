@@ -1,10 +1,12 @@
 import React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, Text } from "react-native";
 
 export default function Button() {
   return (
     <Pressable style={styles.pressable} onPress={onPressFunction}>
-      <View>Click me</View>
+      <View>
+        <Text>Click me</Text>
+      </View>
     </Pressable>
   );
 }
