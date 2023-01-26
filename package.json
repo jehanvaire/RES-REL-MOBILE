@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo/webpack-config": "^0.17.2",
     "expo": "^47.0.0",
-    "expo-cli": "^4.3.0",
+    "expo-cli": "^4.13.0",
     "expo-status-bar": "~1.4.2",
     "native-base": "^3.4.25",
     "npx": "^3.0.0",
