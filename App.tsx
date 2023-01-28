@@ -3,12 +3,15 @@ import React from "react";
 import { NativeBaseProvider, Text, Box } from "native-base";
 import Publication from "./components/Publication";
 import { StatusPublicationEnum } from "./ressources/enums/StatusPublicationEnum";
+import FooterNavigation from "./components/FooterNavigation";
+import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
-  // 2. Use at the root of your app
   return (
     <NativeBaseProvider>
-      <Box>
+      <FooterNavigation />
+
+      {/* <Box>
         <Publication
           auteur="Adrien"
           titre="Mémoires de Louis de Funès"
@@ -42,7 +45,7 @@ export default function App() {
           dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
           lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
         />
-      </Box>
+      </Box> */}
     </NativeBaseProvider>
   );
 }
