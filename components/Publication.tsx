@@ -9,8 +9,9 @@ import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-function getDiffTime(date: Date) {
+function GetDiffTime(date: Date) {
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
   if (seconds < 60) return seconds + "s";
@@ -29,30 +30,29 @@ function getDiffTime(date: Date) {
   return years + " ans";
 }
 
-function likePublication() {
-  PublicationService.addLikeToPublication(1).then((res) => {
+function LikePublication() {
+  PublicationService.AddLikeToPublication(1).then((res) => {
     console.log(res);
   });
 }
 
-function showCommentsSection() {
+function ShowCommentsSection() {
   console.log("TODO: show comments section");
 }
 
-function sauvegarderPublication() {
-  PublicationService.sauvegarderPublication(1).then((res) => {
+function SauvegarderPublication() {
+  PublicationService.SauvegarderPublication(1).then((res) => {
     console.log(res);
   });
 }
 
-function afficherPlusOptions() {
+function AfficherPlusOptions() {
   console.log("TODO: afficher plus d'options");
 }
 
 export default function Publication(props: any) {
   return (
     <Box style={styles.container}>
-      {/* Header */}
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
@@ -67,7 +67,7 @@ export default function Publication(props: any) {
         <Spacer />
 
         <Center>
-          <Text>Il y a {getDiffTime(props.dateCreation)}</Text>
+          <Text>Il y a {GetDiffTime(props.dateCreation)}</Text>
         </Center>
       </Stack>
 
@@ -90,28 +90,27 @@ export default function Publication(props: any) {
         />
       </Box>
 
-      {/* Footer */}
       <Stack direction="row" style={styles.footer}>
-        <TouchableOpacity onPress={likePublication}>
-          <LikeOutlined style={styles.button} />
+        <TouchableOpacity onPress={LikePublication}>
+          <Ionicons name={"heart-outline"} size={25} />
         </TouchableOpacity>
 
         <Spacer />
 
-        <TouchableOpacity onPress={showCommentsSection}>
-          <CommentOutlined style={styles.button} />
+        <TouchableOpacity onPress={ShowCommentsSection}>
+          <Ionicons name={"chatbubble-outline"} size={25} />
         </TouchableOpacity>
 
         <Spacer />
 
-        <TouchableOpacity onPress={sauvegarderPublication}>
-          <BookOutlined style={styles.button} />
+        <TouchableOpacity onPress={SauvegarderPublication}>
+          <Ionicons name={"bookmark-outline"} size={25} />
         </TouchableOpacity>
 
         <Spacer />
 
-        <TouchableOpacity onPress={afficherPlusOptions}>
-          <EllipsisOutlined style={styles.button} />
+        <TouchableOpacity onPress={AfficherPlusOptions}>
+          <Ionicons name={"ellipsis-vertical"} size={25} />
         </TouchableOpacity>
       </Stack>
     </Box>

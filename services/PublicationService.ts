@@ -7,7 +7,7 @@ class PublicationService {
   //     return data;
   //   }
 
-  public async addLikeToPublication(id: number): Promise<any> {
+  public async AddLikeToPublication(id: number): Promise<any> {
     // const response = await fetch(`${this.baseUrl}/${id}/like`, {
     //   method: "POST",
     // });
@@ -16,7 +16,7 @@ class PublicationService {
     return data;
   }
 
-  public async addCommentaireToPublication(
+  public async AddCommentaireToPublication(
     id: number,
     comment: string
   ): Promise<any> {
@@ -29,7 +29,7 @@ class PublicationService {
     return data;
   }
 
-  public async sauvegarderPublication(id: number): Promise<any> {
+  public async SauvegarderPublication(id: number): Promise<any> {
     // const response = await fetch(`${this.baseUrl}/${id}/save`, {
     //   method: "POST",
     // });
