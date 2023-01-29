@@ -9,6 +9,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 function GetDiffTime(date: Date) {
   const now = new Date();
@@ -52,7 +53,6 @@ function AfficherPlusOptions() {
 export default function Publication(props: any) {
   return (
     <Box style={styles.container}>
-      {/* Header */}
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
@@ -90,28 +90,27 @@ export default function Publication(props: any) {
         />
       </Box>
 
-      {/* Footer */}
       <Stack direction="row" style={styles.footer}>
         <TouchableOpacity onPress={LikePublication}>
-          <LikeOutlined style={styles.button} />
+          <Ionicons name={"heart-outline"} size={25} />
         </TouchableOpacity>
 
         <Spacer />
 
         <TouchableOpacity onPress={ShowCommentsSection}>
-          <CommentOutlined style={styles.button} />
+          <Ionicons name={"chatbubble-outline"} size={25} />
         </TouchableOpacity>
 
         <Spacer />
 
         <TouchableOpacity onPress={SauvegarderPublication}>
-          <BookOutlined style={styles.button} />
+          <Ionicons name={"bookmark-outline"} size={25} />
         </TouchableOpacity>
 
         <Spacer />
 
         <TouchableOpacity onPress={AfficherPlusOptions}>
-          <EllipsisOutlined style={styles.button} />
+          <Ionicons name={"ellipsis-vertical"} size={25} />
         </TouchableOpacity>
       </Stack>
     </Box>

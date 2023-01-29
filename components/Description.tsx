@@ -1,7 +1,7 @@
 import { Box } from "native-base";
 import React, { useState } from "react";
 
-import { Text, Button, StyleSheet } from "react-native";
+import { Text, Button, StyleSheet, ScrollView } from "react-native";
 
 export default function Description(props: any) {
   const [expanded, setExpanded] = useState(false);
