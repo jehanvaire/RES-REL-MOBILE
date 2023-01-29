@@ -1,6 +1,7 @@
+import { Box } from "native-base";
 import React, { useState } from "react";
 
-import { Text, View, Button, StyleSheet } from "react-native";
+import { Text, Button, StyleSheet } from "react-native";
 
 export default function Description(props: any) {
   const [expanded, setExpanded] = useState(false);
@@ -10,7 +11,7 @@ export default function Description(props: any) {
   };
 
   return (
-    <View>
+    <Box>
       <Text style={styles.description} numberOfLines={expanded ? undefined : 3}>
         {props.description}
       </Text>
@@ -21,7 +22,7 @@ export default function Description(props: any) {
           onPress={toggleExpand}
         />
       )}
-    </View>
+    </Box>
   );
 }
 

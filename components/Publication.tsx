@@ -10,7 +10,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
 
-function getDiffTime(date: Date) {
+function GetDiffTime(date: Date) {
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
   if (seconds < 60) return seconds + "s";
@@ -29,23 +29,23 @@ function getDiffTime(date: Date) {
   return years + " ans";
 }
 
-function likePublication() {
-  PublicationService.addLikeToPublication(1).then((res) => {
+function LikePublication() {
+  PublicationService.AddLikeToPublication(1).then((res) => {
     console.log(res);
   });
 }
 
-function showCommentsSection() {
+function ShowCommentsSection() {
   console.log("TODO: show comments section");
 }
 
-function sauvegarderPublication() {
-  PublicationService.sauvegarderPublication(1).then((res) => {
+function SauvegarderPublication() {
+  PublicationService.SauvegarderPublication(1).then((res) => {
     console.log(res);
   });
 }
 
-function afficherPlusOptions() {
+function AfficherPlusOptions() {
   console.log("TODO: afficher plus d'options");
 }
 
@@ -67,7 +67,7 @@ export default function Publication(props: any) {
         <Spacer />
 
         <Center>
-          <Text>Il y a {getDiffTime(props.dateCreation)}</Text>
+          <Text>Il y a {GetDiffTime(props.dateCreation)}</Text>
         </Center>
       </Stack>
 
@@ -92,25 +92,25 @@ export default function Publication(props: any) {
 
       {/* Footer */}
       <Stack direction="row" style={styles.footer}>
-        <TouchableOpacity onPress={likePublication}>
+        <TouchableOpacity onPress={LikePublication}>
           <LikeOutlined style={styles.button} />
         </TouchableOpacity>
 
         <Spacer />
 
-        <TouchableOpacity onPress={showCommentsSection}>
+        <TouchableOpacity onPress={ShowCommentsSection}>
           <CommentOutlined style={styles.button} />
         </TouchableOpacity>
 
         <Spacer />
 
-        <TouchableOpacity onPress={sauvegarderPublication}>
+        <TouchableOpacity onPress={SauvegarderPublication}>
           <BookOutlined style={styles.button} />
         </TouchableOpacity>
 
         <Spacer />
 
-        <TouchableOpacity onPress={afficherPlusOptions}>
+        <TouchableOpacity onPress={AfficherPlusOptions}>
           <EllipsisOutlined style={styles.button} />
         </TouchableOpacity>
       </Stack>
