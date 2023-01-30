@@ -1,5 +1,5 @@
 class PublicationService {
-  private baseUrl = "emplacement de l'API";
+  private baseUrl = "publications";
 
   //   public static async getPublications(): Promise<any> {
   //     const response = await fetch(this.baseUrl);

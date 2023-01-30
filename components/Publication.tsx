@@ -1,9 +1,3 @@
-import {
-  BookOutlined,
-  CommentOutlined,
-  EllipsisOutlined,
-  LikeOutlined,
-} from "@ant-design/icons";
 import { Text, Box, Spacer, Center, Stack, Avatar, Image } from "native-base";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
@@ -12,8 +6,10 @@ import PublicationService from "../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 function GetDiffTime(date: Date) {
+  if (!date) return "unknown";
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (seconds < 0) return "dans le futur";
   if (seconds < 60) return seconds + "s";
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return minutes + "m";
