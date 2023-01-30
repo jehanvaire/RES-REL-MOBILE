@@ -1,13 +1,19 @@
 import { Box, ScrollView } from "native-base";
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import Publication from "../components/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
+import { UserContext } from "../stores/UtilisateurStore";
 
 export default function ListePublicationsScreen() {
+  const utilisateur = React.useContext(UserContext);
+
   return (
     <Box style={styles.container}>
+      <Text>
+        {utilisateur.user.prenom} {utilisateur.user.nom}
+      </Text>
       <ScrollView>
         <Publication
           auteur="Adrien"

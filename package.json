@@ -9,7 +9,6 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.0.1",
     "@babel/runtime": "^7.20.13",
     "@expo/webpack-config": "^0.17.2",
     "@react-navigation/bottom-tabs": "^6.5.3",
