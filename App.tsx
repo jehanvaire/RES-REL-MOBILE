@@ -1,5 +1,4 @@
 import React from "react";
-// 1. import `NativeBaseProvider` component
 import { NativeBaseProvider, Text, Box } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import ListePublicationsScreen from "./pages/ListePublicationsScreen";
@@ -8,13 +7,27 @@ import ProfilScreen from "./pages/ProfilScreen";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchScreen from "./pages/SearchScreen";
-import { UserProvider } from "./stores/UtilisateurStore";
+import ConnexionScreen from "./pages/ConnexionScreen";
+import { getConnectedUser } from "./services/UtilisateurService";
+import { MMKV } from "react-native-mmkv";
 
 const Tab = createMaterialBottomTabNavigator();
 
-export default function App() {
-  return (
-    <UserProvider>
+function App() {
+  const storage = new MMKV();
+
+  const user = storage.getString("user_token");
+
+  console.log("user", user);
+
+  if (user == null) {
+    return (
+      <NativeBaseProvider>
+        <ConnexionScreen></ConnexionScreen>
+      </NativeBaseProvider>
+    );
+  } else {
+    return (
       <NavigationContainer>
         <NativeBaseProvider>
           <Tab.Navigator
@@ -55,6 +68,8 @@ export default function App() {
           </Tab.Navigator>
         </NativeBaseProvider>
       </NavigationContainer>
-    </UserProvider>
-  );
+    );
+  }
 }
+
+export default App;

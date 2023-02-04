@@ -1,27 +1,35 @@
-import React, { useState } from "react";
-import { Utilisateur } from "../ressources/types/Utilisateur";
+import { configureStore } from "@reduxjs/toolkit";
 
-// Create a context for sharing data between components
-const UserContext = React.createContext({
-  user: new Utilisateur("", ""),
-  updateUser: new Function(),
-});
-
-// Create a provider component for sharing the context value
-const UserProvider = ({ children }: any) => {
-  // State to store the user data
-  const [user, setUser] = useState(new Utilisateur("Adrien", "BONY"));
-
-  // Function to update the user data
-  const updateUser = (updatedUser: Utilisateur) => {
-    setUser(updatedUser);
-  };
-
-  return (
-    <UserContext.Provider value={{ user, updateUser }}>
-      {children}
-    </UserContext.Provider>
-  );
+const initialState = {
+  user: null,
+  token: null,
+  isAuth: false,
 };
 
-export { UserContext, UserProvider };
+const reducer = (state = initialState, action: any) => {
+  switch (action.type) {
+    case "SET_TOKEN":
+      return {
+        ...state,
+        token: action.token,
+      };
+    case "LOGIN":
+      return {
+        ...state,
+        isAuth: action.isAuth,
+        user: action.user,
+      };
+    case "LOGOUT":
+      return {
+        ...state,
+        isAuth: false,
+        user: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export const store = configureStore({
+  reducer,
+});
