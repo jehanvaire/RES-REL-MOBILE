@@ -4,13 +4,13 @@ import { Box, Input, View } from "native-base";
 import axios from "axios";
 import { MMKV } from "react-native-mmkv";
 
-export default function ConnexionScreen() {
+export default function ConnexionScreen({ navigation }: any) {
   const storage = new MMKV();
   const [nom, setNom] = React.useState("");
 
   const [motDePasse, setMotDePasse] = React.useState("");
 
-  const handleConnexion = async (props: any) => {
+  const handleConnexion = () => {
     // TODO: Appeler le service de connexion try catch
     // TODO: Vérifier mot de passe
     // TODO:  try catch
@@ -30,7 +30,7 @@ export default function ConnexionScreen() {
     };
 
     storage.set("user_token", response.data.token);
-    props.navigation.navigate("Menu");
+    navigation.navigate("Menu");
   };
 
   return (

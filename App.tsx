@@ -5,30 +5,40 @@ import ListePublicationsScreen from "./pages/ListePublicationsScreen";
 import NofificationScreen from "./pages/NotificationsScreen";
 import ProfilScreen from "./pages/ProfilScreen";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchScreen from "./pages/SearchScreen";
 import ConnexionScreen from "./pages/ConnexionScreen";
-import { getConnectedUser } from "./services/UtilisateurService";
 import { MMKV } from "react-native-mmkv";
 
 const Tab = createMaterialBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 function App() {
   const storage = new MMKV();
 
+  // erase storage
+  // storage.clearAll();
+
   const user = storage.getString("user_token");
 
-  console.log("user", user);
-
   if (user == null) {
+    // go to connexion screen if no user is connected
+    // and add the option to go back to the main menu
     return (
-      <NativeBaseProvider>
-        <ConnexionScreen></ConnexionScreen>
-      </NativeBaseProvider>
+      <NavigationContainer>
+        <NativeBaseProvider>
+          <Stack.Navigator initialRouteName="Connexion">
+            <Stack.Screen name="Connexion" component={ConnexionScreen} />
+            <Stack.Screen name="Menu" component={App} />
+          </Stack.Navigator>
+        </NativeBaseProvider>
+      </NavigationContainer>
     );
   } else {
     return (
-      <NavigationContainer>
+      <NavigationContainer independent={true}>
         <NativeBaseProvider>
           <Tab.Navigator
             screenOptions={({ route }) => ({
