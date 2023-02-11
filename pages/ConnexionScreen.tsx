@@ -1,59 +1,36 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, Text } from "react-native";
-import { Box, Input, View } from "native-base";
-import axios from "axios";
-import { MMKV } from "react-native-mmkv";
+import { Button, StyleSheet, View } from "react-native";
+import { useAuth } from "../services/AuthentificationService";
 
-export default function ConnexionScreen({ navigation }: any) {
-  const storage = new MMKV();
-  const [nom, setNom] = React.useState("");
-
-  const [motDePasse, setMotDePasse] = React.useState("");
-
-  const handleConnexion = () => {
-    // TODO: Appeler le service de connexion try catch
-    // TODO: Vérifier mot de passe
-    // TODO:  try catch
-
-    // const response = await axios.post(
-    //   "http://localhost:3000/api/utilisateurs/connexion",
-    //   {
-    //     nom: nom,
-    //     motDePasse: motDePasse,
-    //   }
-    // );
-
-    const response = {
-      data: {
-        token: "123456789",
-      },
-    };
-
-    storage.set("user_token", response.data.token);
-    navigation.navigate("Menu");
+// The registration view
+const Connexion = () => {
+  const auth = useAuth();
+  const onConnexion = () => {
+    console.log(`onConnexion`);
+    auth.register();
   };
 
   return (
-    <Box style={styles.container}>
-      <Input placeholder="Nom" value={nom} onChangeText={setNom} />
-
-      <Input
-        placeholder="Mot de passe"
-        value={motDePasse}
-        onChangeText={setMotDePasse}
-      />
-
-      <TouchableOpacity onPress={handleConnexion}>
-        <Text>Connexion</Text>
-      </TouchableOpacity>
-    </Box>
+    <View style={styles.view}>
+      <Button title={"Connexion"} onPress={onConnexion} />
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  view: {
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
+  },
+  button: {
+    backgroundColor: "gray",
+    height: 50,
+    width: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 50,
   },
 });
+
+export default Connexion;
