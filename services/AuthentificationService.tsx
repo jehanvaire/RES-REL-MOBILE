@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { MMKV } from "react-native-mmkv";
 
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+
 const AuthContext = React.createContext({} as any);
 
-const AUTHENTICATED = "AUTHENTICATED";
-const ACCESS_TOKEN_KEY = "access_token";
+const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
+const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
+const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
 export const storage = new MMKV();
 
 // clear storage
-// storage.clearAll();
+storage.clearAll();
 
 const getUtilisateurToken = () => {
   // Récupère le token de l'utilisateur
@@ -82,6 +85,8 @@ export const AuthContainer = ({ children }: any) => {
 
         const user = await getUtilisateur(token);
         console.log(`user`, user.userName);
+
+        storage.set(CURRENT_USER, user.userName);
 
         dispatch({ type: AUTHENTICATED });
       },
