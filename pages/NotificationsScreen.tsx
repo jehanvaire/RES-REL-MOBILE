@@ -1,17 +1,15 @@
 import { Center } from "native-base";
-import React from "react";
+import React, { useState } from "react";
 
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
-import { UserContext } from "../stores/UtilisateurStore";
+import { Utilisateur } from "../ressources/types/Utilisateur";
 
-export default function ListePublicationsScreen() {
-  const utilisateur = React.useContext(UserContext);
-
+export default function ListePublicationsScreen(props: any) {
   return (
     <View style={styles.container}>
       <Text>
-        {utilisateur.user.prenom} {utilisateur.user.nom}
+        {props.prenom} {props.nom}
       </Text>
       <Text>Nofitications</Text>
     </View>

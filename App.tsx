@@ -1,60 +1,47 @@
 import React from "react";
-// 1. import `NativeBaseProvider` component
-import { NativeBaseProvider, Text, Box } from "native-base";
+import { NativeBaseProvider } from "native-base";
+import { AuthContainer } from "./services/AuthentificationService";
+import Authentification from "./pages/Authentification/AuthentificationMenuScreen";
+import Menu from "./pages/Menu";
 import { NavigationContainer } from "@react-navigation/native";
-import ListePublicationsScreen from "./pages/ListePublicationsScreen";
-import NofificationScreen from "./pages/NotificationsScreen";
-import ProfilScreen from "./pages/ProfilScreen";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import SearchScreen from "./pages/SearchScreen";
-import { UserProvider } from "./stores/UtilisateurStore";
+import { createStackNavigator } from "@react-navigation/stack";
+import Connexion from "./pages/Authentification/ConnexionScreen";
+import CreationCompte from "./pages/Authentification/CreationCompteScreen";
 
-const Tab = createMaterialBottomTabNavigator();
+const Stack = createStackNavigator();
 
-export default function App() {
+function App() {
   return (
-    <UserProvider>
-      <NavigationContainer>
-        <NativeBaseProvider>
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color }) => {
-                let iconName;
-
-                switch (route.name) {
-                  case "Menu":
-                    iconName = focused ? "home" : "home-outline";
-                    break;
-                  case "Recherche":
-                    iconName = focused ? "search" : "search-outline";
-                    break;
-                  case "Notifications":
-                    iconName = focused
-                      ? "notifications"
-                      : "notifications-outline";
-                    break;
-                  case "Profil":
-                    iconName = focused ? "person" : "person-outline";
-                    break;
-                  default:
-                    iconName = focused ? "home" : "home-outline";
-                }
-
-                // You can return any component that you like here!
-                return <Ionicons name={iconName} size={25} color={color} />;
-              },
-              tabBarActiveTintColor: "tomato",
-              tabBarInactiveTintColor: "gray",
-            })}
-          >
-            <Tab.Screen name="Menu" component={ListePublicationsScreen} />
-            <Tab.Screen name="Recherche" component={SearchScreen} />
-            <Tab.Screen name="Notifications" component={NofificationScreen} />
-            <Tab.Screen name="Profil" component={ProfilScreen} />
-          </Tab.Navigator>
-        </NativeBaseProvider>
-      </NavigationContainer>
-    </UserProvider>
+    <NavigationContainer>
+      <NativeBaseProvider>
+        <AuthContainer>
+          {({ authenticated }: any) => {
+            return authenticated ? (
+              <Menu />
+            ) : (
+              <Stack.Navigator initialRouteName="Authentification">
+                <Stack.Screen
+                  name="Authentification"
+                  component={Authentification}
+                  options={{ header: () => null }}
+                />
+                <Stack.Screen
+                  name="Connexion"
+                  component={Connexion}
+                  options={{ header: () => null }}
+                />
+                <Stack.Screen
+                  name="CreationCompte"
+                  component={CreationCompte}
+                  options={{ header: () => null }}
+                />
+              </Stack.Navigator>
+            );
+          }}
+        </AuthContainer>
+      </NativeBaseProvider>
+    </NavigationContainer>
   );
 }
+
+export default App;
