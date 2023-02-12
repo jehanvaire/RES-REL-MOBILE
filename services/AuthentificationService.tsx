@@ -11,6 +11,7 @@ const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
 export const storage = new MMKV();
 
 // clear storage
+// TODO: a supprimer
 storage.clearAll();
 
 const getUtilisateurToken = () => {

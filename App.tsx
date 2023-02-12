@@ -1,63 +1,47 @@
 import React from "react";
 import { NativeBaseProvider } from "native-base";
 import { AuthContainer } from "./services/AuthentificationService";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native";
-import Connexion from "./pages/ConnexionScreen";
+import Authentification from "./pages/Authentification/AuthentificationMenuScreen";
 import Menu from "./pages/Menu";
-import { Dimensions } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Connexion from "./pages/Authentification/ConnexionScreen";
+import CreationCompte from "./pages/Authentification/CreationCompteScreen";
 
-var width = Dimensions.get("window").width; //full width
+const Stack = createStackNavigator();
 
 function App() {
   return (
-    <SafeAreaView style={styles.view}>
+    <NavigationContainer>
       <NativeBaseProvider>
         <AuthContainer>
           {({ authenticated }: any) => {
-            return authenticated ? <Menu /> : <Connexion />;
+            return authenticated ? (
+              <Menu />
+            ) : (
+              <Stack.Navigator initialRouteName="Authentification">
+                <Stack.Screen
+                  name="Authentification"
+                  component={Authentification}
+                  options={{ header: () => null }}
+                />
+                <Stack.Screen
+                  name="Connexion"
+                  component={Connexion}
+                  options={{ header: () => null }}
+                />
+                <Stack.Screen
+                  name="CreationCompte"
+                  component={CreationCompte}
+                  options={{ header: () => null }}
+                />
+              </Stack.Navigator>
+            );
           }}
         </AuthContainer>
       </NativeBaseProvider>
-    </SafeAreaView>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  view: {
-    // takes all the space available
-    flex: 1,
-    width: width,
-
-    // aligns the children in the center of the main axis (here, vertical)
-    justifyContent: "center",
-
-    // aligns the children in the center of the cross axis (here, horizontal)
-    alignItems: "center",
-
-    // sets the background color to white
-    backgroundColor: "white",
-
-    // centers the children
-    textAlign: "center",
-
-    // adds a default font size
-    fontSize: 16,
-
-    // adds a default font weight
-    fontWeight: "normal",
-
-    // adds a default color
-    color: "black",
-  },
-  button: {
-    backgroundColor: "gray",
-    height: 50,
-    width: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 50,
-  },
-});
 
 export default App;
