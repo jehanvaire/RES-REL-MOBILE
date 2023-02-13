@@ -12,7 +12,7 @@ export const storage = new MMKV();
 
 // clear storage
 // TODO: a supprimer
-storage.clearAll();
+// storage.clearAll();
 
 const getUtilisateurToken = () => {
   // Récupère le token de l'utilisateur

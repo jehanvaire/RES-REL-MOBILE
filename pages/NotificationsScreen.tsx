@@ -5,7 +5,7 @@ import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
 import { Utilisateur } from "../ressources/types/Utilisateur";
 
-export default function ListePublicationsScreen(props: any) {
+export default function NotificationScreen(props: any) {
   return (
     <View style={styles.container}>
       <Text>
