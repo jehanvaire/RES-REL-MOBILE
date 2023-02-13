@@ -11,7 +11,7 @@ export default function ListePublicationsScreen(props: any) {
       <Text>
         {props.prenom} {props.nom}
       </Text>
-      <Text>Nofitications</Text>
+      <Text>Search</Text>
     </View>
   );
 }
