@@ -14,7 +14,11 @@ Puis lancer la commande `npm -v`
 
 ## 2. Installer Expo
 
+Lancer la commande `npm i -g expo-cli`
+
 ## 3. Installer toutes les dépendances
+
+Lancer la commande `yarn`
 
 ## 4. Installer Java 11
 
