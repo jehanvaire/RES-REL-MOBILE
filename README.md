@@ -16,7 +16,7 @@ Puis lancer la commande `npm -v`
 
 ## 2. Installer Expo
 
-Lancer la commande `npm iinstall -g expo-cli`
+Lancer la commande `npm install -g expo-cli`
 
 (Vérifier dans le fichier `package.json` la version d'expo-cli)
 
@@ -26,7 +26,7 @@ Si la version est inférieure dans ce fichier, installer expo-cli localement (sa
 
 Installer yarn avec la commande `npm install -g yarn`
 
-Lancer la commande `yarn`
+Lancer la commande `yarn` (dans le dossier du projet)
 
 ## 4. Installer Java 11
 
