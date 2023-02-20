@@ -1,5 +1,5 @@
 import React from "react";
-import { NativeBaseProvider } from "native-base";
+import { NativeBaseProvider, StatusBar, Text } from "native-base";
 import { AuthContainer } from "./services/AuthentificationService";
 import Authentification from "./pages/Authentification/AuthentificationMenuScreen";
 import Menu from "./pages/Menu";
@@ -12,35 +12,40 @@ const Stack = createStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <NativeBaseProvider>
-        <AuthContainer>
-          {({ authenticated }: any) => {
-            return authenticated ? (
-              <Menu />
-            ) : (
-              <Stack.Navigator initialRouteName="Authentification">
-                <Stack.Screen
-                  name="Authentification"
-                  component={Authentification}
-                  options={{ header: () => null }}
-                />
-                <Stack.Screen
-                  name="Connexion"
-                  component={Connexion}
-                  options={{ header: () => null }}
-                />
-                <Stack.Screen
-                  name="CreationCompte"
-                  component={CreationCompte}
-                  options={{ header: () => null }}
-                />
-              </Stack.Navigator>
-            );
-          }}
-        </AuthContainer>
-      </NativeBaseProvider>
-    </NavigationContainer>
+    <>
+      <StatusBar barStyle="dark-content" hidden={false} translucent={true} />
+      <NavigationContainer>
+        <NativeBaseProvider>
+          <AuthContainer>
+            {({ authenticated }: any) => {
+              return authenticated ? (
+                <Menu />
+              ) : (
+                <Stack.Navigator initialRouteName="Authentification">
+                  <Stack.Screen
+                    name="Authentification"
+                    component={Authentification}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Connexion"
+                    component={Connexion}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="CreationCompte"
+                    component={CreationCompte}
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Navigator>
+              );
+            }}
+          </AuthContainer>
+        </NativeBaseProvider>
+      </NavigationContainer>
+    </>
   );
 }
 

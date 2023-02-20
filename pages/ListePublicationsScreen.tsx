@@ -49,6 +49,6 @@ export default function ListePublicationsScreen(props: any) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30,
+    marginTop: 50,
   },
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text } from "native-base";
 import { MMKV } from "react-native-mmkv";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -8,6 +8,7 @@ import ProfilScreen from "./ProfilScreen";
 import SearchScreen from "./SearchScreen";
 import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
+import { storage } from "../services/AuthentificationService";
 
 const Tab = createMaterialBottomTabNavigator();
 

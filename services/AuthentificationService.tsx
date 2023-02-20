@@ -70,6 +70,10 @@ export const AuthContainer = ({ children }: any) => {
 
           storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
 
+          const user = await getUtilisateur(result.access_token);
+
+          storage.set(CURRENT_USER, JSON.stringify(user));
+
           dispatch({ type: AUTHENTICATED });
         } catch (error) {
           console.error(error);
@@ -85,9 +89,8 @@ export const AuthContainer = ({ children }: any) => {
         }
 
         const user = await getUtilisateur(token);
-        console.log(`user`, user.userName);
 
-        storage.set(CURRENT_USER, user.userName);
+        storage.set(CURRENT_USER, JSON.stringify(user));
 
         dispatch({ type: AUTHENTICATED });
       },
