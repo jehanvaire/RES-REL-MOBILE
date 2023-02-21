@@ -37,6 +37,94 @@ class PublicationService {
     const data = "Publication sauvegardée";
     return data;
   }
+
+  public async GetAllPublications(): Promise<any> {
+    // const response = await fetch(this.baseUrl);
+    // const data = await response.json();
+    const data = [
+      {
+        id: 1,
+        title: "Publication 1",
+        description: "Description de la publication 1",
+        likes: 10,
+        comments: [
+          {
+            id: 1,
+            comment: "Commentaire 1",
+            likes: 5,
+          },
+          {
+            id: 2,
+            comment: "Commentaire 2",
+            likes: 2,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: "Publication 2",
+        description: "Description de la publication 2",
+        likes: 5,
+        comments: [
+          {
+            id: 1,
+            comment: "Commentaire 1",
+            likes: 5,
+          },
+          {
+            id: 2,
+            comment: "Commentaire 2",
+            likes: 2,
+          },
+        ],
+      },
+    ];
+    return data;
+  }
+
+  public async GetAllPublicationsByUser(id: number): Promise<any> {
+    // const response = await fetch(`${this.baseUrl}/user/${id}`);
+    // const data = await response.json();
+    const data = [
+      {
+        id: 1,
+        title: "Publication 1",
+        description: "Description de la publication 1",
+        likes: 10,
+        comments: [
+          {
+            id: 1,
+            comment: "Commentaire 1",
+            likes: 5,
+          },
+          {
+            id: 2,
+            comment: "Commentaire 2",
+            likes: 2,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: "Publication 2",
+        description: "Description de la publication 2",
+        likes: 5,
+        comments: [
+          {
+            id: 1,
+            comment: "Commentaire 1",
+            likes: 5,
+          },
+          {
+            id: 2,
+            comment: "Commentaire 2",
+            likes: 2,
+          },
+        ],
+      },
+    ];
+    return data;
+  }
 }
 
 export default new PublicationService();

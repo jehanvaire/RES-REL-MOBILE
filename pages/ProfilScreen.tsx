@@ -1,25 +1,82 @@
-import { Center, Spacer } from "native-base";
+import {
+  Box,
+  Center,
+  Spacer,
+  Image,
+  Avatar,
+  Stack,
+  Button,
+  Text,
+} from "native-base";
 import React, { useEffect, useState } from "react";
 
-import { StyleSheet, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { View } from "native-base";
-import { Utilisateur } from "../ressources/types/Utilisateur";
-import { MMKV } from "react-native-mmkv";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import PublicationService from "../services/PublicationService";
 
 export default function ListePublicationsScreen(props: any) {
-  const [user_storage, setUserStorage] = useState<any | null>(null);
+  const [nomUtilisateur, setNomUtilisateur] = useState<any | null>(null);
   useEffect(() => {
-    setUserStorage(storage.getString(AuthentificationEnum.CURRENT_USER));
+    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+    setNomUtilisateur(JSON.parse(user_json).userName);
   }, []);
+  let listePublications: any[];
+  let isLoading: boolean = true;
 
-  return (
-    <View style={styles.container}>
-      <Text>{user_storage}</Text>
-      <Text>Profil</Text>
-    </View>
-  );
+  PublicationService.GetAllPublicationsByUser(1).then((result) => {
+    listePublications = result;
+    isLoading = false;
+  });
+
+  if (isLoading) {
+    return <Text style={{ margin: 100 }}>Loading...</Text>;
+  } else {
+    return (
+      <View style={styles.container}>
+        <Stack direction="row" style={styles.header}>
+          <Avatar
+            size={100}
+            source={{
+              uri: "https://i.redd.it/flmx8fb1dzz41.jpg",
+            }}
+          ></Avatar>
+
+          <Center marginLeft={2}>
+            <Text style={styles.text}>{nomUtilisateur}</Text>
+          </Center>
+
+          <Spacer />
+
+          <Center>
+            <TouchableOpacity>
+              <Ionicons name={"options-outline"} size={30} />
+            </TouchableOpacity>
+          </Center>
+        </Stack>
+        <Text style={styles.description}>Bonjour je suis une description</Text>
+
+        <Text style={styles.text}>Publications</Text>
+        <Box
+          style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: "black",
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        ></Box>
+        {/* Print the list after it is initialized */}
+        {/* {listePublications.map((publication) => (
+          <View key={publication.id}>
+            <Text>{publication.titre}</Text>
+          </View>
+        ))} */}
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -27,6 +84,21 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "column",
+    // flexDirection: "column",
+  },
+  header: {
+    margin: 10,
+    marginTop: 5,
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  description: {
+    // put if on left
+    margin: 10,
+    marginTop: 5,
+
+    fontSize: 15,
   },
 });
