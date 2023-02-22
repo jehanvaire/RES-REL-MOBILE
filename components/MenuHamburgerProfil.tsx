@@ -15,7 +15,7 @@ const MenuHamburgerProfil = () => {
     <Box>
       <Center>
         <TouchableOpacity>
-          <Ionicons name={"options-outline"} size={30} onPress={onOpen} />
+          <Ionicons name={"ellipsis-vertical"} size={30} onPress={onOpen} />
         </TouchableOpacity>
         <Actionsheet isOpen={isOpen} onClose={onClose}>
           <Actionsheet.Content>

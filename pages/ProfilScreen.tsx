@@ -11,7 +11,12 @@ import {
 } from "native-base";
 import React, { useEffect, useState } from "react";
 
-import { StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+} from "react-native";
 import { View } from "native-base";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
@@ -43,6 +48,18 @@ export default function ListePublicationsScreen(props: any) {
     setUtilisateur(user);
   }, []);
 
+  const scrollY = new Animated.Value(0);
+
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [200, 100],
+    extrapolate: "clamp",
+  });
+
+  const headerStyle = {
+    height: headerHeight,
+  };
+
   return (
     <View style={styles.container}>
       <Stack direction="row" style={styles.header}>
@@ -69,20 +86,24 @@ export default function ListePublicationsScreen(props: any) {
           </TouchableOpacity> */}
         </Center>
       </Stack>
+      <ScrollView
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+      >
+        <Description description={utilisateur.description ?? ""}></Description>
 
-      <Description description={utilisateur.description ?? ""}></Description>
-
-      <Text style={styles.text}>Publications</Text>
-      <Box
-        style={{
-          width: "100%",
-          height: 1,
-          backgroundColor: "black",
-          marginTop: 10,
-          marginBottom: 10,
-        }}
-      ></Box>
-      <ScrollView>
+        <Text style={styles.text}>Publications</Text>
+        <Box
+          style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: "black",
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        ></Box>
         {listePublications.map((publication) => (
           <View key={publication.id}>
             <Publication
