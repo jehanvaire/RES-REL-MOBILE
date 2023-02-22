@@ -1,3 +1,6 @@
+import Publication from "../components/Publication";
+import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
+
 class PublicationService {
   private baseUrl = "publications";
 
@@ -41,88 +44,86 @@ class PublicationService {
   public async GetAllPublications(): Promise<any> {
     // const response = await fetch(this.baseUrl);
     // const data = await response.json();
+
+    const autheur = "Auteur ";
+
     const data = [
       {
         id: 1,
-        title: "Publication 1",
+        titre: "Publication 1",
         description: "Description de la publication 1",
-        likes: 10,
-        comments: [
-          {
-            id: 1,
-            comment: "Commentaire 1",
-            likes: 5,
-          },
-          {
-            id: 2,
-            comment: "Commentaire 2",
-            likes: 2,
-          },
-        ],
+        auteur: autheur,
+        status: StatusPublicationEnum.ENATTENTE,
+        raisonRefus: undefined,
+        dateCreation: new Date(),
+        lienImage: "https://picsum.photos/200/300",
       },
       {
         id: 2,
-        title: "Publication 2",
+        titre: "Publication 2",
         description: "Description de la publication 2",
-        likes: 5,
-        comments: [
-          {
-            id: 1,
-            comment: "Commentaire 1",
-            likes: 5,
-          },
-          {
-            id: 2,
-            comment: "Commentaire 2",
-            likes: 2,
-          },
-        ],
+        auteur: autheur,
+        status: StatusPublicationEnum.ENATTENTE,
+        raisonRefus: undefined,
+        dateCreation: new Date(),
+        lienImage: "https://picsum.photos/200/300",
+      },
+      {
+        id: 3,
+        titre: "Publication 3",
+        description: "Description de la publication 3",
+        auteur: autheur,
+        status: StatusPublicationEnum.ENATTENTE,
+        raisonRefus: undefined,
+        dateCreation: new Date(),
+        lienImage: "https://picsum.photos/200/300",
       },
     ];
     return data;
   }
 
-  public async GetAllPublicationsByUser(id: number): Promise<any> {
+  public async GetListePublicationsUtilisateur(id: number): Promise<any> {
     // const response = await fetch(`${this.baseUrl}/user/${id}`);
     // const data = await response.json();
+
+    const autheur = "Auteur " + id;
+
+    // Create a list of publications with random number of comments
+    // with type Publication, using fields auteur, titre, description, status, raisonRefus={undefined}, dateCreation, lienImage
+
     const data = [
       {
         id: 1,
-        title: "Publication 1",
+        titre: "Publication 1",
         description: "Description de la publication 1",
-        likes: 10,
-        comments: [
-          {
-            id: 1,
-            comment: "Commentaire 1",
-            likes: 5,
-          },
-          {
-            id: 2,
-            comment: "Commentaire 2",
-            likes: 2,
-          },
-        ],
+        auteur: autheur,
+        status: StatusPublicationEnum.ENATTENTE,
+        raisonRefus: undefined,
+        dateCreation: new Date(),
+        lienImage: "https://picsum.photos/200/300",
       },
       {
         id: 2,
-        title: "Publication 2",
+        titre: "Publication 2",
         description: "Description de la publication 2",
-        likes: 5,
-        comments: [
-          {
-            id: 1,
-            comment: "Commentaire 1",
-            likes: 5,
-          },
-          {
-            id: 2,
-            comment: "Commentaire 2",
-            likes: 2,
-          },
-        ],
+        auteur: autheur,
+        status: StatusPublicationEnum.ENATTENTE,
+        raisonRefus: undefined,
+        dateCreation: new Date(),
+        lienImage: "https://picsum.photos/200/300",
+      },
+      {
+        id: 3,
+        titre: "Publication 3",
+        description: "Description de la publication 3",
+        auteur: autheur,
+        status: StatusPublicationEnum.ENATTENTE,
+        raisonRefus: undefined,
+        dateCreation: new Date(),
+        lienImage: "https://picsum.photos/200/300",
       },
     ];
+
     return data;
   }
 }

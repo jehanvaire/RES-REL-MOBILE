@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { MMKV } from "react-native-mmkv";
 
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+import { Utilisateur } from "../ressources/types/Utilisateur";
 
 const AuthContext = React.createContext({} as any);
 
@@ -70,7 +71,16 @@ export const AuthContainer = ({ children }: any) => {
 
           storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
 
-          const user = await getUtilisateur(result.access_token);
+          let user = (await getUtilisateur(result.access_token)) as Utilisateur;
+
+          // Add all other user Attributes here
+          // TODO: à supprimer après
+          user.prenom = "Adrien";
+          user.nom = "Bony";
+          user.lienPhoto = "https://i.redd.it/flmx8fb1dzz41.jpg";
+          user.description = "Bonjour je suis une description";
+          user.dateNaissance = new Date("1995-01-01");
+          user.dateInscription = new Date("2020-01-01");
 
           storage.set(CURRENT_USER, JSON.stringify(user));
 
@@ -88,7 +98,16 @@ export const AuthContainer = ({ children }: any) => {
           return;
         }
 
-        const user = await getUtilisateur(token);
+        let user = await getUtilisateur(token);
+
+        // Add all other user Attributes here
+        // TODO: à supprimer après
+        user.prenom = "Adrien";
+        user.nom = "Bony";
+        user.lienPhoto = "https://i.redd.it/flmx8fb1dzz41.jpg";
+        user.description = "Bonjour je suis une description";
+        user.dateNaissance = new Date("1995-01-01");
+        user.dateInscription = new Date("2020-01-01");
 
         storage.set(CURRENT_USER, JSON.stringify(user));
 

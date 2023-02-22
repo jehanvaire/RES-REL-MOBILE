@@ -125,12 +125,13 @@ const styles = StyleSheet.create({
   titre: {
     fontSize: 26,
     fontWeight: "bold",
-    marginLeft: 10,
-    marginRight: 10,
+    paddingTop: 10,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
   },
   description: {
     fontSize: 16,
-    margin: 10,
+    marginHorizontal: 10,
   },
   image: {
     marginTop: 10,
