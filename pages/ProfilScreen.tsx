@@ -27,7 +27,7 @@ import { Utilisateur } from "../ressources/types/Utilisateur";
 import Description from "../components/Description";
 import MenuHamburgerProfil from "../components/MenuHamburgerProfil";
 
-export default function ListePublicationsScreen(props: any) {
+export default function ListePublicationsScreen() {
   const [listePublications, setListePublications] = useState<any[]>([]);
   const [utilisateur, setUtilisateur] = useState<Utilisateur>(
     {} as Utilisateur
@@ -71,7 +71,7 @@ export default function ListePublicationsScreen(props: any) {
         ></Avatar>
 
         <Center marginLeft={2}>
-          <Text style={styles.text}>
+          <Text style={styles.title}>
             {utilisateur.nom} {utilisateur.prenom}
           </Text>
         </Center>
@@ -80,21 +80,13 @@ export default function ListePublicationsScreen(props: any) {
 
         <Center>
           <MenuHamburgerProfil></MenuHamburgerProfil>
-
-          {/* <TouchableOpacity>
-            <Ionicons name={"options-outline"} size={30} />
-          </TouchableOpacity> */}
         </Center>
       </Stack>
-      <ScrollView
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-      >
+
+      <ScrollView>
         <Description description={utilisateur.description ?? ""}></Description>
 
-        <Text style={styles.text}>Publications</Text>
+        <Text style={styles.title}>Publications</Text>
         <Box
           style={{
             width: "100%",
@@ -132,9 +124,10 @@ const styles = StyleSheet.create({
     margin: 10,
     marginTop: 5,
   },
-  text: {
+  title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginHorizontal: 10,
   },
   description: {
     margin: 10,
