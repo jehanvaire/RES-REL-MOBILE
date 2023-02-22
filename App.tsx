@@ -1,5 +1,5 @@
 import React from "react";
-import { NativeBaseProvider, StatusBar, Text } from "native-base";
+import { NativeBaseProvider, StatusBar } from "native-base";
 import { AuthContainer } from "./services/AuthentificationService";
 import Authentification from "./pages/Authentification/AuthentificationMenuScreen";
 import Menu from "./pages/Menu";
