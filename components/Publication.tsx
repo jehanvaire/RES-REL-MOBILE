@@ -4,6 +4,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 function GetDiffTime(date: Date) {
   if (!date) return "unknown";
@@ -45,6 +46,11 @@ function SauvegarderPublication() {
 function AfficherPlusOptions() {
   console.log("TODO: afficher plus d'options");
 }
+const tap = Gesture.Tap()
+  .numberOfTaps(2)
+  .onStart(() => {
+    LikePublication();
+  });
 
 export default function Publication(props: any) {
   return (
@@ -76,14 +82,16 @@ export default function Publication(props: any) {
       </Box>
 
       <Box>
-        <Image
-          style={styles.image}
-          source={{
-            uri: props.lienImage,
-          }}
-          alt={props.titre + " image"}
-          size="xl"
-        />
+        <GestureDetector gesture={tap}>
+          <Image
+            style={styles.image}
+            source={{
+              uri: props.lienImage,
+            }}
+            alt={props.titre + " image"}
+            size="xl"
+          />
+        </GestureDetector>
       </Box>
 
       <Stack direction="row" style={styles.footer}>

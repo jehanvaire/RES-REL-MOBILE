@@ -1,31 +1,15 @@
-import {
-  Box,
-  Center,
-  Spacer,
-  Image,
-  Avatar,
-  Stack,
-  Button,
-  Text,
-  Actionsheet,
-} from "native-base";
+import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
 import React, { useEffect, useState } from "react";
-
-import {
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Animated,
-} from "react-native";
+import { StyleSheet, ScrollView, Animated } from "react-native";
 import { View } from "native-base";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../services/PublicationService";
 import Publication from "../components/Publication";
 import { Utilisateur } from "../ressources/types/Utilisateur";
 import Description from "../components/Description";
 import MenuHamburgerProfil from "../components/MenuHamburgerProfil";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function ListePublicationsScreen() {
   const [listePublications, setListePublications] = useState<any[]>([]);
@@ -61,56 +45,60 @@ export default function ListePublicationsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Stack direction="row" style={styles.header}>
-        <Avatar
-          size={100}
-          source={{
-            uri: utilisateur.lienPhoto,
-          }}
-        ></Avatar>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <Stack direction="row" style={styles.header}>
+          <Avatar
+            size={100}
+            source={{
+              uri: utilisateur.lienPhoto,
+            }}
+          ></Avatar>
 
-        <Center marginLeft={2}>
-          <Text style={styles.title}>
-            {utilisateur.nom} {utilisateur.prenom}
-          </Text>
-        </Center>
+          <Center marginLeft={2}>
+            <Text style={styles.title}>
+              {utilisateur.nom} {utilisateur.prenom}
+            </Text>
+          </Center>
 
-        <Spacer />
+          <Spacer />
 
-        <Center>
-          <MenuHamburgerProfil></MenuHamburgerProfil>
-        </Center>
-      </Stack>
+          <Center>
+            <MenuHamburgerProfil></MenuHamburgerProfil>
+          </Center>
+        </Stack>
 
-      <ScrollView>
-        <Description description={utilisateur.description ?? ""}></Description>
+        <ScrollView>
+          <Description
+            description={utilisateur.description ?? ""}
+          ></Description>
 
-        <Text style={styles.title}>Publications</Text>
-        <Box
-          style={{
-            width: "100%",
-            height: 1,
-            backgroundColor: "black",
-            marginTop: 10,
-            marginBottom: 10,
-          }}
-        ></Box>
-        {listePublications.map((publication) => (
-          <View key={publication.id}>
-            <Publication
-              auteur={publication.auteur}
-              titre={publication.titre}
-              description={publication.description}
-              status={publication.status}
-              raisonRefus={publication.raisonRefus}
-              dateCreation={publication.dateCreation}
-              lienImage={publication.lienImage}
-            />
-          </View>
-        ))}
-      </ScrollView>
-    </View>
+          <Text style={styles.title}>Publications</Text>
+          <Box
+            style={{
+              width: "100%",
+              height: 1,
+              backgroundColor: "black",
+              marginTop: 10,
+              marginBottom: 10,
+            }}
+          ></Box>
+          {listePublications.map((publication) => (
+            <View key={publication.id}>
+              <Publication
+                auteur={publication.auteur}
+                titre={publication.titre}
+                description={publication.description}
+                status={publication.status}
+                raisonRefus={publication.raisonRefus}
+                dateCreation={publication.dateCreation}
+                lienImage={publication.lienImage}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </GestureHandlerRootView>
   );
 }
 
