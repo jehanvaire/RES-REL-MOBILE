@@ -1,10 +1,14 @@
 import { Text, Box, Spacer, Center, Stack, Avatar, Image } from "native-base";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { State, TapGestureHandler } from "react-native-gesture-handler";
+import { DoubleTap } from "./DoubleTap";
+import { createStackNavigator } from "@react-navigation/stack";
+
+const SNavigator = createStackNavigator();
 
 function GetDiffTime(date: Date) {
   if (!date) return "unknown";
@@ -47,37 +51,7 @@ function AfficherPlusOptions() {
   console.log("TODO: afficher plus d'options");
 }
 
-const tap = Gesture.Tap()
-  .numberOfTaps(2)
-  .onStart(() => {
-    LikePublication();
-  });
-
-// handle simple tap
-const tap2 = Gesture.Tap().onStart(() => {
-  console.log("tap");
-});
-
 export default function Publication(props: any) {
-  const [lastTap, setLastTap] = useState<number | null>(null);
-
-  const handleSingleTap = () => {
-    const now = Date.now();
-    if (lastTap && now - lastTap < 300) {
-      handleDoubleTap();
-    } else {
-      // Perform action for a single tap
-      console.log("single tap");
-    }
-    setLastTap(now);
-  };
-
-  const handleDoubleTap = () => {
-    // Perform action for a double tap
-    console.log("double tap");
-    setLastTap(null);
-  };
-
   return (
     <Box style={styles.container}>
       <Stack direction="row" style={styles.header}>
@@ -107,8 +81,8 @@ export default function Publication(props: any) {
       </Box>
 
       <Box>
-        {/* <GestureDetector gesture={tap}> */}
-        <TouchableOpacity onPress={handleSingleTap}>
+        {/* Gestion navigation lors du click sur la publication */}
+        <DoubleTap>
           <Image
             style={styles.image}
             source={{
@@ -117,8 +91,7 @@ export default function Publication(props: any) {
             alt={props.titre + " image"}
             size="xl"
           />
-        </TouchableOpacity>
-        {/* </GestureDetector> */}
+        </DoubleTap>
       </Box>
 
       <Stack direction="row" style={styles.footer}>
