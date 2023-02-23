@@ -1,14 +1,10 @@
 import { Text, Box, Spacer, Center, Stack, Avatar, Image } from "native-base";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { State, TapGestureHandler } from "react-native-gesture-handler";
 import { DoubleTap } from "./DoubleTap";
-import { createStackNavigator } from "@react-navigation/stack";
-
-const SNavigator = createStackNavigator();
 
 function GetDiffTime(date: Date) {
   if (!date) return "unknown";
@@ -51,6 +47,10 @@ function AfficherPlusOptions() {
   console.log("TODO: afficher plus d'options");
 }
 
+function AfficherPublication() {
+  console.log("TODO: afficher la publication");
+}
+
 export default function Publication(props: any) {
   return (
     <Box style={styles.container}>
@@ -81,8 +81,10 @@ export default function Publication(props: any) {
       </Box>
 
       <Box>
-        {/* Gestion navigation lors du click sur la publication */}
-        <DoubleTap>
+        <DoubleTap
+          AfficherPublication={AfficherPublication}
+          LikePublication={LikePublication}
+        >
           <Image
             style={styles.image}
             source={{

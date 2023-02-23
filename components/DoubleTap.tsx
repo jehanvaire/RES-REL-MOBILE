@@ -1,18 +1,22 @@
 import { useRef } from "react";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 
-export const DoubleTap = ({ children }: any) => {
+export const DoubleTap = ({
+  children,
+  AfficherPublication,
+  LikePublication,
+}: any) => {
   const doubleTapRef = useRef(null);
 
   const onSingleTapEvent = (event: any) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      console.log("single tap 1");
+      AfficherPublication();
     }
   };
 
   const onDoubleTapEvent = (event: any) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      console.log("double tap 1");
+      LikePublication();
     }
   };
 
