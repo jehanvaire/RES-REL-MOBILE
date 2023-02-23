@@ -1,5 +1,5 @@
 import { Text, Box, Spacer, Center, Stack, Avatar, Image } from "native-base";
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "./Description";
 import PublicationService from "../services/PublicationService";
@@ -46,13 +46,38 @@ function SauvegarderPublication() {
 function AfficherPlusOptions() {
   console.log("TODO: afficher plus d'options");
 }
+
 const tap = Gesture.Tap()
   .numberOfTaps(2)
   .onStart(() => {
     LikePublication();
   });
 
+// handle simple tap
+const tap2 = Gesture.Tap().onStart(() => {
+  console.log("tap");
+});
+
 export default function Publication(props: any) {
+  const [lastTap, setLastTap] = useState<number | null>(null);
+
+  const handleSingleTap = () => {
+    const now = Date.now();
+    if (lastTap && now - lastTap < 300) {
+      handleDoubleTap();
+    } else {
+      // Perform action for a single tap
+      console.log("single tap");
+    }
+    setLastTap(now);
+  };
+
+  const handleDoubleTap = () => {
+    // Perform action for a double tap
+    console.log("double tap");
+    setLastTap(null);
+  };
+
   return (
     <Box style={styles.container}>
       <Stack direction="row" style={styles.header}>
@@ -82,7 +107,8 @@ export default function Publication(props: any) {
       </Box>
 
       <Box>
-        <GestureDetector gesture={tap}>
+        {/* <GestureDetector gesture={tap}> */}
+        <TouchableOpacity onPress={handleSingleTap}>
           <Image
             style={styles.image}
             source={{
@@ -91,7 +117,8 @@ export default function Publication(props: any) {
             alt={props.titre + " image"}
             size="xl"
           />
-        </GestureDetector>
+        </TouchableOpacity>
+        {/* </GestureDetector> */}
       </Box>
 
       <Stack direction="row" style={styles.footer}>
