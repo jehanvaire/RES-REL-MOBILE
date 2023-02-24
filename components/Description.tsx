@@ -29,6 +29,7 @@ export default function Description(props: any) {
 const styles = StyleSheet.create({
   description: {
     fontSize: 16,
+    textAlign: "justify",
     margin: 10,
   },
 });

@@ -49,8 +49,7 @@ const Publication = (props: any) => {
   }
 
   function AfficherPublication() {
-    console.log(props.auteur);
-    props.navigation.navigate("PublicationDetails", {
+    props.navigation.navigate("DetailsPublication", {
       auteur: props.auteur,
       titre: props.titre,
       description: props.description,

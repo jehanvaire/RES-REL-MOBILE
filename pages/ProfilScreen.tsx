@@ -121,7 +121,7 @@ const ProfilStack = () => {
         options={{ headerShown: false }}
       />
       <StackNav.Screen
-        name="PublicationDetails"
+        name="DetailsPublication"
         component={DetailsPublication}
         options={{ headerShown: true, title: "" }}
       />
