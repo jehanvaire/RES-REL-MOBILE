@@ -1,58 +1,65 @@
 import { Text, Box, Spacer, Center, Stack, Avatar, Image } from "native-base";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import Description from "./Description";
-import PublicationService from "../services/PublicationService";
+import Description from "../Description";
+import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { DoubleTap } from "../DoubleTap";
 
-function GetDiffTime(date: Date) {
-  if (!date) return "unknown";
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  if (seconds < 0) return "dans le futur";
-  if (seconds < 60) return seconds + "s";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return minutes + "m";
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return hours + "h";
-  const days = Math.floor(hours / 24);
-  if (days < 7) return days + " jours";
-  const weeks = Math.floor(days / 7);
-  if (weeks < 4) return weeks + " semaines";
-  const months = Math.floor(days / 30);
-  if (months < 12) return months + " mois";
-  const years = Math.floor(days / 365);
-  if (years < 2) return years + " an";
-  return years + " ans";
-}
+const Publication = (props: any) => {
+  function GetDiffTime(date: Date) {
+    if (!date) return "unknown";
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (seconds < 0) return "dans le futur";
+    if (seconds < 60) return seconds + "s";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + "m";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + "h";
+    const days = Math.floor(hours / 24);
+    if (days < 7) return days + " jours";
+    const weeks = Math.floor(days / 7);
+    if (weeks < 4) return weeks + " semaines";
+    const months = Math.floor(days / 30);
+    if (months < 12) return months + " mois";
+    const years = Math.floor(days / 365);
+    if (years < 2) return years + " an";
+    return years + " ans";
+  }
 
-function LikePublication() {
-  PublicationService.AddLikeToPublication(1).then((res) => {
-    console.log(res);
-  });
-}
+  function LikePublication() {
+    PublicationService.AddLikeToPublication(1).then((res) => {
+      console.log(res);
+    });
+  }
 
-function ShowCommentsSection() {
-  console.log("TODO: show comments section");
-}
+  function ShowCommentsSection() {
+    console.log("TODO: show comments section");
+  }
 
-function SauvegarderPublication() {
-  PublicationService.SauvegarderPublication(1).then((res) => {
-    console.log(res);
-  });
-}
+  function SauvegarderPublication() {
+    PublicationService.SauvegarderPublication(1).then((res) => {
+      console.log(res);
+    });
+  }
 
-function AfficherPlusOptions() {
-  console.log("TODO: afficher plus d'options");
-}
-const tap = Gesture.Tap()
-  .numberOfTaps(2)
-  .onStart(() => {
-    LikePublication();
-  });
+  function AfficherPlusOptions() {
+    console.log("TODO: afficher plus d'options");
+  }
 
-export default function Publication(props: any) {
+  function AfficherPublication() {
+    console.log(props.auteur);
+    props.navigation.navigate("PublicationDetails", {
+      auteur: props.auteur,
+      titre: props.titre,
+      description: props.description,
+      status: props.status,
+      raisonRefus: props.raisonRefus,
+      dateCreation: JSON.stringify(props.dateCreation),
+      lienImage: props.lienImage,
+    });
+  }
   return (
     <Box style={styles.container}>
       <Stack direction="row" style={styles.header}>
@@ -82,7 +89,10 @@ export default function Publication(props: any) {
       </Box>
 
       <Box>
-        <GestureDetector gesture={tap}>
+        <DoubleTap
+          AfficherPublication={AfficherPublication}
+          LikePublication={LikePublication}
+        >
           <Image
             style={styles.image}
             source={{
@@ -91,7 +101,7 @@ export default function Publication(props: any) {
             alt={props.titre + " image"}
             size="xl"
           />
-        </GestureDetector>
+        </DoubleTap>
       </Box>
 
       <Stack direction="row" style={styles.footer}>
@@ -119,7 +129,9 @@ export default function Publication(props: any) {
       </Stack>
     </Box>
   );
-}
+};
+
+export default Publication;
 
 const styles = StyleSheet.create({
   container: {

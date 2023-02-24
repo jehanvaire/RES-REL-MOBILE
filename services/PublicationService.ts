@@ -1,4 +1,4 @@
-import Publication from "../components/Publication";
+import Publication from "../components/Publication/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
 
 class PublicationService {
