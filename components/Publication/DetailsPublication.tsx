@@ -1,4 +1,13 @@
-import { Avatar, Box, Center, Spacer, Stack, Text, Image } from "native-base";
+import {
+  Avatar,
+  Box,
+  Center,
+  Spacer,
+  Stack,
+  Text,
+  Image,
+  ScrollView,
+} from "native-base";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
@@ -54,60 +63,62 @@ const DetailsPublication = (props: any) => {
 
   return (
     <Box style={styles.container}>
-      <Stack direction="row" style={styles.header}>
-        <Avatar
+      <ScrollView>
+        <Stack direction="row" style={styles.header}>
+          <Avatar
+            source={{
+              uri: "https://i.imgflip.com/2xc9z0.png",
+            }}
+          ></Avatar>
+
+          <Center marginLeft={2}>
+            <Text>Partagé par {auteur}</Text>
+          </Center>
+
+          <Spacer />
+
+          <Center>
+            <Text>Il y a {GetDiffTime(dateCreation)}</Text>
+          </Center>
+        </Stack>
+
+        <Text style={styles.titre}>{titre}</Text>
+
+        <Text style={styles.description}>{description}</Text>
+
+        <Image
+          style={styles.image}
           source={{
-            uri: "https://i.imgflip.com/2xc9z0.png",
+            uri: lienImage,
           }}
-        ></Avatar>
+          alt={titre + " image"}
+          size="xl"
+        />
 
-        <Center marginLeft={2}>
-          <Text>Partagé par {auteur}</Text>
-        </Center>
+        <Stack direction="row" style={styles.footer}>
+          <TouchableOpacity onPress={LikePublication}>
+            <Ionicons name={"heart-outline"} size={25} />
+          </TouchableOpacity>
 
-        <Spacer />
+          <Spacer />
 
-        <Center>
-          <Text>Il y a {GetDiffTime(dateCreation)}</Text>
-        </Center>
-      </Stack>
+          <TouchableOpacity onPress={ShowCommentsSection}>
+            <Ionicons name={"chatbubble-outline"} size={25} />
+          </TouchableOpacity>
 
-      <Text style={styles.titre}>{titre}</Text>
+          <Spacer />
 
-      <Text style={styles.description}>{description}</Text>
+          <TouchableOpacity onPress={SauvegarderPublication}>
+            <Ionicons name={"bookmark-outline"} size={25} />
+          </TouchableOpacity>
 
-      <Image
-        style={styles.image}
-        source={{
-          uri: lienImage,
-        }}
-        alt={titre + " image"}
-        size="xl"
-      />
+          <Spacer />
 
-      <Stack direction="row" style={styles.footer}>
-        <TouchableOpacity onPress={LikePublication}>
-          <Ionicons name={"heart-outline"} size={25} />
-        </TouchableOpacity>
-
-        <Spacer />
-
-        <TouchableOpacity onPress={ShowCommentsSection}>
-          <Ionicons name={"chatbubble-outline"} size={25} />
-        </TouchableOpacity>
-
-        <Spacer />
-
-        <TouchableOpacity onPress={SauvegarderPublication}>
-          <Ionicons name={"bookmark-outline"} size={25} />
-        </TouchableOpacity>
-
-        <Spacer />
-
-        <TouchableOpacity onPress={AfficherPlusOptions}>
-          <Ionicons name={"ellipsis-vertical"} size={25} />
-        </TouchableOpacity>
-      </Stack>
+          <TouchableOpacity onPress={AfficherPlusOptions}>
+            <Ionicons name={"ellipsis-vertical"} size={25} />
+          </TouchableOpacity>
+        </Stack>
+      </ScrollView>
     </Box>
   );
 };
@@ -131,6 +142,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     marginHorizontal: 10,
+    textAlign: "justify",
   },
   image: {
     marginTop: 10,
