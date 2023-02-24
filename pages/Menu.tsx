@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Text } from "native-base";
-import { MMKV } from "react-native-mmkv";
+import React from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ProfilScreen from "./ProfilScreen";
 import SearchScreen from "./SearchScreen";
 import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
-import { storage } from "../services/AuthentificationService";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -16,7 +12,7 @@ const Tab = createMaterialBottomTabNavigator();
 const Menu = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Profil"
+      initialRouteName="Recherche"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;
@@ -47,7 +43,11 @@ const Menu = () => {
     >
       <Tab.Screen name="Menu" component={ListePublicationsScreen} />
       <Tab.Screen name="Recherche" component={SearchScreen} />
-      <Tab.Screen name="Notifications" component={NotificationScreen} />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationScreen}
+        options={{ tabBarBadge: 3 }}
+      />
       <Tab.Screen name="Profil" component={ProfilScreen} />
     </Tab.Navigator>
   );
