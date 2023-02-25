@@ -55,10 +55,10 @@ class PublicationService {
         auteur + 1,
         "Description de la publication 1",
         StatusPublicationEnum.ENATTENTE,
-        undefined,
+        null,
         new Date(),
         "https://picsum.photos/200/300",
-        undefined
+        null
       ),
       new PublicationEntity(
         2,
@@ -66,10 +66,10 @@ class PublicationService {
         auteur + 1,
         "Description de la publication 2",
         StatusPublicationEnum.ENATTENTE,
-        undefined,
+        null,
         new Date(),
         "https://picsum.photos/200/300",
-        undefined
+        null
       ),
       new PublicationEntity(
         3,
@@ -77,10 +77,10 @@ class PublicationService {
         auteur + 3,
         "Description de la publication 3",
         StatusPublicationEnum.ENATTENTE,
-        undefined,
+        null,
         new Date(),
         "https://picsum.photos/200/300",
-        undefined
+        null
       ),
     ] as PublicationEntity[];
     return data;
@@ -101,10 +101,10 @@ class PublicationService {
         auteur + 1,
         "Description de la publication 1",
         StatusPublicationEnum.ENATTENTE,
-        undefined,
+        null,
         new Date(),
         "https://picsum.photos/200/300",
-        undefined
+        null
       ),
       new PublicationEntity(
         2,
@@ -112,10 +112,10 @@ class PublicationService {
         auteur + 1,
         "Description de la publication 2",
         StatusPublicationEnum.ENATTENTE,
-        undefined,
+        null,
         new Date(),
         "https://picsum.photos/200/300",
-        undefined
+        null
       ),
       new PublicationEntity(
         3,
@@ -123,10 +123,10 @@ class PublicationService {
         auteur + 3,
         "Description de la publication 3",
         StatusPublicationEnum.ENATTENTE,
-        undefined,
+        null,
         new Date(),
         "https://picsum.photos/200/300",
-        undefined
+        null
       ),
     ] as PublicationEntity[];
     return data;
