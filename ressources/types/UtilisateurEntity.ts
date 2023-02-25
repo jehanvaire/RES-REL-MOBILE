@@ -1,4 +1,4 @@
-export class Utilisateur {
+export class UtilisateurEntity {
   // Attributs
   private _nom: string;
   private _prenom: string;

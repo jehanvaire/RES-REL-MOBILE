@@ -5,7 +5,7 @@ import { View } from "native-base";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import PublicationService from "../services/PublicationService";
-import { Utilisateur } from "../ressources/types/Utilisateur";
+import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
 import Description from "../components/Description";
 import MenuHamburgerProfil from "../components/MenuHamburgerProfil";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -29,8 +29,8 @@ export const StackNav = createStackNavigator();
 
 function ProfilScreen({ navigation }: any) {
   const [listePublications, setListePublications] = useState<any[]>([]);
-  const [utilisateur, setUtilisateur] = useState<Utilisateur>(
-    {} as Utilisateur
+  const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
+    {} as UtilisateurEntity
   );
 
   const fetchListePublicationsUtilisateur = async () => {
@@ -44,7 +44,7 @@ function ProfilScreen({ navigation }: any) {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     fetchListePublicationsUtilisateur();
 
-    var user = JSON.parse(user_json) as Utilisateur;
+    var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
   }, []);
 
