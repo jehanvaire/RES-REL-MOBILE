@@ -12,7 +12,7 @@ const Tab = createMaterialBottomTabNavigator();
 const Menu = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Recherche"
+      initialRouteName="Profil"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;

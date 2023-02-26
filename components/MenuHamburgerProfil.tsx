@@ -10,7 +10,7 @@ import {
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const MenuHamburgerProfil = () => {
+const MenuHamburgerProfil = ({ navigation }: any) => {
   const { isOpen, onOpen, onClose } = useDisclose();
   return (
     <Box>
@@ -32,6 +32,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("GestionComptesAdministrateursScreen");
+              }}
             >
               <Text style={styles.elementTextAdmin}>
                 Gérer les comptes administrateur
@@ -49,6 +53,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("GestionCategoriesScreen");
+              }}
             >
               <Text style={styles.elementTextAdmin}>Catégories</Text>
             </Actionsheet.Item>
@@ -64,6 +72,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("GestionComptesUtilisateursScreen");
+              }}
             >
               <Text style={styles.elementTextAdmin}>Gérer les comptes</Text>
             </Actionsheet.Item>
@@ -79,6 +91,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("StatistiquesScreen");
+              }}
             >
               <Text style={styles.elementTextAdmin}>Statistiques</Text>
             </Actionsheet.Item>
@@ -94,6 +110,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("ParametresScreen");
+              }}
             >
               <Text style={styles.elementTextUtilisateur}>Paramètres</Text>
             </Actionsheet.Item>
@@ -109,6 +129,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("FavorisScreen");
+              }}
             >
               <Text style={styles.elementTextUtilisateur}>Favoris</Text>
             </Actionsheet.Item>
@@ -124,6 +148,10 @@ const MenuHamburgerProfil = () => {
                   }
                 />
               }
+              onPress={() => {
+                onClose();
+                navigation.navigate("PublicationsEnregistrees");
+              }}
             >
               <Text style={styles.elementTextUtilisateur}>Mis de côté</Text>
             </Actionsheet.Item>
