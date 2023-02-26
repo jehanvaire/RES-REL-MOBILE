@@ -7,6 +7,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { DoubleTap } from "../DoubleTap";
 
 const Publication = (props: any) => {
+  const [liked, setLiked] = React.useState(false);
   function GetDiffTime(date: Date) {
     if (!date) return "unknown";
     const now = new Date();
@@ -29,6 +30,7 @@ const Publication = (props: any) => {
   }
 
   function LikePublication() {
+    setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log(res);
     });
@@ -105,7 +107,11 @@ const Publication = (props: any) => {
 
       <Stack direction="row" style={styles.footer}>
         <TouchableOpacity onPress={LikePublication}>
-          <Ionicons name={"heart-outline"} size={25} />
+          {liked ? (
+            <Ionicons name={"heart"} size={25} color={"red"} />
+          ) : (
+            <Ionicons name={"heart-outline"} size={25} />
+          )}
         </TouchableOpacity>
 
         <Spacer />
