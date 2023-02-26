@@ -11,8 +11,6 @@ import {
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
-import Description from "../Description";
-import { DoubleTap } from "../DoubleTap";
 
 const DetailsPublication = (props: any) => {
   function GetDiffTime(date: Date) {

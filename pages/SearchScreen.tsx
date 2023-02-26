@@ -1,4 +1,4 @@
-import { Center, Spacer, Stack } from "native-base";
+import { Center, Spacer, Stack, Image } from "native-base";
 import React, { useEffect, useState } from "react";
 
 import { StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
@@ -9,8 +9,12 @@ import { storage } from "../services/AuthentificationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
+import { createStackNavigator } from "@react-navigation/stack";
+import DetailsPublication from "../components/Publication/DetailsPublication";
 
-export default function ListePublicationsScreen(props: any) {
+const StackNav = createStackNavigator();
+
+function ListePublicationsScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -27,7 +31,6 @@ export default function ListePublicationsScreen(props: any) {
   }, []);
 
   const startSearch = () => {
-    console.log("search : " + searchValue);
     // TODO: call API
 
     // const query = searchValue;
@@ -47,9 +50,12 @@ export default function ListePublicationsScreen(props: any) {
             .includes(searchValue.toLowerCase());
         });
 
-        console.log(liste);
-
         setListePublicationsRecherche(liste);
+      });
+    } else {
+      PublicationService.GetAllPublications().then((listePublications) => {
+        // TODO : afficher les 10 dernières publications
+        setListePublicationsRecherche(listePublications);
       });
     }
   };
@@ -62,6 +68,18 @@ export default function ListePublicationsScreen(props: any) {
     return () => clearTimeout(timer);
   }, [searchValue]);
 
+  function AfficherPublication(publication: PublicationEntity) {
+    props.navigation.navigate("DetailsPublication", {
+      auteur: publication.auteur,
+      titre: publication.titre,
+      description: publication.description,
+      status: publication.status,
+      raisonRefus: publication.raisonRefus,
+      dateCreation: JSON.stringify(publication.dateCreation),
+      lienImage: publication.lienImage,
+    });
+  }
+
   return (
     <View style={styles.container}>
       <Center style={styles.searchStack}>
@@ -71,6 +89,7 @@ export default function ListePublicationsScreen(props: any) {
             onChangeText={setSeachValue}
             value={searchValue}
             placeholder="Rechercher une ressource"
+            returnKeyType="search"
           />
           <TouchableOpacity>
             <Ionicons
@@ -89,12 +108,56 @@ export default function ListePublicationsScreen(props: any) {
         </Stack>
       </Center>
 
-      <Spacer />
+      <View style={styles.listePublications}>
+        {listePublicationsRecherche.map((publication: PublicationEntity) => {
+          return (
+            <TouchableOpacity
+              style={{}}
+              key={publication.id}
+              onPress={() => {
+                AfficherPublication(publication);
+              }}
+            >
+              <Stack style={styles.publicationPreview} direction="row">
+                <Text style={styles.titrePreview}>{publication.titre}</Text>
+                <Spacer />
+                <Image
+                  style={styles.imagePrewiew}
+                  source={{
+                    uri: publication.lienImage,
+                  }}
+                  alt={publication.titre + " image"}
+                  size="xl"
+                />
+              </Stack>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
-      <Text>{searchValue}</Text>
+      <Spacer />
     </View>
   );
 }
+
+const RechercheStack = () => {
+  return (
+    <StackNav.Navigator initialRouteName="RechercheScreen">
+      <StackNav.Screen
+        name="RechercheScreen"
+        component={ListePublicationsScreen}
+        options={{ headerShown: false }}
+      />
+      <StackNav.Screen
+        name="DetailsPublication"
+        component={DetailsPublication}
+        options={{ headerShown: true, title: "" }}
+      />
+    </StackNav.Navigator>
+  );
+};
+
+export default RechercheStack;
 
 const styles = StyleSheet.create({
   container: {
@@ -122,5 +185,31 @@ const styles = StyleSheet.create({
     color: "black",
     marginTop: 5,
     marginRight: 10,
+  },
+  listePublications: {
+    padding: 10,
+    width: "100%",
+  },
+  publicationPreview: {
+    backgroundColor: "white",
+    height: 50,
+    width: "100%",
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  titrePreview: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 10,
+  },
+  imagePrewiew: {
+    height: 42,
+    width: 42,
+    borderRadius: 10,
+    marginTop: 4,
+    marginBottom: 4,
+    marginRight: 4,
   },
 });
