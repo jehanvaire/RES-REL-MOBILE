@@ -12,6 +12,13 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { createStackNavigator } from "@react-navigation/stack";
 import Publication from "../components/Publication/Publication";
 import DetailsPublication from "../components/Publication/DetailsPublication";
+import ParametresScreen from "./MenuProfilUtilisateur/ParametresScreen";
+import GestionComptesAdministrateursScreen from "./MenuProfilUtilisateur/GestionComptesAdministrateursScreen";
+import GestionCategoriesScreen from "./MenuProfilUtilisateur/GestionCategoriesScreen";
+import GestionComptesUtilisateursScreen from "./MenuProfilUtilisateur/GestionComptesUtilisateursScreen";
+import StatistiquesScreen from "./MenuProfilUtilisateur/StatistiquesScreen";
+import FavorisScreen from "./MenuProfilUtilisateur/FavorisScreen";
+import PublicationsEnregistreesScreen from "./MenuProfilUtilisateur/PublicationsEnregistrees";
 
 export const StackNav = createStackNavigator();
 
@@ -68,7 +75,7 @@ function ProfilScreen({ navigation }: any) {
           <Spacer />
 
           <Center>
-            <MenuHamburgerProfil></MenuHamburgerProfil>
+            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
           </Center>
         </Stack>
 
@@ -124,6 +131,28 @@ const ProfilStack = () => {
         name="DetailsPublication"
         component={DetailsPublication}
         options={{ headerShown: true, title: "" }}
+      />
+      <StackNav.Screen
+        name="GestionComptesAdministrateursScreen"
+        component={GestionComptesAdministrateursScreen}
+      />
+      <StackNav.Screen
+        name="GestionCategoriesScreen"
+        component={GestionCategoriesScreen}
+      />
+      <StackNav.Screen
+        name="GestionComptesUtilisateursScreen"
+        component={GestionComptesUtilisateursScreen}
+      />
+      <StackNav.Screen
+        name="StatistiquesScreen"
+        component={StatistiquesScreen}
+      />
+      <StackNav.Screen name="ParametresScreen" component={ParametresScreen} />
+      <StackNav.Screen name="FavorisScreen" component={FavorisScreen} />
+      <StackNav.Screen
+        name="PublicationsEnregistrees"
+        component={PublicationsEnregistreesScreen}
       />
     </StackNav.Navigator>
   );
