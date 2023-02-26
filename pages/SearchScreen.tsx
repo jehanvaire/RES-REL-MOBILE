@@ -53,7 +53,10 @@ function ListePublicationsScreen(props: any) {
         setListePublicationsRecherche(liste);
       });
     } else {
-      setListePublicationsRecherche([]);
+      PublicationService.GetAllPublications().then((listePublications) => {
+        // TODO : afficher les 10 dernières publications
+        setListePublicationsRecherche(listePublications);
+      });
     }
   };
 
