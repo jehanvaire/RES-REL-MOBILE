@@ -20,25 +20,67 @@ const MenuHamburgerProfil = () => {
         </TouchableOpacity>
         <Actionsheet isOpen={isOpen} onClose={onClose}>
           <Actionsheet.Content>
-            <Actionsheet.Item>
-              Gérer les comptes administrateur
+            <Actionsheet.Item
+              startIcon={
+                <Icon
+                  as={
+                    <Ionicons
+                      name="settings-outline"
+                      size={20}
+                      style={styles.elementSuperAdmin}
+                    />
+                  }
+                />
+              }
+            >
+              <Text style={styles.elementTextAdmin}>
+                Gérer les comptes administrateur
+              </Text>
             </Actionsheet.Item>
-            <Actionsheet.Item>Catégories</Actionsheet.Item>
-            <Actionsheet.Item>Gérer les comptes</Actionsheet.Item>
+            <Actionsheet.Item
+              startIcon={
+                <Icon
+                  as={
+                    <Ionicons
+                      name="list-outline"
+                      size={20}
+                      style={styles.elementSuperAdmin}
+                    />
+                  }
+                />
+              }
+            >
+              <Text style={styles.elementTextAdmin}>Catégories</Text>
+            </Actionsheet.Item>
+            <Actionsheet.Item
+              startIcon={
+                <Icon
+                  as={
+                    <Ionicons
+                      name="person-add-outline"
+                      size={20}
+                      style={styles.elementSuperAdmin}
+                    />
+                  }
+                />
+              }
+            >
+              <Text style={styles.elementTextAdmin}>Gérer les comptes</Text>
+            </Actionsheet.Item>
             <Actionsheet.Item
               startIcon={
                 <Icon
                   as={
                     <Ionicons
                       name="stats-chart-outline"
-                      size={25}
-                      style={[styles.element]}
+                      size={20}
+                      style={styles.elementAdmin}
                     />
                   }
                 />
               }
             >
-              Statistiques
+              <Text style={styles.elementTextAdmin}>Statistiques</Text>
             </Actionsheet.Item>
             <Actionsheet.Item
               startIcon={
@@ -46,14 +88,14 @@ const MenuHamburgerProfil = () => {
                   as={
                     <Ionicons
                       name="settings-outline"
-                      size={25}
-                      style={styles.element}
+                      size={20}
+                      style={styles.elementUtilisateur}
                     />
                   }
                 />
               }
             >
-              Paramètres
+              <Text style={styles.elementTextUtilisateur}>Paramètres</Text>
             </Actionsheet.Item>
             <Actionsheet.Item
               startIcon={
@@ -61,14 +103,14 @@ const MenuHamburgerProfil = () => {
                   as={
                     <Ionicons
                       name="heart-outline"
-                      size={25}
-                      style={styles.element}
+                      size={20}
+                      style={styles.elementUtilisateur}
                     />
                   }
                 />
               }
             >
-              Favoris
+              <Text style={styles.elementTextUtilisateur}>Favoris</Text>
             </Actionsheet.Item>
             <Actionsheet.Item
               startIcon={
@@ -76,14 +118,14 @@ const MenuHamburgerProfil = () => {
                   as={
                     <Ionicons
                       name="bookmark-outline"
-                      size={25}
-                      style={styles.element}
+                      size={20}
+                      style={styles.elementUtilisateur}
                     />
                   }
                 />
               }
             >
-              Mis de côté
+              <Text style={styles.elementTextUtilisateur}>Mis de côté</Text>
             </Actionsheet.Item>
           </Actionsheet.Content>
         </Actionsheet>
@@ -94,8 +136,17 @@ const MenuHamburgerProfil = () => {
 export default MenuHamburgerProfil;
 
 const styles = StyleSheet.create({
-  element: {
+  elementUtilisateur: {
     alignItems: "center",
+  },
+  elementTextAdmin: {
+    alignItems: "center",
+    color: "red",
+    fontSize: 15,
+  },
+  elementTextUtilisateur: {
+    alignItems: "center",
+    fontSize: 15,
   },
   elementAdmin: {
     alignItems: "center",
