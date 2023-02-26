@@ -1,12 +1,4 @@
-import {
-  useDisclose,
-  Center,
-  Actionsheet,
-  Box,
-  Button,
-  Text,
-  Icon,
-} from "native-base";
+import { useDisclose, Center, Actionsheet, Box, Text, Icon } from "native-base";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
