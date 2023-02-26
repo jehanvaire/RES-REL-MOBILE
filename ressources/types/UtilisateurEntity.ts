@@ -3,7 +3,7 @@ export class UtilisateurEntity {
   private _nom: string;
   private _prenom: string;
   private _email: string;
-  private _description: string;
+  private _contenu: string;
   private _dateNaissance: Date;
   private _dateInscription: Date;
   private _lienPhoto: string;
@@ -13,7 +13,7 @@ export class UtilisateurEntity {
     nom: string,
     prenom: string,
     email: string,
-    description: string,
+    contenu: string,
     dateNaissance: Date,
     dateInscription: Date,
     lienPhoto: string
@@ -21,7 +21,7 @@ export class UtilisateurEntity {
     this._nom = nom;
     this._prenom = prenom;
     this._email = email;
-    this._description = description;
+    this._contenu = contenu;
     this._dateNaissance = dateNaissance;
     this._dateInscription = dateInscription;
     this._lienPhoto = lienPhoto;
@@ -51,12 +51,12 @@ export class UtilisateurEntity {
     this._email = value;
   }
 
-  get description(): string {
-    return this._description;
+  get contenu(): string {
+    return this._contenu;
   }
 
-  set description(value: string) {
-    this._description = value;
+  set contenu(value: string) {
+    this._contenu = value;
   }
 
   get dateNaissance(): Date {

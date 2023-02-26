@@ -3,7 +3,7 @@ import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 
 class PublicationService {
-  private baseUrl = "publications";
+  private baseUrl = "ressources";
 
   //   public static async getPublications(): Promise<any> {
   //     const response = await fetch(this.baseUrl);
@@ -43,93 +43,60 @@ class PublicationService {
   }
 
   public async GetAllPublications(): Promise<PublicationEntity[]> {
-    // const response = await fetch(this.baseUrl);
-    // const data = await response.json();
+    // fetch to get all publications using this url : https://api.victor-gombert.fr/api/v1/ressources
+    const response = await fetch(
+      "https://api.victor-gombert.fr/api/v1/ressources"
+    ).then((response) => response.json());
 
-    const auteur = "Auteur ";
+    // console.log(response.data);
 
-    const data = [
-      new PublicationEntity(
-        1,
-        "Titre1",
-        auteur + 1,
-        "Description de la publication 1",
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
+    const listePublications = response.data.map((publication: any) => {
+      return new PublicationEntity(
+        publication.id,
+        publication.titre,
+        publication.auteur,
+        publication.contenu,
+        publication.status,
+        publication.raisonRefus,
+        publication.dateCreation,
+        publication.datePublication,
         "https://picsum.photos/200/300",
-        null
-      ),
-      new PublicationEntity(
-        2,
-        "Publication",
-        auteur + 1,
-        "Description de la publication 2",
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
-        "https://picsum.photos/200/300",
-        null
-      ),
-      new PublicationEntity(
-        3,
-        "Publi",
-        auteur + 3,
-        "Description de la publication 3",
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
-        "https://picsum.photos/200/300",
-        null
-      ),
-    ] as PublicationEntity[];
-    return data;
+        publication.idCategorie,
+        publication.idUtilisateur,
+        publication.navigation
+      );
+    });
+
+    return listePublications;
   }
 
   public async GetListePublicationsUtilisateur(
     id: number
   ): Promise<PublicationEntity[]> {
-    // const response = await fetch(`${this.baseUrl}/user/${id}`);
-    // const data = await response.json();
+    const response = await fetch(
+      "https://api.victor-gombert.fr/api/v1/ressources"
+    ).then((response) => response.json());
 
-    const auteur = "Auteur ";
+    // console.log(response.data);
 
-    const data = [
-      new PublicationEntity(
-        1,
-        "Titre1",
-        auteur + 1,
-        "Description de la publication 1",
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
+    const listePublications = response.data.map((publication: any) => {
+      return new PublicationEntity(
+        publication.id,
+        publication.titre,
+        publication.auteur,
+        publication.contenu,
+        publication.status,
+        publication.raisonRefus,
+        publication.dateCreation,
+        publication.datePublication,
         "https://picsum.photos/200/300",
-        null
-      ),
-      new PublicationEntity(
-        2,
-        "Publication",
-        auteur + 1,
-        "Description de la publication 2",
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
-        "https://picsum.photos/200/300",
-        null
-      ),
-      new PublicationEntity(
-        3,
-        "Publi",
-        auteur + 3,
-        "Description de la publication 3",
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
-        "https://picsum.photos/200/300",
-        null
-      ),
-    ] as PublicationEntity[];
-    return data;
+        publication.idCategorie,
+        publication.idUtilisateur,
+        publication.navigation
+      );
+    });
+
+    return listePublications;
   }
 }
 

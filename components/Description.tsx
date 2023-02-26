@@ -12,11 +12,11 @@ export default function Description(props: any) {
 
   return (
     <Box>
-      <Text style={styles.description} numberOfLines={expanded ? undefined : 3}>
-        {props.description}
+      <Text style={styles.contenu} numberOfLines={expanded ? undefined : 3}>
+        {props.contenu}
       </Text>
       {/* show the button only if the text is longer than 100 caracters */}
-      {props.description.length > 100 && (
+      {props.contenu.length > 100 && (
         <Button
           title={expanded ? "Afficher moins" : "Afficher plus"}
           onPress={toggleExpand}
@@ -27,7 +27,7 @@ export default function Description(props: any) {
 }
 
 const styles = StyleSheet.create({
-  description: {
+  contenu: {
     fontSize: 16,
     textAlign: "justify",
     margin: 10,

@@ -1,7 +1,13 @@
 import { Center, Spacer, Stack, Image } from "native-base";
 import React, { useEffect, useState } from "react";
 
-import { StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
@@ -72,70 +78,75 @@ function ListePublicationsScreen(props: any) {
     props.navigation.navigate("DetailsPublication", {
       auteur: publication.auteur,
       titre: publication.titre,
-      description: publication.description,
+      contenu: publication.contenu,
       status: publication.status,
       raisonRefus: publication.raisonRefus,
-      dateCreation: JSON.stringify(publication.dateCreation),
+      dateCreation: publication.dateCreation,
       lienImage: publication.lienImage,
     });
   }
 
   return (
     <View style={styles.container}>
-      <Center style={styles.searchStack}>
-        <Stack direction="row">
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setSeachValue}
-            value={searchValue}
-            placeholder="Rechercher une ressource"
-            returnKeyType="search"
-          />
-          <TouchableOpacity>
-            <Ionicons
-              name="search-outline"
-              size={25}
-              style={[styles.searchIcon]}
+      <ScrollView>
+        <Center style={styles.searchStack}>
+          <Stack direction="row">
+            <TextInput
+              style={styles.textInput}
+              onChangeText={setSeachValue}
+              value={searchValue}
+              placeholder="Rechercher une ressource"
+              returnKeyType="search"
             />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons
-              name="options-outline"
-              size={25}
-              style={[styles.searchIcon]}
-            />
-          </TouchableOpacity>
-        </Stack>
-      </Center>
-
-      <View style={styles.listePublications}>
-        {listePublicationsRecherche.map((publication: PublicationEntity) => {
-          return (
-            <TouchableOpacity
-              style={{}}
-              key={publication.id}
-              onPress={() => {
-                AfficherPublication(publication);
-              }}
-            >
-              <Stack style={styles.publicationPreview} direction="row">
-                <Text style={styles.titrePreview}>{publication.titre}</Text>
-                <Spacer />
-                <Image
-                  style={styles.imagePrewiew}
-                  source={{
-                    uri: publication.lienImage,
-                  }}
-                  alt={publication.titre + " image"}
-                  size="xl"
-                />
-              </Stack>
+            <TouchableOpacity>
+              <Ionicons
+                name="search-outline"
+                size={25}
+                style={[styles.searchIcon]}
+              />
             </TouchableOpacity>
-          );
-        })}
-      </View>
+            <TouchableOpacity>
+              <Ionicons
+                name="options-outline"
+                size={25}
+                style={[styles.searchIcon]}
+              />
+            </TouchableOpacity>
+          </Stack>
+        </Center>
 
-      <Spacer />
+        <View style={styles.listePublications}>
+          {listePublicationsRecherche.map((publication: PublicationEntity) => {
+            return (
+              <TouchableOpacity
+                key={publication.id}
+                onPress={() => {
+                  AfficherPublication(publication);
+                }}
+              >
+                <Stack style={styles.publicationPreview} direction="row">
+                  <Text style={styles.titrePreview}>
+                    {publication.titre.substring(0, 20)}
+                    {publication.titre.length > 20 ? "..." : ""}
+                  </Text>
+                  <Spacer />
+                  <Text style={styles.auteurPrewiew}>Adrien</Text>
+                  <Image
+                    style={styles.imagePrewiew}
+                    source={{
+                      uri: publication.lienImage,
+                    }}
+                    alt={publication.titre + " image"}
+                    size="xl"
+                  />
+                </Stack>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <Spacer />
+      </ScrollView>
     </View>
   );
 }
@@ -203,6 +214,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 10,
+  },
+  auteurPrewiew: {
+    fontSize: 15,
+    marginTop: 15,
+    marginBottom: 15,
+    marginRight: 10,
   },
   imagePrewiew: {
     height: 42,

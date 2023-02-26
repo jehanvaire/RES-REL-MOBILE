@@ -80,9 +80,7 @@ function ProfilScreen({ navigation }: any) {
         </Stack>
 
         <ScrollView>
-          <Description
-            description={utilisateur.description ?? ""}
-          ></Description>
+          <Description contenu={utilisateur.contenu ?? ""}></Description>
 
           <Text style={styles.title}>Publications</Text>
           <Box
@@ -99,7 +97,7 @@ function ProfilScreen({ navigation }: any) {
               <Publication
                 auteur={publication.auteur}
                 titre={publication.titre}
-                description={publication.description}
+                contenu={publication.contenu}
                 status={publication.status}
                 raisonRefus={publication.raisonRefus}
                 dateCreation={publication.dateCreation}
@@ -175,7 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 10,
   },
-  description: {
+  contenu: {
     margin: 10,
     marginTop: 5,
     fontSize: 15,

@@ -5,6 +5,7 @@ import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DoubleTap } from "../DoubleTap";
+import dayjs from "dayjs";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
@@ -54,13 +55,14 @@ const Publication = (props: any) => {
     props.navigation.navigate("DetailsPublication", {
       auteur: props.auteur,
       titre: props.titre,
-      description: props.description,
+      contenu: props.contenu,
       status: props.status,
       raisonRefus: props.raisonRefus,
       dateCreation: JSON.stringify(props.dateCreation),
       lienImage: props.lienImage,
     });
   }
+
   return (
     <Box style={styles.container}>
       <Stack direction="row" style={styles.header}>
@@ -77,7 +79,16 @@ const Publication = (props: any) => {
         <Spacer />
 
         <Center>
-          <Text>Il y a {GetDiffTime(props.dateCreation)}</Text>
+          <Text>
+            Il y a{" "}
+            {GetDiffTime(
+              new Date(
+                Date.parse(
+                  dayjs(props.dateCreation).format("YYYY-MM-DDTHH:mm:ss")
+                )
+              )
+            )}
+          </Text>
         </Center>
       </Stack>
 
@@ -86,7 +97,7 @@ const Publication = (props: any) => {
       </Box>
 
       <Box>
-        <Description description={props.description}></Description>
+        <Description contenu={props.contenu}></Description>
       </Box>
 
       <Box>
@@ -154,7 +165,7 @@ const styles = StyleSheet.create({
     textBreakStrategy: "simple",
     marginHorizontal: 10,
   },
-  description: {
+  contenu: {
     fontSize: 16,
     marginHorizontal: 10,
   },

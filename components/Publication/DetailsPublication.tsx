@@ -11,9 +11,11 @@ import {
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
+import dayjs from "dayjs";
 
 const DetailsPublication = (props: any) => {
   function GetDiffTime(date: Date) {
+    console.log(date);
     if (!date) return "unknown";
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -54,10 +56,19 @@ const DetailsPublication = (props: any) => {
     console.log("TODO: afficher plus d'options");
   }
 
-  const { auteur, titre, description, status, raisonRefus, lienImage } =
-    props.route.params;
+  const {
+    auteur,
+    titre,
+    contenu,
+    dateCreation,
+    status,
+    raisonRefus,
+    lienImage,
+  } = props.route.params;
 
-  const dateCreation = new Date(JSON.parse(props.route.params.dateCreation));
+  const date = new Date(
+    Date.parse(dayjs(dateCreation).format("YYYY-MM-DDTHH:mm:ss"))
+  );
 
   return (
     <Box style={styles.container}>
@@ -76,13 +87,13 @@ const DetailsPublication = (props: any) => {
           <Spacer />
 
           <Center>
-            <Text>Il y a {GetDiffTime(dateCreation)}</Text>
+            <Text>Il y a {GetDiffTime(date)}</Text>
           </Center>
         </Stack>
 
         <Text style={styles.titre}>{titre}</Text>
 
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.contenu}>{contenu}</Text>
 
         <Image
           style={styles.image}
@@ -137,7 +148,7 @@ const styles = StyleSheet.create({
     textBreakStrategy: "simple",
     marginHorizontal: 10,
   },
-  description: {
+  contenu: {
     fontSize: 16,
     marginHorizontal: 10,
     textAlign: "justify",
