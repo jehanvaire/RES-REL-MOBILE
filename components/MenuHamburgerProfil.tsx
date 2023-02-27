@@ -1,9 +1,11 @@
 import { useDisclose, Center, Actionsheet, Box, Text, Icon } from "native-base";
+import { useState } from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const MenuHamburgerProfil = ({ navigation }: any) => {
   const { isOpen, onOpen, onClose } = useDisclose();
+  const [isAutorized, setIsAutorized] = useState(false);
   return (
     <Box>
       <Center>
@@ -12,84 +14,89 @@ const MenuHamburgerProfil = ({ navigation }: any) => {
         </TouchableOpacity>
         <Actionsheet isOpen={isOpen} onClose={onClose}>
           <Actionsheet.Content>
-            <Actionsheet.Item
-              startIcon={
-                <Icon
-                  as={
-                    <Ionicons
-                      name="settings-outline"
-                      size={20}
-                      style={styles.elementSuperAdmin}
+            {isAutorized ? (
+              <>
+                <Actionsheet.Item
+                  startIcon={
+                    <Icon
+                      as={
+                        <Ionicons
+                          name="settings-outline"
+                          size={20}
+                          style={styles.elementSuperAdmin}
+                        />
+                      }
                     />
                   }
-                />
-              }
-              onPress={() => {
-                onClose();
-                navigation.navigate("GestionComptesAdministrateursScreen");
-              }}
-            >
-              <Text style={styles.elementTextAdmin}>
-                Gérer les comptes administrateur
-              </Text>
-            </Actionsheet.Item>
-            <Actionsheet.Item
-              startIcon={
-                <Icon
-                  as={
-                    <Ionicons
-                      name="list-outline"
-                      size={20}
-                      style={styles.elementSuperAdmin}
+                  onPress={() => {
+                    onClose();
+                    navigation.navigate("GestionComptesAdministrateursScreen");
+                  }}
+                >
+                  <Text style={styles.elementTextAdmin}>
+                    Gérer les comptes administrateur
+                  </Text>
+                </Actionsheet.Item>
+                <Actionsheet.Item
+                  startIcon={
+                    <Icon
+                      as={
+                        <Ionicons
+                          name="list-outline"
+                          size={20}
+                          style={styles.elementSuperAdmin}
+                        />
+                      }
                     />
                   }
-                />
-              }
-              onPress={() => {
-                onClose();
-                navigation.navigate("GestionCategoriesScreen");
-              }}
-            >
-              <Text style={styles.elementTextAdmin}>Catégories</Text>
-            </Actionsheet.Item>
-            <Actionsheet.Item
-              startIcon={
-                <Icon
-                  as={
-                    <Ionicons
-                      name="person-add-outline"
-                      size={20}
-                      style={styles.elementSuperAdmin}
+                  onPress={() => {
+                    onClose();
+                    navigation.navigate("GestionCategoriesScreen");
+                  }}
+                >
+                  <Text style={styles.elementTextAdmin}>Catégories</Text>
+                </Actionsheet.Item>
+                <Actionsheet.Item
+                  startIcon={
+                    <Icon
+                      as={
+                        <Ionicons
+                          name="person-add-outline"
+                          size={20}
+                          style={styles.elementSuperAdmin}
+                        />
+                      }
                     />
                   }
-                />
-              }
-              onPress={() => {
-                onClose();
-                navigation.navigate("GestionComptesUtilisateursScreen");
-              }}
-            >
-              <Text style={styles.elementTextAdmin}>Gérer les comptes</Text>
-            </Actionsheet.Item>
-            <Actionsheet.Item
-              startIcon={
-                <Icon
-                  as={
-                    <Ionicons
-                      name="stats-chart-outline"
-                      size={20}
-                      style={styles.elementAdmin}
+                  onPress={() => {
+                    onClose();
+                    navigation.navigate("GestionComptesUtilisateursScreen");
+                  }}
+                >
+                  <Text style={styles.elementTextAdmin}>Gérer les comptes</Text>
+                </Actionsheet.Item>
+                <Actionsheet.Item
+                  startIcon={
+                    <Icon
+                      as={
+                        <Ionicons
+                          name="stats-chart-outline"
+                          size={20}
+                          style={styles.elementAdmin}
+                        />
+                      }
                     />
                   }
-                />
-              }
-              onPress={() => {
-                onClose();
-                navigation.navigate("StatistiquesScreen");
-              }}
-            >
-              <Text style={styles.elementTextAdmin}>Statistiques</Text>
-            </Actionsheet.Item>
+                  onPress={() => {
+                    onClose();
+                    navigation.navigate("StatistiquesScreen");
+                  }}
+                >
+                  <Text style={styles.elementTextAdmin}>Statistiques</Text>
+                </Actionsheet.Item>
+              </>
+            ) : null}
+
             <Actionsheet.Item
               startIcon={
                 <Icon
