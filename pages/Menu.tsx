@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ProfilScreen from "./ProfilScreen";
 import SearchScreen from "./SearchScreen";
 import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
+import ValidationRessourcesStack from "./ValidationPublicationScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 
 // The authenticated view
 const Menu = () => {
+  const [isAutorized, setIsAutorized] = useState(true);
+
   return (
     <Tab.Navigator
-      initialRouteName="Recherche"
+      initialRouteName="Validation ressources"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;
@@ -49,6 +52,15 @@ const Menu = () => {
         options={{ tabBarBadge: 3 }}
       />
       <Tab.Screen name="Profil" component={ProfilScreen} />
+
+      {isAutorized ? (
+        <>
+          <Tab.Screen
+            name="Validation ressources"
+            component={ValidationRessourcesStack}
+          />
+        </>
+      ) : null}
     </Tab.Navigator>
   );
 };

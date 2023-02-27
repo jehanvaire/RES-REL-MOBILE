@@ -15,7 +15,6 @@ import dayjs from "dayjs";
 
 const DetailsPublication = (props: any) => {
   function GetDiffTime(date: Date) {
-    console.log(date);
     if (!date) return "unknown";
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);

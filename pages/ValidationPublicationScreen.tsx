@@ -17,10 +17,11 @@ import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../components/Publication/DetailsPublication";
+import { color } from "native-base/lib/typescript/theme/styled-system";
 
 const StackNav = createStackNavigator();
 
-function ListePublicationsScreen(props: any) {
+function ValidationRessourcesScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -88,41 +89,16 @@ function ListePublicationsScreen(props: any) {
 
   return (
     <View style={styles.container}>
-      <Center style={styles.searchStack}>
-        <Stack direction="row">
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setSeachValue}
-            value={searchValue}
-            placeholder="Rechercher une ressource"
-            returnKeyType="search"
-          />
-          <TouchableOpacity>
-            <Ionicons
-              name="search-outline"
-              size={25}
-              style={[styles.searchIcon]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons
-              name="options-outline"
-              size={25}
-              style={[styles.searchIcon]}
-            />
-          </TouchableOpacity>
-        </Stack>
-      </Center>
-
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.listePublications}>
           {listePublicationsRecherche.map((publication: PublicationEntity) => {
             return (
               <TouchableOpacity
-                key={publication.id}
                 onPress={() => {
                   AfficherPublication(publication);
                 }}
+                key={publication.id}
+                style={styles.publicationPreviewContainer}
               >
                 <Stack style={styles.publicationPreview} direction="row">
                   <Text style={styles.titrePreview}>
@@ -140,6 +116,22 @@ function ListePublicationsScreen(props: any) {
                     size="xl"
                   />
                 </Stack>
+
+                <Center>
+                  <Stack direction="row">
+                    <TouchableOpacity
+                      style={[styles.bouton, { backgroundColor: "red" }]}
+                    >
+                      <Text>Refuser</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.bouton, { backgroundColor: "green" }]}
+                    >
+                      <Text>Accepter</Text>
+                    </TouchableOpacity>
+                  </Stack>
+                </Center>
               </TouchableOpacity>
             );
           })}
@@ -151,12 +143,12 @@ function ListePublicationsScreen(props: any) {
   );
 }
 
-const RechercheStack = () => {
+const ValidationRessourcesStack = () => {
   return (
     <StackNav.Navigator initialRouteName="RechercheScreen">
       <StackNav.Screen
         name="RechercheScreen"
-        component={ListePublicationsScreen}
+        component={ValidationRessourcesScreen}
         options={{ headerShown: false }}
       />
       <StackNav.Screen
@@ -168,7 +160,7 @@ const RechercheStack = () => {
   );
 };
 
-export default RechercheStack;
+export default ValidationRessourcesStack;
 
 const styles = StyleSheet.create({
   container: {
@@ -178,34 +170,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "column",
   },
-  searchStack: {
+  publicationPreviewContainer: {
     backgroundColor: "white",
-    height: 50,
-    width: "100%",
+    marginBottom: 10,
+    borderRadius: 10,
   },
-  textInput: {
-    height: 40,
-    paddingLeft: 10,
-    marginRight: 10,
-    borderRadius: 15,
-    width: "75%",
-    borderColor: "gray",
-    borderWidth: 1,
-  },
-  searchIcon: {
-    color: "black",
-    marginTop: 5,
-    marginRight: 10,
+  bouton: {
+    backgroundColor: "red",
+    borderRadius: 10,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
   },
   listePublications: {
     padding: 10,
     width: "100%",
   },
   publicationPreview: {
-    backgroundColor: "white",
     height: 50,
     width: "100%",
-    marginBottom: 10,
     borderRadius: 10,
   },
   titrePreview: {

@@ -5,7 +5,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 const MenuHamburgerProfil = ({ navigation }: any) => {
   const { isOpen, onOpen, onClose } = useDisclose();
-  const [isAutorized, setIsAutorized] = useState(false);
+  const [isAutorized, setIsAutorized] = useState(true);
   return (
     <Box>
       <Center>
