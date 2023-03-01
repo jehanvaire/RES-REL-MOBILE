@@ -92,29 +92,23 @@ const Publication = (props: any) => {
         </Center>
       </Stack>
 
-      <Box>
-        <Text style={styles.titre}>{props.titre}</Text>
-      </Box>
+      <Text style={styles.titre}>{props.titre}</Text>
 
-      <Box>
-        <Description contenu={props.contenu}></Description>
-      </Box>
+      <Description contenu={props.contenu}></Description>
 
-      <Box>
-        <DoubleTap
-          AfficherPublication={AfficherPublication}
-          LikePublication={LikePublication}
-        >
-          <Image
-            style={styles.image}
-            source={{
-              uri: props.lienImage,
-            }}
-            alt={props.titre + " image"}
-            size="xl"
-          />
-        </DoubleTap>
-      </Box>
+      <DoubleTap
+        AfficherPublication={AfficherPublication}
+        LikePublication={LikePublication}
+      >
+        <Image
+          style={styles.image}
+          source={{
+            uri: props.lienImage,
+          }}
+          alt={props.titre + " image"}
+          size="xl"
+        />
+      </DoubleTap>
 
       <Stack direction="row" style={styles.footer}>
         <TouchableOpacity onPress={LikePublication}>

@@ -18,6 +18,7 @@ import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../components/Publication/DetailsPublication";
 import { color } from "native-base/lib/typescript/theme/styled-system";
+import ValidationPublicationComponent from "../components/Publication/ValidationPublicationComponent";
 
 const StackNav = createStackNavigator();
 
@@ -75,64 +76,17 @@ function ValidationRessourcesScreen(props: any) {
     return () => clearTimeout(timer);
   }, [searchValue]);
 
-  function AfficherPublication(publication: PublicationEntity) {
-    props.navigation.navigate("DetailsPublication", {
-      auteur: publication.auteur,
-      titre: publication.titre,
-      contenu: publication.contenu,
-      status: publication.status,
-      raisonRefus: publication.raisonRefus,
-      dateCreation: publication.dateCreation,
-      lienImage: publication.lienImage,
-    });
-  }
-
   return (
     <View style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.listePublications}>
           {listePublicationsRecherche.map((publication: PublicationEntity) => {
             return (
-              <TouchableOpacity
-                onPress={() => {
-                  AfficherPublication(publication);
-                }}
+              <ValidationPublicationComponent
                 key={publication.id}
-                style={styles.publicationPreviewContainer}
-              >
-                <Stack style={styles.publicationPreview} direction="row">
-                  <Text style={styles.titrePreview}>
-                    {publication.titre.substring(0, 20)}
-                    {publication.titre.length > 20 ? "..." : ""}
-                  </Text>
-                  <Spacer />
-                  <Text style={styles.auteurPrewiew}>Adrien</Text>
-                  <Image
-                    style={styles.imagePrewiew}
-                    source={{
-                      uri: publication.lienImage,
-                    }}
-                    alt={publication.titre + " image"}
-                    size="xl"
-                  />
-                </Stack>
-
-                <Center>
-                  <Stack direction="row">
-                    <TouchableOpacity
-                      style={[styles.bouton, { backgroundColor: "red" }]}
-                    >
-                      <Text>Refuser</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={[styles.bouton, { backgroundColor: "green" }]}
-                    >
-                      <Text>Accepter</Text>
-                    </TouchableOpacity>
-                  </Stack>
-                </Center>
-              </TouchableOpacity>
+                publication={publication}
+                navigation={props.navigation}
+              ></ValidationPublicationComponent>
             );
           })}
         </View>
@@ -170,47 +124,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "column",
   },
-  publicationPreviewContainer: {
-    backgroundColor: "white",
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  bouton: {
-    backgroundColor: "red",
-    borderRadius: 10,
-    padding: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-  },
+
   listePublications: {
     padding: 10,
     width: "100%",
-  },
-  publicationPreview: {
-    height: 50,
-    width: "100%",
-    borderRadius: 10,
-  },
-  titrePreview: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  auteurPrewiew: {
-    fontSize: 15,
-    marginTop: 15,
-    marginBottom: 15,
-    marginRight: 10,
-  },
-  imagePrewiew: {
-    height: 42,
-    width: 42,
-    borderRadius: 10,
-    marginTop: 4,
-    marginBottom: 4,
-    marginRight: 4,
   },
 });
