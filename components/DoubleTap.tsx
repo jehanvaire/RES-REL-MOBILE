@@ -10,7 +10,9 @@ export const DoubleTap = ({
 
   const onSingleTapEvent = (event: any) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      AfficherPublication();
+      if (AfficherPublication) {
+        AfficherPublication();
+      }
     }
   };
 

@@ -12,10 +12,12 @@ import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
 import dayjs from "dayjs";
+import React from "react";
+import { DoubleTap } from "../DoubleTap";
 
 const DetailsPublication = (props: any) => {
+  const [liked, setLiked] = React.useState(false);
   function GetDiffTime(date: Date) {
-    console.log(date);
     if (!date) return "unknown";
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -37,6 +39,7 @@ const DetailsPublication = (props: any) => {
   }
 
   function LikePublication() {
+    setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log(res);
     });
@@ -54,6 +57,18 @@ const DetailsPublication = (props: any) => {
 
   function AfficherPlusOptions() {
     console.log("TODO: afficher plus d'options");
+  }
+
+  function AfficherPublication() {
+    props.navigation.navigate("DetailsPublication", {
+      auteur: props.auteur,
+      titre: props.titre,
+      contenu: props.contenu,
+      status: props.status,
+      raisonRefus: props.raisonRefus,
+      dateCreation: JSON.stringify(props.dateCreation),
+      lienImage: props.lienImage,
+    });
   }
 
   const {
@@ -95,18 +110,24 @@ const DetailsPublication = (props: any) => {
 
         <Text style={styles.contenu}>{contenu}</Text>
 
-        <Image
-          style={styles.image}
-          source={{
-            uri: lienImage,
-          }}
-          alt={titre + " image"}
-          size="xl"
-        />
+        <DoubleTap AfficherPublication={null} LikePublication={LikePublication}>
+          <Image
+            style={styles.image}
+            source={{
+              uri: lienImage,
+            }}
+            alt={titre + " image"}
+            size="xl"
+          />
+        </DoubleTap>
 
         <Stack direction="row" style={styles.footer}>
           <TouchableOpacity onPress={LikePublication}>
-            <Ionicons name={"heart-outline"} size={25} />
+            {liked ? (
+              <Ionicons name={"heart"} size={25} color={"red"} />
+            ) : (
+              <Ionicons name={"heart-outline"} size={25} />
+            )}
           </TouchableOpacity>
 
           <Spacer />

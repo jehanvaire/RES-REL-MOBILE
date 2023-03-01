@@ -17,10 +17,12 @@ import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../components/Publication/DetailsPublication";
+import { color } from "native-base/lib/typescript/theme/styled-system";
+import ValidationPublicationComponent from "../components/Publication/ValidationPublicationComponent";
 
 const StackNav = createStackNavigator();
 
-function ListePublicationsScreen(props: any) {
+function ValidationRessourcesScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -74,73 +76,17 @@ function ListePublicationsScreen(props: any) {
     return () => clearTimeout(timer);
   }, [searchValue]);
 
-  function AfficherPublication(publication: PublicationEntity) {
-    props.navigation.navigate("DetailsPublication", {
-      auteur: publication.auteur,
-      titre: publication.titre,
-      contenu: publication.contenu,
-      status: publication.status,
-      raisonRefus: publication.raisonRefus,
-      dateCreation: publication.dateCreation,
-      lienImage: publication.lienImage,
-    });
-  }
-
   return (
     <View style={styles.container}>
-      <Center style={styles.searchStack}>
-        <Stack direction="row">
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setSeachValue}
-            value={searchValue}
-            placeholder="Rechercher une ressource"
-            returnKeyType="search"
-          />
-          <TouchableOpacity>
-            <Ionicons
-              name="search-outline"
-              size={25}
-              style={[styles.searchIcon]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons
-              name="options-outline"
-              size={25}
-              style={[styles.searchIcon]}
-            />
-          </TouchableOpacity>
-        </Stack>
-      </Center>
-
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.listePublications}>
           {listePublicationsRecherche.map((publication: PublicationEntity) => {
             return (
-              <TouchableOpacity
+              <ValidationPublicationComponent
                 key={publication.id}
-                onPress={() => {
-                  AfficherPublication(publication);
-                }}
-              >
-                <Stack style={styles.publicationPreview} direction="row">
-                  <Text style={styles.titrePreview}>
-                    {publication.titre.substring(0, 20)}
-                    {publication.titre.length > 20 ? "..." : ""}
-                  </Text>
-                  <Spacer />
-                  <Text style={styles.auteurPrewiew}>Adrien</Text>
-                  <Image
-                    style={styles.imagePrewiew}
-                    source={{
-                      uri: publication.lienImage,
-                    }}
-                    alt={publication.titre + " image"}
-                    size="xl"
-                  />
-                </Stack>
-              </TouchableOpacity>
+                publication={publication}
+                navigation={props.navigation}
+              ></ValidationPublicationComponent>
             );
           })}
         </View>
@@ -151,12 +97,12 @@ function ListePublicationsScreen(props: any) {
   );
 }
 
-const RechercheStack = () => {
+const ValidationRessourcesStack = () => {
   return (
     <StackNav.Navigator initialRouteName="RechercheScreen">
       <StackNav.Screen
         name="RechercheScreen"
-        component={ListePublicationsScreen}
+        component={ValidationRessourcesScreen}
         options={{ headerShown: false }}
       />
       <StackNav.Screen
@@ -168,7 +114,7 @@ const RechercheStack = () => {
   );
 };
 
-export default RechercheStack;
+export default ValidationRessourcesStack;
 
 const styles = StyleSheet.create({
   container: {
@@ -178,55 +124,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "column",
   },
-  searchStack: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-  },
-  textInput: {
-    height: 40,
-    paddingLeft: 10,
-    marginRight: 10,
-    borderRadius: 15,
-    width: "75%",
-    borderColor: "gray",
-    borderWidth: 1,
-  },
-  searchIcon: {
-    color: "black",
-    marginTop: 5,
-    marginRight: 10,
-  },
+
   listePublications: {
     padding: 10,
     width: "100%",
-  },
-  publicationPreview: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  titrePreview: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  auteurPrewiew: {
-    fontSize: 15,
-    marginTop: 15,
-    marginBottom: 15,
-    marginRight: 10,
-  },
-  imagePrewiew: {
-    height: 42,
-    width: 42,
-    borderRadius: 10,
-    marginTop: 4,
-    marginBottom: 4,
-    marginRight: 4,
   },
 });
