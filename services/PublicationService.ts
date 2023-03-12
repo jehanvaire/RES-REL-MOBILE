@@ -98,6 +98,24 @@ class PublicationService {
 
     return listePublications;
   }
+
+  public async ValiderPublication(id: number): Promise<any> {
+    // const response = await fetch(`${this.baseUrl}/${id}/validate`, {
+    //   method: "POST",
+    // });
+    // const data = await response.json();
+    const data = "Publication validée";
+    return data;
+  }
+
+  public async RefuserPublication(id: number): Promise<any> {
+    // const response = await fetch(`${this.baseUrl}/${id}/refuse`, {
+    //   method: "POST",
+    // });
+    // const data = await response.json();
+    const data = "Publication refusée";
+    return data;
+  }
 }
 
 export default new PublicationService();
