@@ -13,7 +13,7 @@ import {
 import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { PublicationEntity } from "../../ressources/types/PublicationEntity";
-import ModalValidationPublicationComponent from "./ModalValidationPublicationComponent";
+import PublicationService from "../../services/PublicationService";
 
 function ValidationPublicationComponent({ publication, navigation }: any) {
   const [showModal, setShowModal] = React.useState(false);
@@ -27,6 +27,16 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
       dateCreation: publication.dateCreation,
       lienImage: publication.lienImage,
     });
+  }
+
+  function RefuserPublication(publication: PublicationEntity) {
+    console.log("Refuser", publication);
+    PublicationService.RefuserPublication(publication.id);
+  }
+
+  function ValiderPublication(publication: PublicationEntity) {
+    console.log("Accepter", publication);
+    PublicationService.ValiderPublication(publication.id);
   }
 
   return (
@@ -58,7 +68,6 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
           <TouchableOpacity
             onPress={() => {
               setShowModal(true);
-              console.log("Refuser");
             }}
             style={[styles.bouton, { backgroundColor: "red" }]}
           >
@@ -66,6 +75,9 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={() => {
+              ValiderPublication(publication);
+            }}
             style={[styles.bouton, { backgroundColor: "green" }]}
           >
             <Text>Accepter</Text>
@@ -90,14 +102,15 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
                     setShowModal(false);
                   }}
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button
                   onPress={() => {
+                    RefuserPublication(publication);
                     setShowModal(false);
                   }}
                 >
-                  Save
+                  Refuser
                 </Button>
               </Button.Group>
             </Modal.Footer>
