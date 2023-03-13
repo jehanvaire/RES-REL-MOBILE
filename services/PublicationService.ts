@@ -48,9 +48,7 @@ class PublicationService {
 
   public async GetAllPublications(): Promise<PublicationEntity[]> {
     // fetch to get all publications using this url : https://api.victor-gombert.fr/api/v1/ressources
-    const response = await this.baseApi
-      .get(this.baseUrl)
-      .then((response) => response.json());
+    const response = await this.baseApi.get(this.baseUrl);
 
     // console.log(response.data);
 
@@ -77,9 +75,7 @@ class PublicationService {
   public async GetListePublicationsUtilisateur(
     id: number
   ): Promise<PublicationEntity[]> {
-    const response = await this.baseApi
-      .get(this.baseUrl)
-      .then((response) => response.json());
+    const response = await this.baseApi.get(this.baseUrl);
 
     // console.log(response.data);
 
