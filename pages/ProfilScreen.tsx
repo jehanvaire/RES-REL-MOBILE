@@ -19,6 +19,7 @@ import GestionComptesUtilisateursScreen from "./MenuProfilUtilisateur/GestionCom
 import StatistiquesScreen from "./MenuProfilUtilisateur/StatistiquesScreen";
 import FavorisScreen from "./MenuProfilUtilisateur/FavorisScreen";
 import PublicationsEnregistreesScreen from "./MenuProfilUtilisateur/PublicationsEnregistrees";
+import { PublicationEntity } from "../ressources/types/PublicationEntity";
 
 export const StackNav = createStackNavigator();
 
@@ -35,7 +36,9 @@ export const StackNav = createStackNavigator();
 // };
 
 function ProfilScreen({ navigation }: any) {
-  const [listePublications, setListePublications] = useState<any[]>([]);
+  const [listePublications, setListePublications] = useState<
+    PublicationEntity[]
+  >([]);
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );

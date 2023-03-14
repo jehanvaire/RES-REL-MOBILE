@@ -26,8 +26,7 @@ function ValidationRessourcesScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
-  const [searchValue, setSeachValue] = React.useState("");
-  const [listePublicationsRecherche, setListePublicationsRecherche] = useState<
+  const [listePublicationsEnAttente, setListePublicationsEnAttente] = useState<
     PublicationEntity[]
   >([]);
 
@@ -38,49 +37,22 @@ function ValidationRessourcesScreen(props: any) {
     setUtilisateur(user);
   }, []);
 
-  const startSearch = () => {
-    // TODO: call API
-
-    // const query = searchValue;
-    // const url = "https://api.github.com/search/repositories?q=" + query;
-    // fetch(url)
-    //   .then((response) => response.json())
-    //   .then((json) => {
-    //     console.log(json);
-    //   });
-
-    // TODO: supprimer quand l'API sera prête
-    if (searchValue !== "") {
-      PublicationService.GetAllPublications().then((listePublications) => {
-        const liste = listePublications.filter((publication) => {
-          return publication.titre
-            .toLowerCase()
-            .includes(searchValue.toLowerCase());
-        });
-
-        setListePublicationsRecherche(liste);
-      });
-    } else {
-      PublicationService.GetAllPublications().then((listePublications) => {
-        // TODO : afficher les 10 dernières publications
-        setListePublicationsRecherche(listePublications);
-      });
-    }
+  const fetchPublicationsEnAttente = () => {
+    PublicationService.GetAllPublications().then((listePublications) => {
+      // TODO : afficher les 10 dernières publications
+      setListePublicationsEnAttente(listePublications);
+    });
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      startSearch();
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [searchValue]);
+    fetchPublicationsEnAttente();
+  });
 
   return (
     <View style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.listePublications}>
-          {listePublicationsRecherche.map((publication: PublicationEntity) => {
+          {listePublicationsEnAttente.map((publication: PublicationEntity) => {
             return (
               <ValidationPublicationComponent
                 key={publication.id}
