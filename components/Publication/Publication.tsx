@@ -6,29 +6,10 @@ import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DoubleTap } from "../DoubleTap";
 import dayjs from "dayjs";
+import moment from "moment";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
-  function GetDiffTime(date: Date) {
-    if (!date) return "unknown";
-    const now = new Date();
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (seconds < 0) return "dans le futur";
-    if (seconds < 60) return seconds + "s";
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return minutes + "m";
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return hours + "h";
-    const days = Math.floor(hours / 24);
-    if (days < 7) return days + " jours";
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) return weeks + " semaines";
-    const months = Math.floor(days / 30);
-    if (months < 12) return months + " mois";
-    const years = Math.floor(days / 365);
-    if (years < 2) return years + " an";
-    return years + " ans";
-  }
 
   function LikePublication() {
     setLiked(!liked);
@@ -80,14 +61,9 @@ const Publication = (props: any) => {
 
         <Center>
           <Text>
-            Il y a{" "}
-            {GetDiffTime(
-              new Date(
-                Date.parse(
-                  dayjs(props.dateCreation).format("YYYY-MM-DDTHH:mm:ss")
-                )
-              )
-            )}
+            {moment(props.dateCreation).fromNow() === "Invalid date"
+              ? "quelques secondes"
+              : moment(props.dateCreation).fromNow()}
           </Text>
         </Center>
       </Stack>
