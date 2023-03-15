@@ -1,6 +1,6 @@
 import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView } from "react-native";
+import { StyleSheet, FlatList } from "react-native";
 import { View } from "native-base";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
@@ -76,7 +76,7 @@ function ProfilScreen({ navigation }: any) {
     if (
       event.nativeEvent.contentOffset.y >=
       event.nativeEvent.contentSize.height -
-        (event.nativeEvent.layoutMeasurement.height)
+        event.nativeEvent.layoutMeasurement.height
     ) {
       handleLoadMore();
       console.log(event.nativeEvent.contentOffset.y);
@@ -127,34 +127,42 @@ function ProfilScreen({ navigation }: any) {
           </Center>
         </Stack>
 
-        <ScrollView onScroll={handleScroll}>
-          <Description contenu={utilisateur.contenu ?? ""}></Description>
+        <Description contenu={utilisateur.contenu ?? ""}></Description>
+        <Text style={styles.title}>Publications</Text>
+        <Box
+          style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: "black",
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        ></Box>
 
-          <Text style={styles.title}>Publications</Text>
-          <Box
-            style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: "black",
-              marginTop: 10,
-              marginBottom: 10,
-            }}
-          ></Box>
-          {listePublications.map((publication) => (
-            <View key={publication.id}>
+        <FlatList
+          removeClippedSubviews={true}
+          initialNumToRender={5}
+          data={listePublications}
+          renderItem={({ item }) => (
+            <View key={item.id}>
               <Publication
-                auteur={publication.auteur}
-                titre={publication.titre}
-                contenu={publication.contenu}
-                status={publication.status}
-                raisonRefus={publication.raisonRefus}
-                dateCreation={publication.dateCreation}
-                lienImage={publication.lienImage}
+                auteur={item.auteur}
+                titre={item.titre}
+                contenu={item.contenu}
+                status={item.status}
+                raisonRefus={item.raisonRefus}
+                dateCreation={item.dateCreation}
+                lienImage={item.lienImage}
                 navigation={navigation}
               />
             </View>
-          ))}
-        </ScrollView>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
       </View>
     </GestureHandlerRootView>
   );

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
-  ScrollView,
+  FlatList,
 } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
@@ -50,21 +50,17 @@ function ValidationRessourcesScreen(props: any) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{ width: "100%" }}>
-        <View style={styles.listePublications}>
-          {listePublicationsEnAttente.map((publication: PublicationEntity) => {
-            return (
-              <ValidationPublicationComponent
-                key={publication.id}
-                publication={publication}
-                navigation={props.navigation}
-              ></ValidationPublicationComponent>
-            );
-          })}
-        </View>
-
-        <Spacer />
-      </ScrollView>
+      <FlatList
+        data={listePublicationsEnAttente}
+        renderItem={({ item }) => (
+          <ValidationPublicationComponent
+            key={item.id}
+            publication={item}
+            navigation={props.navigation}
+          ></ValidationPublicationComponent>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
     </View>
   );
 }

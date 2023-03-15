@@ -1,13 +1,7 @@
-import { Center, Spacer, Stack, Image } from "native-base";
+import { Center, Spacer, Stack, Image, FlatList } from "native-base";
 import React, { useEffect, useState } from "react";
 
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
@@ -114,39 +108,38 @@ function ListePublicationsScreen(props: any) {
         </Stack>
       </Center>
 
-      <ScrollView style={{ width: "100%" }}>
-        <View style={styles.listePublications}>
-          {listePublicationsRecherche.map((publication: PublicationEntity) => {
-            return (
-              <TouchableOpacity
-                key={publication.id}
-                onPress={() => {
-                  AfficherPublication(publication);
+      <FlatList
+        style={{ width: "100%" }}
+        data={listePublicationsRecherche}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => {
+              AfficherPublication(item);
+            }}
+          >
+            <Stack style={styles.publicationPreview} direction="row">
+              <Text style={styles.titrePreview}>
+                {item.titre.substring(0, 20)}
+                {item.titre.length > 20 ? "..." : ""}
+              </Text>
+              <Spacer />
+              <Text style={styles.auteurPrewiew}>Adrien</Text>
+              <Image
+                style={styles.imagePrewiew}
+                source={{
+                  uri: item.lienImage,
                 }}
-              >
-                <Stack style={styles.publicationPreview} direction="row">
-                  <Text style={styles.titrePreview}>
-                    {publication.titre.substring(0, 20)}
-                    {publication.titre.length > 20 ? "..." : ""}
-                  </Text>
-                  <Spacer />
-                  <Text style={styles.auteurPrewiew}>Adrien</Text>
-                  <Image
-                    style={styles.imagePrewiew}
-                    source={{
-                      uri: publication.lienImage,
-                    }}
-                    alt={publication.titre + " image"}
-                    size="xl"
-                  />
-                </Stack>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+                alt={item.titre + " image"}
+                size="xl"
+              />
+            </Stack>
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
 
-        <Spacer />
-      </ScrollView>
+      <Spacer />
     </View>
   );
 }
