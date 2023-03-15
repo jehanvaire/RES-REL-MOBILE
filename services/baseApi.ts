@@ -3,14 +3,24 @@ export default class BaseApi {
 
   async get(path: string): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    return data;
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`API call failed with status code: ${response.status}`);
+        return;
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error in API call:", error);
+    }
   }
 
   async post(path: string, body: any): Promise<any> {

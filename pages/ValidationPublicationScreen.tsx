@@ -46,7 +46,7 @@ function ValidationRessourcesScreen(props: any) {
 
   useEffect(() => {
     fetchPublicationsEnAttente();
-  });
+  }, []);
 
   return (
     <View style={styles.container}>
