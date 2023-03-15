@@ -43,11 +43,56 @@ function ProfilScreen({ navigation }: any) {
     {} as UtilisateurEntity
   );
 
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   const fetchListePublicationsUtilisateur = async () => {
     // Get the list of publications
     const listePublications =
       await PublicationService.GetListePublicationsUtilisateur(1);
     setListePublications(listePublications);
+  };
+
+  const handleLoadMore = () => {
+    if (!loading) {
+      setPage(page + 1);
+      console.log("page : " + page);
+      // fetchPosts(page + 1, 10);
+    }
+  };
+
+  const handleRefresh = () => {
+    if (!loading) {
+      setRefreshing(true);
+      setPage(1);
+      // fetchPosts(1, 10);
+      setRefreshing(false);
+    }
+  };
+
+  const handleScroll = (event: any) => {
+    // check if the scroll is at end
+    if (
+      event.nativeEvent.contentOffset.y >=
+      event.nativeEvent.contentSize.height -
+        (event.nativeEvent.layoutMeasurement.height)
+    ) {
+      handleLoadMore();
+      console.log(event.nativeEvent.contentOffset.y);
+      console.log(event.nativeEvent.contentSize.height);
+      console.log(event.nativeEvent.layoutMeasurement.height);
+    }
+
+    // if (event.nativeEvent.contentOffset.y > 100) {
+    //   navigation.setOptions({
+    //     headerShown: true,
+    //   });
+    // } else {
+    //   navigation.setOptions({
+    //     headerShown: false,
+    //   });
+    // }
   };
 
   useEffect(() => {
@@ -82,7 +127,7 @@ function ProfilScreen({ navigation }: any) {
           </Center>
         </Stack>
 
-        <ScrollView>
+        <ScrollView onScroll={handleScroll}>
           <Description contenu={utilisateur.contenu ?? ""}></Description>
 
           <Text style={styles.title}>Publications</Text>
