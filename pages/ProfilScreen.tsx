@@ -54,13 +54,18 @@ function ProfilScreen({ navigation }: any) {
     setListePublications(listePublications);
   };
 
-  const handleLoadMore = () => {
+  function handleLoadMore() {
     if (!loading) {
-      setPage(page + 1);
-      console.log("page : " + page);
-      // fetchPosts(page + 1, 10);
+      const nextPage = page + 1;
+      setPage(nextPage);
+
+      const params = { page: nextPage, perPage: 5 };
+      PublicationService.GetPublications(params).then((publications) => {
+        setListePublications([...listePublications, ...publications]);
+        console.log(publications);
+      });
     }
-  };
+  }
 
   const handleRefresh = () => {
     if (!loading) {
@@ -71,29 +76,29 @@ function ProfilScreen({ navigation }: any) {
     }
   };
 
-  const handleScroll = (event: any) => {
-    // check if the scroll is at end
-    if (
-      event.nativeEvent.contentOffset.y >=
-      event.nativeEvent.contentSize.height -
-        event.nativeEvent.layoutMeasurement.height
-    ) {
-      handleLoadMore();
-      console.log(event.nativeEvent.contentOffset.y);
-      console.log(event.nativeEvent.contentSize.height);
-      console.log(event.nativeEvent.layoutMeasurement.height);
-    }
+  // const handleScroll = (event: any) => {
+  //   // check if the scroll is at end
+  //   if (
+  //     event.nativeEvent.contentOffset.y >=
+  //     event.nativeEvent.contentSize.height -
+  //       event.nativeEvent.layoutMeasurement.height
+  //   ) {
+  //     handleLoadMore();
+  //     console.log(event.nativeEvent.contentOffset.y);
+  //     console.log(event.nativeEvent.contentSize.height);
+  //     console.log(event.nativeEvent.layoutMeasurement.height);
+  //   }
 
-    // if (event.nativeEvent.contentOffset.y > 100) {
-    //   navigation.setOptions({
-    //     headerShown: true,
-    //   });
-    // } else {
-    //   navigation.setOptions({
-    //     headerShown: false,
-    //   });
-    // }
-  };
+  //   // if (event.nativeEvent.contentOffset.y > 100) {
+  //   //   navigation.setOptions({
+  //   //     headerShown: true,
+  //   //   });
+  //   // } else {
+  //   //   navigation.setOptions({
+  //   //     headerShown: false,
+  //   //   });
+  //   // }
+  // };
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -143,6 +148,11 @@ function ProfilScreen({ navigation }: any) {
           removeClippedSubviews={true}
           initialNumToRender={5}
           data={listePublications}
+          keyExtractor={(item) => item.id.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
           renderItem={({ item }) => (
             <View key={item.id}>
               <Publication
@@ -157,11 +167,6 @@ function ProfilScreen({ navigation }: any) {
               />
             </View>
           )}
-          keyExtractor={(item) => item.id.toString()}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
         />
       </View>
     </GestureHandlerRootView>

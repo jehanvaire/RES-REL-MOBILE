@@ -1,25 +1,19 @@
+import axios from "axios";
+
+interface Params {
+  [key: string]: string;
+}
 export default class BaseApi {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
 
-  async get(path: string): Promise<any> {
+  async get(path: string, params?: Params): Promise<any> {
     const url = this.baseUrl + path;
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
 
-      if (!response.ok) {
-        console.error(`API call failed with status code: ${response.status}`);
-        return;
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error in API call:", error);
+    const response = await axios.get(url, { params });
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
     }
   }
 
