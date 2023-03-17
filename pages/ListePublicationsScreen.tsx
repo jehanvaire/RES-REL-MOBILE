@@ -1,15 +1,17 @@
-import { Box, ScrollView } from "native-base";
+import { Box, ScrollView, View } from "native-base";
 import React, { useState } from "react";
 import { StyleSheet, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Publication from "../components/Publication/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
+import CreationPublicationScreen from "../components/Publication/CreationPublicationScreen";
 
-export default function ListePublicationsScreen(props: any) {
+function ListePublicationsScreen(props: any) {
   return (
     <Box style={styles.container}>
       <GestureHandlerRootView>
+        <CreationPublicationScreen></CreationPublicationScreen>
         <ScrollView>
           <Publication
             auteur="Adrien"
@@ -53,6 +55,12 @@ export default function ListePublicationsScreen(props: any) {
   );
 }
 
+const ListePublicationStack = () => {
+  return(
+    <View></View>
+  )
+}
+export default ListePublicationStack;
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,
