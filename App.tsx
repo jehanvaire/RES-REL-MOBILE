@@ -9,6 +9,7 @@ import Connexion from "./pages/Authentification/ConnexionScreen";
 import CreationCompte from "./pages/Authentification/CreationCompteScreen";
 
 const Stack = createStackNavigator();
+require("moment/locale/fr.js");
 
 function App() {
   return (

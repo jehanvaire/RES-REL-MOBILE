@@ -14,6 +14,7 @@ import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { PublicationEntity } from "../../ressources/types/PublicationEntity";
 import PublicationService from "../../services/PublicationService";
+import moment from "moment";
 
 function ValidationPublicationComponent({ publication, navigation }: any) {
   const [showModal, setShowModal] = React.useState(false);
@@ -47,21 +48,20 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
       style={styles.publicationPreviewContainer}
     >
       <Stack style={styles.publicationPreview} direction="row">
-        <Text style={styles.titrePreview}>
-          {publication.titre.substring(0, 20)}
-          {publication.titre.length > 20 ? "..." : ""}
-        </Text>
+        {/* TODO: Mettre l'auteur de la publication */}
+        <Text>Adrien - {moment(publication.dateCreation).fromNow()}</Text>
         <Spacer />
-        <Text style={styles.auteurPrewiew}>Adrien</Text>
-        <Image
-          style={styles.imagePrewiew}
-          source={{
-            uri: publication.lienImage,
-          }}
-          alt={publication.titre + " image"}
-          size="xl"
-        />
+        {/* TODO: mettre le type de la publication */}
+        <Text>Type: Image</Text>
       </Stack>
+
+      <Text style={styles.titrePreview} numberOfLines={2}>
+        {publication.titre}
+      </Text>
+
+      <Text numberOfLines={2} style={styles.descriptionPreview}>
+        {publication.contenu}
+      </Text>
 
       <Center>
         <Stack direction="row">
@@ -69,18 +69,18 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
             onPress={() => {
               setShowModal(true);
             }}
-            style={[styles.bouton, { backgroundColor: "red" }]}
+            style={[styles.bouton, { backgroundColor: "#FC754A" }]}
           >
-            <Text>Refuser</Text>
+            <Text style={styles.textButton}>Refuser</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => {
               ValiderPublication(publication);
             }}
-            style={[styles.bouton, { backgroundColor: "green" }]}
+            style={[styles.bouton, { backgroundColor: "#68BE4A" }]}
           >
-            <Text>Accepter</Text>
+            <Text style={styles.textButton}>Accepter</Text>
           </TouchableOpacity>
         </Stack>
 
@@ -124,8 +124,8 @@ export default ValidationPublicationComponent;
 
 const styles = StyleSheet.create({
   bouton: {
-    backgroundColor: "red",
     borderRadius: 10,
+    width: "40%",
     padding: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: "100%",
     borderRadius: 10,
+    padding: 10,
   },
   titrePreview: {
     fontSize: 20,
@@ -148,18 +149,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 10,
   },
-  auteurPrewiew: {
+  descriptionPreview: {
     fontSize: 15,
-    marginTop: 15,
-    marginBottom: 15,
-    marginRight: 10,
+    padding: 10,
   },
-  imagePrewiew: {
-    height: 42,
-    width: 42,
-    borderRadius: 10,
-    marginTop: 4,
-    marginBottom: 4,
-    marginRight: 4,
+  textButton: {
+    fontSize: 18,
+    // fontWeight: "bold",
   },
 });

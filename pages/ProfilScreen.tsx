@@ -36,7 +36,9 @@ export const StackNav = createStackNavigator();
 // };
 
 function ProfilScreen({ navigation }: any) {
-  const [listePublications, setListePublications] = useState<PublicationEntity[]>([]);
+  const [listePublications, setListePublications] = useState<
+    PublicationEntity[]
+  >([]);
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
