@@ -1,17 +1,22 @@
-import { Box, ScrollView, View } from "native-base";
+import { Box, ScrollView, View , } from "native-base";
 import React, { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text , TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Publication from "../components/Publication/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
 import CreationPublicationScreen from "../components/Publication/CreationPublicationScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-function ListePublicationsScreen(props: any) {
+function ListePublicationsScreen({navigation}: any) {
+  const navigateToCreation = () => {
+    navigation.navigate("CreationPublicationScreen");
+  };
   return (
     <Box style={styles.container}>
+      <CustomButton onPress={navigateToCreation} />
       <GestureHandlerRootView>
-        <CreationPublicationScreen></CreationPublicationScreen>
         <ScrollView>
           <Publication
             auteur="Adrien"
@@ -23,7 +28,7 @@ function ListePublicationsScreen(props: any) {
             raisonRefus={undefined}
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
-            navigation={props.navigation}
+            navigation={navigation}
           />
 
           <Publication
@@ -34,7 +39,7 @@ function ListePublicationsScreen(props: any) {
             status={StatusPublicationEnum.ENATTENTE}
             raisonRefus={undefined}
             lienImage="https://fr.web.img3.acsta.net/r_654_368/newsv7/21/04/29/14/22/0010719.jpg"
-            navigation={props.navigation}
+            navigation={navigation}
           />
 
           <Publication
@@ -47,22 +52,55 @@ function ListePublicationsScreen(props: any) {
             raisonRefus={undefined}
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
-            navigation={props.navigation}
+            navigation={navigation}
           />
         </ScrollView>
       </GestureHandlerRootView>
     </Box>
   );
 }
+function CustomButton({ onPress }: { onPress: () => void }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.customButton}
+    >
+      <Ionicons name="add-outline" size={36} color="#FFFFFF" />
+    </TouchableOpacity>
+  );
+}
+const StackNav = createStackNavigator();
+
 
 const ListePublicationStack = () => {
   return(
-    <View></View>
+    <StackNav.Navigator initialRouteName="ListePublicationsScreen">
+      <StackNav.Screen name="ListePublicationsScreen" component={ListePublicationsScreen} options={{headerShown: false}}/>
+      <StackNav.Screen name="CreationPublicationScreen" component={CreationPublicationScreen}/>
+    </StackNav.Navigator>
   )
 }
 export default ListePublicationStack;
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,
+  },
+  customButton: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    backgroundColor: "#6200EE",
+    borderRadius: 50,
+    width: 56,
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 100,
+  },
+  buttonText: {
+    fontSize: 36,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
