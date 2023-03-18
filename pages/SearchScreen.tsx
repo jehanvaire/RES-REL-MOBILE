@@ -1,6 +1,5 @@
-import { Center, Spacer, Stack, Image, FlatList } from "native-base";
+import { Center, Spacer, Stack, FlatList } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
-
 import { StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";

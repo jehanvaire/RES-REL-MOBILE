@@ -1,23 +1,13 @@
-import { Center, Spacer, Stack, Image } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
-
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  FlatList,
-} from "react-native";
+import { StyleSheet, FlatList } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../components/Publication/DetailsPublication";
-import { color } from "native-base/lib/typescript/theme/styled-system";
 import ValidationPublicationComponent from "../components/Publication/ValidationPublicationComponent";
 
 const StackNav = createStackNavigator();
