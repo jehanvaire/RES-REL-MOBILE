@@ -1,6 +1,6 @@
 import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, FlatList, Animated } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, FlatList } from "react-native";
 import { View } from "native-base";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
@@ -23,7 +23,7 @@ import { PublicationEntity } from "../ressources/types/PublicationEntity";
 
 export const StackNav = createStackNavigator();
 
-const PER_PAGE = 5;
+const PER_PAGE = 10;
 
 function ProfilScreen({ navigation }: any) {
   const [listePublications, setListePublications] = useState<
@@ -53,6 +53,7 @@ function ProfilScreen({ navigation }: any) {
       const params = { page: nextPage, perPage: PER_PAGE };
       PublicationService.GetListePublicationsUtilisateur(1, params).then(
         (publications) => {
+          console.log(publications.length, listePublications.length);
           setListePublications([...listePublications, ...publications]);
         }
       );
@@ -64,7 +65,6 @@ function ProfilScreen({ navigation }: any) {
       setRefreshing(true);
       const firstPage = 1;
       setPage(firstPage);
-      console.log("refresh");
       const params = { page: firstPage, perPage: PER_PAGE };
       PublicationService.GetListePublicationsUtilisateur(1, params).then(
         (publications) => {
@@ -74,6 +74,24 @@ function ProfilScreen({ navigation }: any) {
       setRefreshing(false);
     }
   };
+
+  const renderItem = useCallback(
+    ({ item }: any) => (
+      <View key={item.id}>
+        <Publication
+          auteur={item.auteur}
+          titre={item.titre}
+          contenu={item.contenu}
+          status={item.status}
+          raisonRefus={item.raisonRefus}
+          dateCreation={item.dateCreation}
+          lienImage={item.lienImage}
+          navigation={navigation}
+        />
+      </View>
+    ),
+    []
+  );
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -123,27 +141,15 @@ function ProfilScreen({ navigation }: any) {
         <FlatList
           style={{ marginBottom: 200 }}
           removeClippedSubviews={true}
-          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          initialNumToRender={PER_PAGE}
           data={listePublications}
           keyExtractor={(item) => item.id.toString()}
           onEndReached={handleLoadMore}
-          onEndReachedThreshold={3}
+          onEndReachedThreshold={PER_PAGE}
           refreshing={refreshing}
           onRefresh={handleRefresh}
-          renderItem={({ item }) => (
-            <View key={item.id}>
-              <Publication
-                auteur={item.auteur}
-                titre={item.titre}
-                contenu={item.contenu}
-                status={item.status}
-                raisonRefus={item.raisonRefus}
-                dateCreation={item.dateCreation}
-                lienImage={item.lienImage}
-                navigation={navigation}
-              />
-            </View>
-          )}
+          renderItem={renderItem}
         />
       </View>
     </GestureHandlerRootView>

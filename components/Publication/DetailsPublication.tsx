@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import React from "react";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
+import FastImage from "react-native-fast-image";
 
 const DetailsPublication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
@@ -92,13 +93,13 @@ const DetailsPublication = (props: any) => {
         <Text style={styles.contenu}>{contenu}</Text>
 
         <DoubleTap AfficherPublication={null} LikePublication={LikePublication}>
-          <Image
+          <FastImage
             style={styles.image}
             source={{
               uri: lienImage,
+              priority: FastImage.priority.normal,
             }}
-            alt={titre + " image"}
-            size="xl"
+            resizeMode={FastImage.resizeMode.contain}
           />
         </DoubleTap>
 
