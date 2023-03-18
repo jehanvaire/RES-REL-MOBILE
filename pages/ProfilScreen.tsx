@@ -1,6 +1,6 @@
 import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, FlatList, Animated } from "react-native";
 import { View } from "native-base";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
@@ -23,17 +23,7 @@ import { PublicationEntity } from "../ressources/types/PublicationEntity";
 
 export const StackNav = createStackNavigator();
 
-// const scrollY = new Animated.Value(0);
-
-// const headerHeight = scrollY.interpolate({
-//   inputRange: [0, 100],
-//   outputRange: [200, 100],
-//   extrapolate: "clamp",
-// });
-
-// const headerStyle = {
-//   height: headerHeight,
-// };
+const PER_PAGE = 5;
 
 function ProfilScreen({ navigation }: any) {
   const [listePublications, setListePublications] = useState<
@@ -49,56 +39,41 @@ function ProfilScreen({ navigation }: any) {
 
   const fetchListePublicationsUtilisateur = async () => {
     // Get the list of publications
+    const params = { page: 1, perPage: PER_PAGE };
     const listePublications =
-      await PublicationService.GetListePublicationsUtilisateur(1);
+      await PublicationService.GetListePublicationsUtilisateur(1, params);
     setListePublications(listePublications);
   };
 
-  function handleLoadMore() {
+  const handleLoadMore = () => {
     if (!loading) {
       const nextPage = page + 1;
       setPage(nextPage);
 
-      const params = { page: nextPage, perPage: 5 };
-      PublicationService.GetPublications(params).then((publications) => {
-        setListePublications([...listePublications, ...publications]);
-        console.log(publications);
-      });
+      const params = { page: nextPage, perPage: PER_PAGE };
+      PublicationService.GetListePublicationsUtilisateur(1, params).then(
+        (publications) => {
+          setListePublications([...listePublications, ...publications]);
+        }
+      );
     }
-  }
+  };
 
   const handleRefresh = () => {
     if (!loading) {
       setRefreshing(true);
-      setPage(1);
-      // fetchPosts(1, 10);
+      const firstPage = 1;
+      setPage(firstPage);
+      console.log("refresh");
+      const params = { page: firstPage, perPage: PER_PAGE };
+      PublicationService.GetListePublicationsUtilisateur(1, params).then(
+        (publications) => {
+          setListePublications(publications);
+        }
+      );
       setRefreshing(false);
     }
   };
-
-  // const handleScroll = (event: any) => {
-  //   // check if the scroll is at end
-  //   if (
-  //     event.nativeEvent.contentOffset.y >=
-  //     event.nativeEvent.contentSize.height -
-  //       event.nativeEvent.layoutMeasurement.height
-  //   ) {
-  //     handleLoadMore();
-  //     console.log(event.nativeEvent.contentOffset.y);
-  //     console.log(event.nativeEvent.contentSize.height);
-  //     console.log(event.nativeEvent.layoutMeasurement.height);
-  //   }
-
-  //   // if (event.nativeEvent.contentOffset.y > 100) {
-  //   //   navigation.setOptions({
-  //   //     headerShown: true,
-  //   //   });
-  //   // } else {
-  //   //   navigation.setOptions({
-  //   //     headerShown: false,
-  //   //   });
-  //   // }
-  // };
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -133,6 +108,7 @@ function ProfilScreen({ navigation }: any) {
         </Stack>
 
         <Description contenu={utilisateur.contenu ?? ""}></Description>
+
         <Text style={styles.title}>Publications</Text>
         <Box
           style={{
@@ -145,12 +121,13 @@ function ProfilScreen({ navigation }: any) {
         ></Box>
 
         <FlatList
+          style={{ marginBottom: 200 }}
           removeClippedSubviews={true}
           initialNumToRender={5}
           data={listePublications}
           keyExtractor={(item) => item.id.toString()}
           onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={3}
           refreshing={refreshing}
           onRefresh={handleRefresh}
           renderItem={({ item }) => (

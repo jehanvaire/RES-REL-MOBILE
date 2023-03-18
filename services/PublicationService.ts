@@ -78,9 +78,10 @@ class PublicationService {
   }
 
   public async GetListePublicationsUtilisateur(
-    id: number
+    id: number,
+    params: any = {}
   ): Promise<PublicationEntity[]> {
-    const response = await this.baseApi.get(this.baseUrl);
+    const response = await this.baseApi.get(this.baseUrl, params);
 
     // console.log(response.data);
 
