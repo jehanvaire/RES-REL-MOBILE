@@ -1,5 +1,5 @@
 import { Center, Spacer, Stack, Image, FlatList } from "native-base";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import { View } from "native-base";
@@ -11,8 +11,11 @@ import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../components/Publication/DetailsPublication";
+import FastImage from "react-native-fast-image";
 
 const StackNav = createStackNavigator();
+
+const PER_PAGE = 15;
 
 function ListePublicationsScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -22,6 +25,7 @@ function ListePublicationsScreen(props: any) {
   const [listePublicationsRecherche, setListePublicationsRecherche] = useState<
     PublicationEntity[]
   >([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -58,6 +62,45 @@ function ListePublicationsScreen(props: any) {
         setListePublicationsRecherche(listePublications);
       });
     }
+  };
+
+  const renderItem = useCallback(
+    ({ item }: any) => (
+      <TouchableOpacity
+        key={item.id}
+        onPress={() => {
+          AfficherPublication(item);
+        }}
+      >
+        <Stack style={styles.publicationPreview} direction="row">
+          <Text style={styles.titrePreview}>
+            {item.titre.substring(0, 20)}
+            {item.titre.length > 20 ? "..." : ""}
+          </Text>
+          <Spacer />
+          <Text style={styles.auteurPrewiew}>Adrien</Text>
+          <FastImage
+            style={styles.imagePrewiew}
+            source={{
+              uri: item.lienImage,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </Stack>
+      </TouchableOpacity>
+    ),
+    []
+  );
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    const params = { perPage: PER_PAGE };
+    PublicationService.GetListePublicationsUtilisateur(1, params).then(
+      (publications) => {
+        setListePublicationsRecherche(publications);
+      }
+    );
+    setRefreshing(false);
   };
 
   useEffect(() => {
@@ -110,32 +153,13 @@ function ListePublicationsScreen(props: any) {
 
       <FlatList
         style={{ width: "100%" }}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={PER_PAGE}
+        initialNumToRender={PER_PAGE}
         data={listePublicationsRecherche}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => {
-              AfficherPublication(item);
-            }}
-          >
-            <Stack style={styles.publicationPreview} direction="row">
-              <Text style={styles.titrePreview}>
-                {item.titre.substring(0, 20)}
-                {item.titre.length > 20 ? "..." : ""}
-              </Text>
-              <Spacer />
-              <Text style={styles.auteurPrewiew}>Adrien</Text>
-              <Image
-                style={styles.imagePrewiew}
-                source={{
-                  uri: item.lienImage,
-                }}
-                alt={item.titre + " image"}
-                size="xl"
-              />
-            </Stack>
-          </TouchableOpacity>
-        )}
+        renderItem={renderItem}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
         keyExtractor={(item) => item.id.toString()}
       />
 

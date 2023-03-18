@@ -1,5 +1,5 @@
 import { Center, Spacer, Stack, Image } from "native-base";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   StyleSheet,
@@ -22,6 +22,8 @@ import ValidationPublicationComponent from "../components/Publication/Validation
 
 const StackNav = createStackNavigator();
 
+const PER_PAGE = 15;
+
 function ValidationRessourcesScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
@@ -30,6 +32,10 @@ function ValidationRessourcesScreen(props: any) {
     PublicationEntity[]
   >([]);
 
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
 
@@ -37,12 +43,55 @@ function ValidationRessourcesScreen(props: any) {
     setUtilisateur(user);
   }, []);
 
-  const fetchPublicationsEnAttente = () => {
-    PublicationService.GetAllPublications().then((listePublications) => {
-      // TODO : afficher les 10 dernières publications
-      setListePublicationsEnAttente(listePublications);
-    });
+  const fetchPublicationsEnAttente = async () => {
+    const params = { page: 1, perPage: PER_PAGE };
+    const listePublications =
+      await PublicationService.GetListePublicationsUtilisateur(1, params);
+    setListePublicationsEnAttente(listePublications);
   };
+
+  const handleLoadMore = () => {
+    if (!loading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      console.log("nextPage", nextPage);
+      const params = { page: nextPage, perPage: PER_PAGE };
+      PublicationService.GetListePublicationsUtilisateur(1, params).then(
+        (publications) => {
+          setListePublicationsEnAttente([
+            ...listePublicationsEnAttente,
+            ...publications,
+          ]);
+        }
+      );
+    }
+  };
+
+  const handleRefresh = () => {
+    if (!loading) {
+      setRefreshing(true);
+      const firstPage = 1;
+      setPage(firstPage);
+      const params = { page: firstPage, perPage: PER_PAGE };
+      PublicationService.GetListePublicationsUtilisateur(1, params).then(
+        (publications) => {
+          setListePublicationsEnAttente(publications);
+        }
+      );
+      setRefreshing(false);
+    }
+  };
+
+  const renderItem = useCallback(
+    ({ item }: any) => (
+      <ValidationPublicationComponent
+        key={item.id}
+        publication={item}
+        navigation={props.navigation}
+      ></ValidationPublicationComponent>
+    ),
+    []
+  );
 
   useEffect(() => {
     fetchPublicationsEnAttente();
@@ -52,14 +101,15 @@ function ValidationRessourcesScreen(props: any) {
     <View style={styles.container}>
       <FlatList
         data={listePublicationsEnAttente}
-        renderItem={({ item }) => (
-          <ValidationPublicationComponent
-            key={item.id}
-            publication={item}
-            navigation={props.navigation}
-          ></ValidationPublicationComponent>
-        )}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={PER_PAGE}
+        initialNumToRender={PER_PAGE}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={PER_PAGE}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
       />
     </View>
   );

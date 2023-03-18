@@ -141,7 +141,7 @@ function ProfilScreen({ navigation }: any) {
         <FlatList
           style={{ marginBottom: 200 }}
           removeClippedSubviews={true}
-          maxToRenderPerBatch={5}
+          maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
           data={listePublications}
           keyExtractor={(item) => item.id.toString()}
