@@ -53,7 +53,6 @@ function ProfilScreen({ navigation }: any) {
       const params = { page: nextPage, perPage: PER_PAGE };
       PublicationService.GetListePublicationsUtilisateur(1, params).then(
         (publications) => {
-          console.log(publications.length, listePublications.length);
           setListePublications([...listePublications, ...publications]);
         }
       );

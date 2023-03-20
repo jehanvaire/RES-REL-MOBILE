@@ -55,8 +55,6 @@ class PublicationService {
     // fetch to get all publications using this url : https://api.victor-gombert.fr/api/v1/ressources
     const response = await this.baseApi.get(this.baseUrl);
 
-    // console.log(response.data);
-
     const listePublications = response.data.map((publication: any) => {
       return new PublicationEntity(
         publication.id,
@@ -82,8 +80,6 @@ class PublicationService {
     params: any = {}
   ): Promise<PublicationEntity[]> {
     const response = await this.baseApi.get(this.baseUrl, params);
-
-    // console.log(response.data);
 
     const listePublications = response.data.map((publication: any) => {
       return new PublicationEntity(

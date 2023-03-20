@@ -44,7 +44,6 @@ function ValidationRessourcesScreen(props: any) {
     if (!loading) {
       const nextPage = page + 1;
       setPage(nextPage);
-      console.log("nextPage", nextPage);
       const params = { page: nextPage, perPage: PER_PAGE };
       PublicationService.GetListePublicationsUtilisateur(1, params).then(
         (publications) => {
