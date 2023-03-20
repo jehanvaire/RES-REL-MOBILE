@@ -31,6 +31,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-mmkv": "2.5.1",
     "react-native-paper": "^5.1.4",

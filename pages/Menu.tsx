@@ -15,7 +15,7 @@ const Menu = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName="Validation ressources"
+      initialRouteName="Profil"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;

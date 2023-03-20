@@ -1,12 +1,12 @@
-import { Text, Box, Spacer, Center, Stack, Avatar, Image } from "native-base";
+import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DoubleTap } from "../DoubleTap";
-import dayjs from "dayjs";
 import moment from "moment";
+import FastImage from "react-native-fast-image";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
@@ -76,13 +76,13 @@ const Publication = (props: any) => {
         AfficherPublication={AfficherPublication}
         LikePublication={LikePublication}
       >
-        <Image
+        <FastImage
           style={styles.image}
           source={{
             uri: props.lienImage,
+            priority: FastImage.priority.normal,
           }}
-          alt={props.titre + " image"}
-          size="xl"
+          resizeMode={FastImage.resizeMode.contain}
         />
       </DoubleTap>
 
