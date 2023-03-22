@@ -16,7 +16,9 @@ const StackNav = createStackNavigator();
 
 const PER_PAGE = 15;
 
-function ListePublicationsScreen(props: any) {
+// TODO: Recherche ressource, utilisateur, catégorie, groupes
+
+function ListeRechercheScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -34,17 +36,6 @@ function ListePublicationsScreen(props: any) {
   }, []);
 
   const startSearch = () => {
-    // TODO: call API
-
-    // const query = searchValue;
-    // const url = "https://api.github.com/search/repositories?q=" + query;
-    // fetch(url)
-    //   .then((response) => response.json())
-    //   .then((json) => {
-    //     console.log(json);
-    //   });
-
-    // TODO: supprimer quand l'API sera prête
     if (searchValue !== "") {
       PublicationService.GetAllPublications().then((listePublications) => {
         const liste = listePublications.filter((publication) => {
@@ -57,39 +48,10 @@ function ListePublicationsScreen(props: any) {
       });
     } else {
       PublicationService.GetAllPublications().then((listePublications) => {
-        // TODO : afficher les 10 dernières publications
         setListePublicationsRecherche(listePublications);
       });
     }
   };
-
-  const renderItem = useCallback(
-    ({ item }: any) => (
-      <TouchableOpacity
-        key={item.id}
-        onPress={() => {
-          AfficherPublication(item);
-        }}
-      >
-        <Stack style={styles.publicationPreview} direction="row">
-          <Text style={styles.titrePreview}>
-            {item.titre.substring(0, 20)}
-            {item.titre.length > 20 ? "..." : ""}
-          </Text>
-          <Spacer />
-          <Text style={styles.auteurPrewiew}>Adrien</Text>
-          <FastImage
-            style={styles.imagePrewiew}
-            source={{
-              uri: item.lienImage,
-            }}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-        </Stack>
-      </TouchableOpacity>
-    ),
-    []
-  );
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -122,6 +84,34 @@ function ListePublicationsScreen(props: any) {
     });
   }
 
+  const renderItem = useCallback(
+    ({ item }: any) => (
+      <TouchableOpacity
+        key={item.id}
+        onPress={() => {
+          AfficherPublication(item);
+        }}
+      >
+        <Stack style={styles.publicationPreview} direction="row">
+          <Text style={styles.titrePreview}>
+            {item.titre.substring(0, 20)}
+            {item.titre.length > 20 ? "..." : ""}
+          </Text>
+          <Spacer />
+          <Text style={styles.auteurPrewiew}>Adrien</Text>
+          <FastImage
+            style={styles.imagePrewiew}
+            source={{
+              uri: item.lienImage,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </Stack>
+      </TouchableOpacity>
+    ),
+    []
+  );
+
   return (
     <View style={styles.container}>
       <Center style={styles.searchStack}>
@@ -130,7 +120,7 @@ function ListePublicationsScreen(props: any) {
             style={styles.textInput}
             onChangeText={setSeachValue}
             value={searchValue}
-            placeholder="Rechercher une ressource"
+            placeholder="Ressource, utilisateur, catégoie..."
             returnKeyType="search"
           />
           <TouchableOpacity>
@@ -172,7 +162,7 @@ const RechercheStack = () => {
     <StackNav.Navigator initialRouteName="RechercheScreen">
       <StackNav.Screen
         name="RechercheScreen"
-        component={ListePublicationsScreen}
+        component={ListeRechercheScreen}
         options={{ headerShown: false }}
       />
       <StackNav.Screen
@@ -201,6 +191,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 40,
+    fontSize: 15,
     paddingLeft: 10,
     marginRight: 10,
     borderRadius: 15,

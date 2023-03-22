@@ -15,7 +15,7 @@ const Menu = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName="Profil"
+      initialRouteName="Recherche"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;

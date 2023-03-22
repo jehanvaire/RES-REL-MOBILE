@@ -19,39 +19,41 @@ export default class BaseApi {
 
   async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const data = await response.json();
-    return data;
+    const response = await axios.post(url, body);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
+    }
   }
 
   async put(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const data = await response.json();
-    return data;
+    const response = await axios.put(url, body);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
+    }
   }
 
   async delete(path: string): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    return data;
+    const response = await axios.delete(url);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
+    }
+  }
+
+  async patch(path: string, body: any): Promise<any> {
+    const url = this.baseUrl + path;
+    const response = await axios.patch(url, body);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
+    }
   }
 }

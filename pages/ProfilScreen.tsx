@@ -74,22 +74,19 @@ function ProfilScreen({ navigation }: any) {
     }
   };
 
-  const renderItem = useCallback(
-    ({ item }: any) => (
-      <View key={item.id}>
-        <Publication
-          auteur={item.auteur}
-          titre={item.titre}
-          contenu={item.contenu}
-          status={item.status}
-          raisonRefus={item.raisonRefus}
-          dateCreation={item.dateCreation}
-          lienImage={item.lienImage}
-          navigation={navigation}
-        />
-      </View>
-    ),
-    []
+  const renderItem = ({ item }: any) => (
+    <View key={item.id}>
+      <Publication
+        auteur={item.auteur}
+        titre={item.titre}
+        contenu={item.contenu}
+        status={item.status}
+        raisonRefus={item.raisonRefus}
+        dateCreation={item.dateCreation}
+        lienImage={item.lienImage}
+        navigation={navigation}
+      />
+    </View>
   );
 
   useEffect(() => {
