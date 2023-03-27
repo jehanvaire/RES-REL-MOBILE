@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ProfilScreen from "./ProfilScreen";
-import SearchScreen from "./SearchScreen";
+import SearchScreen from "./Rercherche/SearchScreen";
 import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ValidationRessourcesStack from "./ValidationPublicationScreen";
