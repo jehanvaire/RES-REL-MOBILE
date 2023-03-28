@@ -1,22 +1,22 @@
-import { Spacer, Stack, FlatList } from "native-base";
+import { Center, Spacer, Stack, FlatList } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
 import SearchService from "../../services/SearchService";
 import { PublicationEntity } from "../../ressources/types/PublicationEntity";
 import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../../components/Publication/DetailsPublication";
 import FastImage from "react-native-fast-image";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 const PER_PAGE = 15;
 
-const StackNav = createStackNavigator();
-
-function RessourceSearchScreen(props: any) {
+function UtilisateurSearchScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -126,29 +126,13 @@ function RessourceSearchScreen(props: any) {
         onRefresh={handleRefresh}
         keyExtractor={(item) => item.id.toString()}
       />
+
       <Spacer />
     </View>
   );
 }
 
-const RechercheStackNavigator = () => {
-  return (
-    <StackNav.Navigator initialRouteName="RechercheScreen">
-      <StackNav.Screen
-        name="RechercheScreen"
-        component={RessourceSearchScreen}
-        options={{ headerShown: false }}
-      />
-      <StackNav.Screen
-        name="DetailsPublication"
-        component={DetailsPublication}
-        options={{ headerShown: false, title: "" }}
-      />
-    </StackNav.Navigator>
-  );
-};
-
-export default RechercheStackNavigator;
+export default UtilisateurSearchScreen;
 
 const styles = StyleSheet.create({
   container: {
