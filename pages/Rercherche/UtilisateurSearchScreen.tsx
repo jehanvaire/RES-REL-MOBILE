@@ -13,6 +13,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import DetailsPublication from "../../components/Publication/DetailsPublication";
 import FastImage from "react-native-fast-image";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { BehaviorSubject } from "rxjs";
 
 const PER_PAGE = 15;
 
@@ -20,8 +21,7 @@ function UtilisateurSearchScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
-  const [searchValue, setSeachValue] = React.useState("");
-  const [listeRercheche, setListeRecherche] = useState<any[]>([]);
+  const listeResultats = new BehaviorSubject<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -29,86 +29,64 @@ function UtilisateurSearchScreen(props: any) {
 
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
+
+    SearchService.GetListeResultats().subscribe((result) => {
+      listeResultats.next(result);
+    });
   }, []);
 
-  const startSearch = () => {
-    if (searchValue !== "") {
-      const params = {
-        ressourceQuery: searchValue,
-        utilisateurQuery: searchValue,
-      };
-      SearchService.Search(params).then((result) => {
-        result.forEach((element) => {
-          console.log(element.titre);
-        });
-        setListeRecherche(result);
-      });
+  // const handleRefresh = () => {
+  //   setRefreshing(true);
+  //   const params = { perPage: PER_PAGE };
+  //   PublicationService.GetListePublicationsUtilisateur(1, params).then(
+  //     (publications) => {
+  //       setListeRecherche(publications);
+  //     }
+  //   );
+  //   setRefreshing(false);
+  // };
 
-      console.log(listeRercheche);
-    } else {
-      PublicationService.GetAllPublications().then((listePublications) => {
-        setListeRecherche(listePublications);
-      });
-    }
-  };
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    const params = { perPage: PER_PAGE };
-    PublicationService.GetListePublicationsUtilisateur(1, params).then(
-      (publications) => {
-        setListeRecherche(publications);
-      }
-    );
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startSearch();
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [searchValue]);
-
-  function AfficherPublication(publication: PublicationEntity) {
-    props.navigation.navigate("DetailsPublication", {
-      auteur: publication.auteur,
-      titre: publication.titre,
-      contenu: publication.contenu,
-      status: publication.status,
-      raisonRefus: publication.raisonRefus,
-      dateCreation: publication.dateCreation,
-      lienImage: publication.lienImage,
-    });
-  }
+  // function AfficherPublication(publication: PublicationEntity) {
+  //   props.navigation.navigate("DetailsPublication", {
+  //     auteur: publication.auteur,
+  //     titre: publication.titre,
+  //     contenu: publication.contenu,
+  //     status: publication.status,
+  //     raisonRefus: publication.raisonRefus,
+  //     dateCreation: publication.dateCreation,
+  //     lienImage: publication.lienImage,
+  //   });
+  // }
 
   const renderItem = useCallback(
     ({ item }: any) => (
-      <TouchableOpacity
-        key={item.id}
-        onPress={() => {
-          AfficherPublication(item);
-        }}
-      >
-        {item.titre ? (
-          <Stack style={styles.publicationPreview} direction="row">
-            <Text style={styles.titrePreview}>
-              {item.titre.substring(0, 20)}
-              {item.titre.length > 20 ? "..." : ""}
-            </Text>
-            <Spacer />
-            <Text style={styles.auteurPrewiew}>Adrien</Text>
-            <FastImage
-              style={styles.imagePrewiew}
-              source={{
-                uri: item.lienImage,
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-          </Stack>
+      // <TouchableOpacity
+      //   key={item.id}
+      //   onPress={() => {
+      //     AfficherPublication(item);
+      //   }}
+      // >
+      <View style={styles.container}>
+        {item.mail ? (
+          // <Stack style={styles.publicationPreview} direction="row">
+          //   <Text style={styles.titrePreview}>
+          //     {item.titre.substring(0, 20)}
+          //     {item.titre.length > 20 ? "..." : ""}
+          //   </Text>
+          //   <Spacer />
+          //   <Text style={styles.auteurPrewiew}>Adrien</Text>
+          //   <FastImage
+          //     style={styles.imagePrewiew}
+          //     source={{
+          //       uri: item.lienImage,
+          //     }}
+          //     resizeMode={FastImage.resizeMode.contain}
+          //   />
+          // </Stack>
+          <Text style={styles.textInput}>Bonjour {item.mail}</Text>
         ) : null}
-      </TouchableOpacity>
+      </View>
+      // </TouchableOpacity>
     ),
     []
   );
@@ -120,11 +98,11 @@ function UtilisateurSearchScreen(props: any) {
         removeClippedSubviews={true}
         maxToRenderPerBatch={PER_PAGE}
         initialNumToRender={PER_PAGE}
-        data={listeRercheche}
+        data={listeResultats.value}
         renderItem={renderItem}
         refreshing={refreshing}
-        onRefresh={handleRefresh}
-        keyExtractor={(item) => item.id.toString()}
+        // onRefresh={handleRefresh}
+        keyExtractor={(item: any) => item.id.toString()}
       />
 
       <Spacer />

@@ -1,18 +1,70 @@
 import { Center, Stack } from "native-base";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { View } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import RessourceSearchScreen from "./RessourceSearchScreen";
 import UtilisateurSearchScreen from "./UtilisateurSearchScreen";
+import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
+import { storage } from "../../services/AuthentificationService";
+import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
+import SearchService from "../../services/SearchService";
+import PublicationService from "../../services/PublicationService";
+import { BehaviorSubject } from "rxjs";
 
 const TopNav = createMaterialTopTabNavigator();
 
-// TODO: Recherche ressource, utilisateur, catégorie, groupes
+const PER_PAGE = 15;
 
 const TopNavigator = () => {
+  const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
+    {} as UtilisateurEntity
+  );
   const [searchValue, setSeachValue] = React.useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+
+    var user = JSON.parse(user_json) as UtilisateurEntity;
+    setUtilisateur(user);
+  }, []);
+
+  const startSearch = () => {
+    if (searchValue !== "") {
+      const params = {
+        ressourceQuery: searchValue,
+        utilisateurQuery: searchValue,
+      };
+      SearchService.Search(params).then((listeResultats) => {
+        SearchService.SetListeResultats(listeResultats);
+      });
+    } else {
+      PublicationService.GetAllPublications().then((listeResultats) => {
+        SearchService.SetListeResultats(listeResultats);
+      });
+    }
+  };
+
+  // const handleRefresh = () => {
+  //   setRefreshing(true);
+  //   const params = { perPage: PER_PAGE };
+  //   PublicationService.GetListePublicationsUtilisateur(1, params).then(
+  //     (publications) => {
+  //       setListeRecherche(publications);
+  //     }
+  //   );
+  //   setRefreshing(false);
+  // };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startSearch();
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [searchValue]);
 
   return (
     <>
@@ -44,7 +96,7 @@ const TopNavigator = () => {
         </Center>
       </View>
       <TopNav.Navigator
-        initialRouteName="Screen 1"
+        initialRouteName="UtilisateursSearch"
         screenOptions={{
           tabBarIndicatorStyle: {
             backgroundColor: "red", // changer la couleur de l'indicateur
@@ -52,7 +104,7 @@ const TopNavigator = () => {
         }}
       >
         <TopNav.Screen
-          name="UtilisateursSearch"
+          name="RessourcesSearch"
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ focused, color }) =>
@@ -62,10 +114,10 @@ const TopNavigator = () => {
                 <Ionicons name="images-outline" color={color} size={25} />
               ),
           }}
-          component={UtilisateurSearchScreen}
+          component={RessourceSearchScreen}
         />
         <TopNav.Screen
-          name="RessourcesSearch"
+          name="UtilisateursSearch"
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ focused, color }) =>
@@ -75,7 +127,7 @@ const TopNavigator = () => {
                 <Ionicons name="person-outline" color={color} size={25} />
               ),
           }}
-          component={RessourceSearchScreen}
+          component={UtilisateurSearchScreen}
         />
       </TopNav.Navigator>
     </>

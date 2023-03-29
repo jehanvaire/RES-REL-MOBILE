@@ -43,8 +43,6 @@ function RessourceSearchScreen(props: any) {
         });
         setListeRecherche(result);
       });
-
-      console.log(listeRercheche);
     } else {
       PublicationService.GetAllPublications().then((listePublications) => {
         setListeRecherche(listePublications);
