@@ -21,7 +21,7 @@ function RessourceSearchScreen(props: any) {
     {} as UtilisateurEntity
   );
   const [searchValue, setSeachValue] = React.useState("");
-  const [listeRercheche, setListeRecherche] = useState<any[]>([]);
+  const [listeResultats, setListeResultats] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -29,6 +29,15 @@ function RessourceSearchScreen(props: any) {
 
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
+
+    SearchService.GetListeResultats().subscribe((result) => {
+      if (result) {
+        result = result.filter((item) => item.titre);
+        setListeResultats(result);
+      } else {
+        setListeResultats([]);
+      }
+    });
   }, []);
 
   const startSearch = () => {
@@ -41,11 +50,11 @@ function RessourceSearchScreen(props: any) {
         result.forEach((element) => {
           console.log(element.titre);
         });
-        setListeRecherche(result);
+        setListeResultats(result);
       });
     } else {
       PublicationService.GetAllPublications().then((listePublications) => {
-        setListeRecherche(listePublications);
+        setListeResultats(listePublications);
       });
     }
   };
@@ -55,7 +64,7 @@ function RessourceSearchScreen(props: any) {
     const params = { perPage: PER_PAGE };
     PublicationService.GetListePublicationsUtilisateur(1, params).then(
       (publications) => {
-        setListeRecherche(publications);
+        setListeResultats(publications);
       }
     );
     setRefreshing(false);
@@ -118,18 +127,18 @@ function RessourceSearchScreen(props: any) {
         removeClippedSubviews={true}
         maxToRenderPerBatch={PER_PAGE}
         initialNumToRender={PER_PAGE}
-        data={listeRercheche}
+        data={listeResultats}
         renderItem={renderItem}
         refreshing={refreshing}
-        onRefresh={handleRefresh}
-        keyExtractor={(item) => item.id.toString()}
+        // onRefresh={handleRefresh}
+        keyExtractor={(item: any) => item.id.toString()}
       />
       <Spacer />
     </View>
   );
 }
 
-const RechercheStackNavigator = () => {
+const RessourceStackNavigator = () => {
   return (
     <StackNav.Navigator initialRouteName="RechercheScreen">
       <StackNav.Screen
@@ -146,7 +155,7 @@ const RechercheStackNavigator = () => {
   );
 };
 
-export default RechercheStackNavigator;
+export default RessourceStackNavigator;
 
 const styles = StyleSheet.create({
   container: {

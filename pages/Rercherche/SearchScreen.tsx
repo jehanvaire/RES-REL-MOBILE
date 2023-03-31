@@ -68,7 +68,7 @@ const TopNavigator = () => {
 
   return (
     <>
-      <View style={{ marginTop: 50 }}>
+      <View style={{ marginTop: 50, width: "100%" }}>
         <Center style={styles.searchStack}>
           <Stack direction="row">
             <TextInput
@@ -137,13 +137,6 @@ const TopNavigator = () => {
 export default TopNavigator;
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 50,
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
   searchStack: {
     backgroundColor: "white",
     height: 50,
