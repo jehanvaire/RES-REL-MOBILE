@@ -12,6 +12,7 @@ import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnu
 import SearchService from "../../services/SearchService";
 import PublicationService from "../../services/PublicationService";
 import { BehaviorSubject } from "rxjs";
+import Filtre from "../../components/Filtre";
 
 const TopNav = createMaterialTopTabNavigator();
 
@@ -85,13 +86,8 @@ const TopNavigator = () => {
                 style={[styles.searchIcon]}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons
-                name="options-outline"
-                size={25}
-                style={[styles.searchIcon]}
-              />
-            </TouchableOpacity>
+
+            <Filtre></Filtre>
           </Stack>
         </Center>
       </View>
