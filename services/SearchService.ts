@@ -1,19 +1,19 @@
 import { BehaviorSubject } from "rxjs";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
-import BaseApi from "./baseApi";
+import RestClient from "./RestClient";
 class SearchService {
   private baseUrl = "search";
 
-  private baseApi: BaseApi;
+  private restClient: RestClient;
 
   private listeResultats = new BehaviorSubject<any[]>([]);
 
   constructor() {
-    this.baseApi = new BaseApi();
+    this.restClient = new RestClient();
   }
 
   public async Search(query: any = {}): Promise<any[]> {
-    const reponse = await this.baseApi.post(this.baseUrl, query);
+    const reponse = await this.restClient.post(this.baseUrl, query);
     return reponse.data;
   }
 

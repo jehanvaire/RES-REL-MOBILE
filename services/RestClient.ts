@@ -3,7 +3,7 @@ import axios from "axios";
 interface Params {
   [key: string]: string;
 }
-export default class BaseApi {
+export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
 
   async get(path: string, params?: Params): Promise<any> {
