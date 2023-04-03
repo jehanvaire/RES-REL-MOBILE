@@ -8,6 +8,7 @@ import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum
 import CreationPublicationScreen from "../components/Publication/CreationPublicationScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AjouterPJScreen from "../components/Ressource/AjouterPJScreen"; 
 
 function ListePublicationsScreen({navigation}: any) {
   const navigateToCreation = () => {
@@ -77,6 +78,7 @@ const ListePublicationStack = () => {
     <StackNav.Navigator initialRouteName="ListePublicationsScreen">
       <StackNav.Screen name="ListePublicationsScreen" component={ListePublicationsScreen} options={{headerShown: false}}/>
       <StackNav.Screen name="CreationPublicationScreen" component={CreationPublicationScreen}/>
+      <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen}/>
     </StackNav.Navigator>
   )
 }
