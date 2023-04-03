@@ -1,5 +1,9 @@
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import BaseApi from "./baseApi";
+import axios from 'axios';
+
+const API_URL = 'https://api.victor-gombert.fr/api/v1';
+
 class PublicationService {
   private baseUrl = "ressources";
 
@@ -115,6 +119,50 @@ class PublicationService {
     // const data = await response.json();
     const data = "Publication refusée";
     return data;
+  }
+
+  public async CreerPublication(publication: FormData): Promise<any> {
+    try{
+      const response = await axios.post(
+        `${API_URL}/${this.baseUrl}`,
+        publication,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+    // const response = await axios.post(
+    //   `${API_URL}/${this.baseUrl}`,
+    //   publication,
+    //   {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //     },
+    //   }
+    // );
+    // return response;
+  }
+
+
+  public async AjouterPieceJointe(pieceJointe: FormData, idRessource: any) {
+    const response = await axios.post(
+      `${API_URL}/ressources/${idRessource}/attachments`,
+      pieceJointe,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return response.data;
   }
 }
 

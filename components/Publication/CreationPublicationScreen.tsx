@@ -1,48 +1,52 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View, Image, Text } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
+import Video from 'react-native-video';
+import Pdf from 'react-native-pdf';
 import { useNavigation, CommonActions } from '@react-navigation/native';
+import PublicationService from '../../services/PublicationService';
+import DocumentPicker from 'react-native-document-picker';
+import RNFS from 'react-native-fs';
+import base64 from 'base64-js';
+
 
 function CreationPublicationScreen() {
     const navigation = useNavigation();
-    const [auteur, setAuteur] = useState('');
     const [titre, setTitre] = useState('');
     const [contenu, setContenu] = useState('');
-    const [lienImage, setLienImage] = useState('');
+    const [lienPieceJointe, setLienPieceJointe] = useState('');
+    const [fileInfo, setFileInfo] = useState<{ uri: string; type: string }>({ uri: '', type: '' });
+
 
     const LONGUEUR_MIN_TITRE = 5;
 
-    const gererChangementTitre = (texte: any) => {
-        if (texte.length < LONGUEUR_MIN_TITRE) {
+    const validateTitle = (text: string) => {
+        if (text.length < LONGUEUR_MIN_TITRE) {
             console.warn(`Le titre doit contenir au moins ${LONGUEUR_MIN_TITRE} caractères.`);
+            return false;
         }
-        setTitre(texte);
+        return true;
     };
 
-    const validerAuteur = (texte: any) => {
-        if (texte.length > 0) {
-            setAuteur(texte);
-        } else {
-            console.warn("Le champ auteur ne doit pas être vide.");
-        }
-    };
-
-    const validerContenu = (texte: any) => {
-        if (texte.length > 0) {
-            setContenu(texte);
-        } else {
+    const validateContent = (text: string) => {
+        if (text.length === 0) {
             console.warn("Le champ contenu ne doit pas être vide.");
+            return false;
+        }
+        return true;
+    };
+
+    const gererChangementTitre = (texte: string) => {
+        if (validateTitle(texte)) {
+            setTitre(texte);
         }
     };
 
-    const validerLienImage = (texte: any) => {
-        if (texte.length > 0) {
-            setLienImage(texte);
-        } else {
-            console.warn("Le champ lien de l'image ne doit pas être vide.");
+    const validerContenu = (texte: string) => {
+        if (validateContent(texte)) {
+            setContenu(texte);
         }
     };
-
     const gererNavigation = useCallback(() => {
         navigation.dispatch(
             CommonActions.reset({
@@ -52,49 +56,103 @@ function CreationPublicationScreen() {
         );
     }, [navigation]);
 
-    const soumettre = () => {
-        if (auteur.length === 0 || titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0 || lienImage.length === 0) {
-            console.warn("Veuillez remplir tous les champs correctement avant de soumettre.");
-        } else {
-            const envoyerDonnees = async () => {
-                try {
-                    const reponse = await fetch('https://api.victor-gombert.fr/api/v1/ressources', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            auteur,
-                            titre,
-                            contenu,
-                            lienImage,
-                            // ...autres propriétés de la publication
-                        }),
-                    });
+    const soumettre = async (publication: any, pieceJointe: any) => {
+        try {
+            const formData = new FormData();
+            if (pieceJointe) {
+                console.log('pieceJointe', pieceJointe);
 
-                    if (!reponse.ok) {
-                        throw new Error('Échec de la soumission de la publication');
-                    }
-                    // Appeler la fonction gererNavigation pour réinitialiser la pile de navigation et naviguer vers "ListePublicationsScreen"
+                const uri = pieceJointe;
+                console.log('uri', uri);
+
+                // Lire le fichier à partir de l'URI
+                const fileData = await RNFS.readFile(uri, 'base64');
+                console.log('fileData', fileData);
+
+                // Créer un blob à partir des données du fichier
+                const blob = new Blob([base64.toByteArray(fileData)], { type: pieceJointe.type });
+                console.log('blob', blob)
+
+                formData.append('file', blob, pieceJointe.name);
+            }
+            console.log('formData 1', formData);
+            formData.append('titre', publication.titre);
+            formData.append('contenu', publication.contenu);
+            console.log('formData 2', formData);
+            try {
+                const response = await PublicationService.CreerPublication(formData);
+                console.log('Server response', response);
+                if (typeof response === 'object' && response !== null) {
                     gererNavigation();
-                } catch (erreur) {
-                    console.error('Erreur lors de la soumission de la publication:', erreur);
+                } else {
+                    console.error('Erreur lors de la soumission de la publication:', 'Réponse non-JSON reçue du serveur');
                 }
-            };
-
-            envoyerDonnees();
+            } catch (error: any) {
+                console.error('Erreur lors de la soumission de la publication:', error.message);
+            }
+        } catch (erreur: any) {
+            console.error('Erreur lors de la soumission de la publication:', erreur.message);
         }
     };
 
 
+
+
+    const selectionnerPieceJointe = async () => {
+        try {
+            const result = await DocumentPicker.pick({
+                type: [
+                    DocumentPicker.types.images,
+                    DocumentPicker.types.video,
+                    DocumentPicker.types.pdf,
+                ],
+            });
+            setLienPieceJointe(result[0].uri);
+            setFileInfo({ uri: result[0].uri, type: result[0].type || '' });
+        } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+                // L'utilisateur a annulé la sélection de fichier
+            } else {
+                throw err;
+            }
+        }
+    };
+    const renderPieceJointe = () => {
+        if (!fileInfo || !fileInfo.hasOwnProperty("type")) {
+            return <Text>Type de fichier non pris en charge</Text>;
+        }
+        const typeMime = fileInfo.type;
+
+        if (typeMime.startsWith('image/')) {
+            return (
+                <Image
+                    source={{ uri: fileInfo.uri }}
+                    style={styles.imagePieceJointe}
+                />
+            );
+        } else if (typeMime.startsWith('video/')) {
+            return (
+                <Video
+                    source={{ uri: fileInfo.uri }}
+                    style={styles.videoPieceJointe}
+                    resizeMode="contain"
+                    controls
+                />
+            );
+        } else if (typeMime === 'application/pdf') {
+            return (
+                <Pdf
+                    source={{ uri: fileInfo.uri }}
+                    style={styles.pdfPieceJointe}
+                />
+            );
+        } else {
+            return <Text>Type de fichier non pris en charge</Text>;
+        }
+    };
+
     return (
         <ScrollView style={styles.conteneur}>
-            <TextInput
-                label="Auteur"
-                value={auteur}
-                onChangeText={validerAuteur}
-                style={styles.input}
-            />
             <TextInput
                 label="Titre"
                 value={titre}
@@ -109,14 +167,31 @@ function CreationPublicationScreen() {
                 multiline
                 numberOfLines={4}
             />
-            <TextInput
-                label="Lien de l'image"
-                value={lienImage}
-                onChangeText={validerLienImage}
-                style={styles.input}
-            />
-            <Button mode="contained" onPress={soumettre}
-                style={styles.boutonSoumettre}>
+            <Button
+                mode="contained"
+                onPress={selectionnerPieceJointe}
+                style={styles.boutonSelectionFichier}
+            >
+                Sélectionner une pièce jointe
+            </Button>
+
+            {lienPieceJointe.length > 0 && (
+                <View style={styles.previewPieceJointe}>
+                    <Text style={styles.titrePieceJointe}>Pièce jointe :</Text>
+                    {renderPieceJointe()}
+                </View>
+            )}
+
+
+            <Button
+                mode="contained"
+                onPress={() => soumettre({
+                    titre,
+                    contenu,
+                }, lienPieceJointe)}
+                style={styles.boutonSoumettre}
+                disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
+            >
                 Créer la publication
             </Button>
         </ScrollView>
@@ -135,5 +210,33 @@ const styles = StyleSheet.create({
     },
     boutonSoumettre: {
         marginTop: 16,
+    },
+    boutonSelectionFichier: {
+        marginBottom: 16,
+    },
+    previewPieceJointe: {
+        alignItems: 'center',
+        marginVertical: 16,
+    },
+    titrePieceJointe: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    imagePieceJointe: {
+        width: '100%',
+        height: 250,
+        resizeMode: 'contain',
+        marginBottom: 16,
+    },
+    videoPieceJointe: {
+        width: '100%',
+        height: 250,
+        marginBottom: 16,
+    },
+    pdfPieceJointe: {
+        width: '100%',
+        height: 250,
+        marginBottom: 16,
     },
 });
