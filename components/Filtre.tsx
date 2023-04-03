@@ -13,7 +13,13 @@ import DateTimePicker, {
   DateTimePickerAndroid,
 } from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React from "react";
 import { BehaviorSubject } from "rxjs";
@@ -22,43 +28,43 @@ function Filtre() {
   const initialFocusRef = React.useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  // valeurs du formulaire
+  const [dateDebutPicker, setDateDebutPicker] = useState(false);
+  const [dateFinPicker, setDateFinPicker] = useState(false);
+  const [timePicker, setTimePicker] = useState(false);
+
   const [dateDebut, setDateDebut] = useState(new Date());
+
   const [dateFin, setDateFin] = useState(new Date());
+
+  function showDateDebutPicker() {
+    setDateDebutPicker(true);
+  }
+
+  function showDateFinPicker() {
+    setDateFinPicker(true);
+  }
+
+  function onDateDebutSelected(event: any, value: any) {
+    setDateDebut(value);
+    setDateDebutPicker(false);
+  }
+
+  function onDateFinSelected(event: any, value: any) {
+    setDateFin(value);
+    setDateFinPicker(false);
+  }
+
   const [categorie, setCategorie] = useState("Toutes les catégories");
-
-  function onChange(selectedDate: any) {
-    const currentDate = selectedDate;
-    setDateDebut(currentDate);
-  }
-
-  function onDateFinChange(selectedDate: Date) {
-    // set dateFin to a clone of selectedDate
-    setDateFin(selectedDate);
-  }
 
   React.useEffect(() => {
     dateDebut.setHours(0, 0, 0, 0);
     dateFin.setHours(23, 59, 59, 999);
   }, [dateDebut, dateFin]);
 
-  function datePicker(choixDate: number): void {
-    DateTimePickerAndroid.open({
-      value: new Date(),
-      // onChange: () => {
-      //   console.log("onChange");
-      //   // choixDate === 0 ? onDateDebutChange : onDateFinChange;
-      //   onDateDebutChange
-      // },
-      onChange,
-      mode: "date",
-      is24Hour: true,
-    });
-  }
   // TODO: changer popoover en modal
   // TODO: ajouter les filtres sort by et order by
   return (
-    <View style={styles.Modal}>
+    <View>
       <TouchableOpacity onPress={() => setIsOpen(true)}>
         <Ionicons
           name="options-outline"
@@ -71,39 +77,42 @@ function Filtre() {
           <Modal.CloseButton />
           <Modal.Header>Filtres ressources</Modal.Header>
           <Modal.Body>
-            <FormControl>
-              <Button onPress={() => datePicker(0)}>
-                <Text>Date début</Text>
-              </Button>
-              <Center>
-                <Text>
-                  {dateDebut.toDateString()} {dateDebut.toTimeString()}
-                </Text>
-              </Center>
-            </FormControl>
+            <Text style={styles.text}>Date = {dateDebut.toDateString()}</Text>
+            <Text style={styles.text}>Date = {dateFin.toDateString()}</Text>
 
-            <FormControl>
-              <Button onPress={() => datePicker(1)}>
-                <Text>Date fin</Text>
-              </Button>
-              <Center>
-                <Text>
-                  {dateDebut.toDateString()} {dateDebut.toTimeString()}
-                </Text>
-              </Center>
-            </FormControl>
+            {dateDebutPicker ? (
+              <DateTimePicker
+                value={dateDebut}
+                mode={"date"}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                is24Hour={true}
+                onChange={onDateDebutSelected}
+                style={styles.datePicker}
+              />
+            ) : (
+              <View style={{ margin: 10 }}>
+                <Button color="green" onPress={showDateDebutPicker}>
+                  Date début
+                </Button>
+              </View>
+            )}
 
-            <FormControl mt="3">
-              <FormControl.Label
-                _text={{
-                  fontSize: "xs",
-                  fontWeight: "medium",
-                }}
-              >
-                Last Name
-              </FormControl.Label>
-              <Input rounded="sm" fontSize="xs" />
-            </FormControl>
+            {dateFinPicker ? (
+              <DateTimePicker
+                value={dateFin}
+                mode={"date"}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                is24Hour={true}
+                onChange={onDateFinSelected}
+                style={styles.datePicker}
+              />
+            ) : (
+              <View style={{ margin: 10 }}>
+                <Button color="green" onPress={showDateFinPicker}>
+                  Date fin
+                </Button>
+              </View>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button.Group>
@@ -122,8 +131,27 @@ function Filtre() {
 export default Filtre;
 
 const styles = StyleSheet.create({
-  Modal: {
-    // marginTop: 50,
+  MainContainer: {
+    flex: 1,
+    padding: 6,
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+
+  text: {
+    fontSize: 15,
+    padding: 3,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+
+  // Style for iOS ONLY...
+  datePicker: {
+    justifyContent: "center",
+    alignItems: "flex-start",
+    width: 320,
+    height: 260,
+    display: "flex",
   },
   searchIcon: {
     color: "black",

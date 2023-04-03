@@ -92,7 +92,7 @@ const TopNavigator = () => {
         </Center>
       </View>
       <TopNav.Navigator
-        initialRouteName="UtilisateursSearch"
+        initialRouteName="RessourcesSearch"
         screenOptions={{
           tabBarIndicatorStyle: {
             backgroundColor: "red", // changer la couleur de l'indicateur
