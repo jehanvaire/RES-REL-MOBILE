@@ -1,12 +1,12 @@
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import RestClient from "./RestClient";
-class PublicationService {
+export class PublicationService {
   private baseUrl = "ressources";
 
-  private RestClient: RestClient;
+  private restClient: RestClient;
 
   constructor() {
-    this.RestClient = new RestClient();
+    this.restClient = new RestClient();
   }
 
   //   public static async getPublications(): Promise<any> {
@@ -47,13 +47,14 @@ class PublicationService {
   }
 
   public async GetPublications(query: any = {}): Promise<PublicationEntity[]> {
-    const response = await this.RestClient.get(this.baseUrl, query);
+    const response = await this.restClient.get(this.baseUrl, query);
     return response.data;
   }
 
-  public async GetAllPublications(): Promise<PublicationEntity[]> {
-    // fetch to get all publications using this url : https://api.victor-gombert.fr/api/v1/ressources
-    const response = await this.RestClient.get(this.baseUrl);
+  public async GetAllPublications(
+    filtres: any = {}
+  ): Promise<PublicationEntity[]> {
+    const response = await this.restClient.get(this.baseUrl, filtres);
 
     const listePublications = response.data.map((publication: any) => {
       return new PublicationEntity(
@@ -79,7 +80,7 @@ class PublicationService {
     id: number,
     params: any = {}
   ): Promise<PublicationEntity[]> {
-    const response = await this.RestClient.get(this.baseUrl, params);
+    const response = await this.restClient.get(this.baseUrl, params);
 
     const listePublications = response.data.map((publication: any) => {
       return new PublicationEntity(

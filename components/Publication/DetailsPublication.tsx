@@ -45,6 +45,7 @@ const DetailsPublication = (props: any) => {
     titre,
     contenu,
     dateCreation,
+    datePublication,
     status,
     raisonRefus,
     lienImage,

@@ -1,6 +1,6 @@
 import { StatusPublicationEnum } from "../enums/StatusPublicationEnum";
 
-export class PublicationEntity extends Object {
+export class PublicationEntity {
   // Attributs
   private _id: number;
   private _titre: string;
@@ -30,7 +30,6 @@ export class PublicationEntity extends Object {
     idUtilisateur: number,
     navigation: any
   ) {
-    super();
     this._id = id;
     this._titre = titre;
     this._auteur = auteur;

@@ -13,28 +13,37 @@ import SearchService from "../../services/SearchService";
 import PublicationService from "../../services/PublicationService";
 import { BehaviorSubject } from "rxjs";
 import Filtre from "../../components/Filtre";
+import FiltreService from "../../services/FiltreService";
 
 const TopNav = createMaterialTopTabNavigator();
-
-const PER_PAGE = 15;
 
 const TopNavigator = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
   const [searchValue, setSeachValue] = React.useState("");
-  const [refreshing, setRefreshing] = useState(false);
+
+  const filtres = new BehaviorSubject<FiltreEntity>({} as FiltreEntity);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
 
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
+    FiltreService.getFiltres().subscribe((nouveauxFiltres) => {
+      filtres.next(nouveauxFiltres);
+      setSeachValue("");
+      startSearch();
+    });
   }, []);
 
   const startSearch = () => {
     if (searchValue !== "") {
-      const params = {
+      const params: FiltresRequete = {
+        "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
+        "datePublication[lowerThanEquals]=": filtres.value.dateFin,
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
         ressourceQuery: searchValue,
         utilisateurQuery: searchValue,
       };
@@ -42,22 +51,23 @@ const TopNavigator = () => {
         SearchService.SetListeResultats(listeResultats);
       });
     } else {
-      PublicationService.GetAllPublications().then((listeResultats) => {
-        SearchService.SetListeResultats(listeResultats);
-      });
+      const filtresRequete: FiltresRequete = {
+        "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
+        "datePublication[lowerThanEquals]=": filtres.value.dateFin,
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+      };
+      if (filtres.value.categorie === 0) {
+        filtresRequete["idCategorie[equals]="] = filtres.value.categorie;
+      }
+
+      PublicationService.GetAllPublications(filtresRequete).then(
+        (listeResultats) => {
+          SearchService.SetListeResultats(listeResultats);
+        }
+      );
     }
   };
-
-  // const handleRefresh = () => {
-  //   setRefreshing(true);
-  //   const params = { perPage: PER_PAGE };
-  //   PublicationService.GetListePublicationsUtilisateur(1, params).then(
-  //     (publications) => {
-  //       setListeRecherche(publications);
-  //     }
-  //   );
-  //   setRefreshing(false);
-  // };
 
   useEffect(() => {
     const timer = setTimeout(() => {

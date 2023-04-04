@@ -40,6 +40,7 @@ const Publication = (props: any) => {
       status: props.status,
       raisonRefus: props.raisonRefus,
       dateCreation: JSON.stringify(props.dateCreation),
+      datePublication: JSON.stringify(props.datePublication),
       lienImage: props.lienImage,
     });
   }

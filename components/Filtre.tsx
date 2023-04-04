@@ -1,40 +1,25 @@
-import {
-  Box,
-  VStack,
-  Modal,
-  Select,
-  CheckIcon,
-  Button,
-  FormControl,
-  Input,
-  Center,
-} from "native-base";
-import DateTimePicker, {
-  DateTimePickerAndroid,
-} from "@react-native-community/datetimepicker";
+import { Modal, Select, Button, FormControl } from "native-base";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import {
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-} from "react-native";
+import { TouchableOpacity, StyleSheet, View, Platform } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React from "react";
-import { BehaviorSubject } from "rxjs";
+import CategorieService from "../services/CategorieService";
+import FiltreService from "../services/FiltreService";
 
 function Filtre() {
-  const initialFocusRef = React.useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [categories, setCategories] = useState([] as CategorieEntity[]);
 
   const [dateDebutPicker, setDateDebutPicker] = useState(false);
   const [dateFinPicker, setDateFinPicker] = useState(false);
-  const [timePicker, setTimePicker] = useState(false);
 
-  const [dateDebut, setDateDebut] = useState(new Date());
-
+  const [dateDebut, setDateDebut] = useState(new Date("1990-01-01"));
   const [dateFin, setDateFin] = useState(new Date());
+  const [selectedCategorie, setSelectedCategorie] = useState({
+    id: 0,
+    nom: "Toutes les catégories",
+  } as CategorieEntity);
 
   function showDateDebutPicker() {
     setDateDebutPicker(true);
@@ -45,24 +30,49 @@ function Filtre() {
   }
 
   function onDateDebutSelected(event: any, value: any) {
-    setDateDebut(value);
+    if (value > dateFin) {
+      setDateDebut(dateFin);
+    } else {
+      setDateDebut(value);
+    }
     setDateDebutPicker(false);
   }
 
   function onDateFinSelected(event: any, value: any) {
-    setDateFin(value);
+    if (value < dateDebut) {
+      setDateFin(dateDebut);
+    } else {
+      setDateFin(value);
+    }
     setDateFinPicker(false);
   }
 
-  const [categorie, setCategorie] = useState("Toutes les catégories");
+  function onCancel() {
+    setIsOpen(false);
+    setDateDebut(new Date("1990-01-01"));
+    setDateFin(new Date());
+    setSelectedCategorie({} as CategorieEntity);
+  }
+
+  function onSave() {
+    setIsOpen(false);
+    const filtres = {
+      dateDebut: dateDebut,
+      dateFin: dateFin,
+      categorie: selectedCategorie.id,
+    } as FiltreEntity;
+    FiltreService.setFiltres(filtres);
+  }
 
   React.useEffect(() => {
     dateDebut.setHours(0, 0, 0, 0);
     dateFin.setHours(23, 59, 59, 999);
+
+    CategorieService.GetAllCategories().then((categories: any) => {
+      setCategories(categories);
+    });
   }, [dateDebut, dateFin]);
 
-  // TODO: changer popoover en modal
-  // TODO: ajouter les filtres sort by et order by
   return (
     <View>
       <TouchableOpacity onPress={() => setIsOpen(true)}>
@@ -77,9 +87,6 @@ function Filtre() {
           <Modal.CloseButton />
           <Modal.Header>Filtres ressources</Modal.Header>
           <Modal.Body>
-            <Text style={styles.text}>Date = {dateDebut.toDateString()}</Text>
-            <Text style={styles.text}>Date = {dateFin.toDateString()}</Text>
-
             {dateDebutPicker ? (
               <DateTimePicker
                 value={dateDebut}
@@ -92,11 +99,10 @@ function Filtre() {
             ) : (
               <View style={{ margin: 10 }}>
                 <Button color="green" onPress={showDateDebutPicker}>
-                  Date début
+                  {dateDebut.toLocaleDateString()}
                 </Button>
               </View>
             )}
-
             {dateFinPicker ? (
               <DateTimePicker
                 value={dateFin}
@@ -109,17 +115,45 @@ function Filtre() {
             ) : (
               <View style={{ margin: 10 }}>
                 <Button color="green" onPress={showDateFinPicker}>
-                  Date fin
+                  {dateFin.toLocaleDateString()}
                 </Button>
               </View>
             )}
+            <FormControl>
+              <FormControl.Label>Catégorie</FormControl.Label>
+              <Select
+                selectedValue={selectedCategorie.nom}
+                minWidth={200}
+                accessibilityLabel="Sélectionnez une catégorie"
+                placeholder="Sélectionnez une catégorie"
+                onValueChange={(itemValue) => {
+                  const catSelectionnee: any = categories.find(
+                    (c) => c.nom === itemValue
+                  );
+                  setSelectedCategorie(catSelectionnee);
+                }}
+                defaultValue=""
+                _selectedItem={{
+                  bg: "teal.600",
+                }}
+              >
+                <Select.Item key="0" label="Toutes les catégorie" value="0" />
+                {categories.map((categorie: any) => (
+                  <Select.Item
+                    key={categorie.id}
+                    label={categorie.nom}
+                    value={categorie.nom}
+                  />
+                ))}
+              </Select>
+            </FormControl>
           </Modal.Body>
           <Modal.Footer>
             <Button.Group>
-              <Button colorScheme="coolGray" variant="ghost">
+              <Button colorScheme="coolGray" variant="ghost" onPress={onCancel}>
                 Cancel
               </Button>
-              <Button>Save</Button>
+              <Button onPress={onSave}>Save</Button>
             </Button.Group>
           </Modal.Footer>
         </Modal.Content>

@@ -86,6 +86,7 @@ function RessourceSearchScreen(props: any) {
       status: publication.status,
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
+      datePublication: publication.datePublication,
       lienImage: publication.lienImage,
     });
   }
