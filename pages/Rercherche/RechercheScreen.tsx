@@ -3,9 +3,6 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { View } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import RessourceSearchScreen from "./RessourceSearchScreen";
-import UtilisateurSearchScreen from "./UtilisateurSearchScreen";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
@@ -14,10 +11,9 @@ import PublicationService from "../../services/PublicationService";
 import { BehaviorSubject } from "rxjs";
 import Filtre from "../../components/Filtre";
 import FiltreService from "../../services/FiltreService";
+import RechercheScreenTopNavigator from "../../components/Navigators/Recherche/RerchercheScreenTopNavigator";
 
-const TopNav = createMaterialTopTabNavigator();
-
-const TopNavigator = () => {
+const RechercheScreen = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -101,46 +97,12 @@ const TopNavigator = () => {
           </Stack>
         </Center>
       </View>
-      <TopNav.Navigator
-        initialRouteName="RessourcesSearch"
-        screenOptions={{
-          tabBarIndicatorStyle: {
-            backgroundColor: "red", // changer la couleur de l'indicateur
-          },
-        }}
-      >
-        <TopNav.Screen
-          name="RessourcesSearch"
-          options={{
-            tabBarShowLabel: false,
-            tabBarIcon: ({ focused, color }) =>
-              focused ? (
-                <Ionicons name="images" color={color} size={25} />
-              ) : (
-                <Ionicons name="images-outline" color={color} size={25} />
-              ),
-          }}
-          component={RessourceSearchScreen}
-        />
-        <TopNav.Screen
-          name="UtilisateursSearch"
-          options={{
-            tabBarShowLabel: false,
-            tabBarIcon: ({ focused, color }) =>
-              focused ? (
-                <Ionicons name="person" color={color} size={25} />
-              ) : (
-                <Ionicons name="person-outline" color={color} size={25} />
-              ),
-          }}
-          component={UtilisateurSearchScreen}
-        />
-      </TopNav.Navigator>
+      <RechercheScreenTopNavigator></RechercheScreenTopNavigator>
     </>
   );
 };
 
-export default TopNavigator;
+export default RechercheScreen;
 
 const styles = StyleSheet.create({
   searchStack: {

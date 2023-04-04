@@ -52,7 +52,7 @@ const DetailsPublication = (props: any) => {
   } = props.route.params;
 
   const date = new Date(
-    Date.parse(dayjs(dateCreation).format("YYYY-MM-DDTHH:mm:ss"))
+    Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
   );
 
   return (

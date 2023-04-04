@@ -1,26 +1,20 @@
-import { Center, Spacer, Stack, FlatList, Avatar } from "native-base";
+import { Spacer, Stack, FlatList, Avatar } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchService from "../../services/SearchService";
 import { PublicationEntity } from "../../ressources/types/PublicationEntity";
-import { createStackNavigator } from "@react-navigation/stack";
-import DetailsUtilisateur from "../../components/Publication/DetailsUtilisateur";
 
 const PER_PAGE = 15;
 
-const StackNav = createStackNavigator();
-
-function UtilisateurSearchScreen(props: any) {
+function RechercheUtilisateurScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
   const [listeResultats, setListeResultats] = useState<any[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -37,17 +31,6 @@ function UtilisateurSearchScreen(props: any) {
       }
     });
   }, []);
-
-  // const handleRefresh = () => {
-  //   setRefreshing(true);
-  //   const params = { perPage: PER_PAGE };
-  //   PublicationService.GetListePublicationsUtilisateur(1, params).then(
-  //     (publications) => {
-  //       setListeRecherche(publications);
-  //     }
-  //   );
-  //   setRefreshing(false);
-  // };
 
   function AfficherUtilisateur(publication: PublicationEntity) {
     props.navigation.navigate("DetailsUtilisateur", {
@@ -99,8 +82,6 @@ function UtilisateurSearchScreen(props: any) {
             initialNumToRender={PER_PAGE}
             data={listeResultats}
             renderItem={renderItem}
-            refreshing={refreshing}
-            // onRefresh={handleRefresh}
             keyExtractor={(item: any) => item.id.toString()}
           />
           <Spacer />
@@ -114,24 +95,7 @@ function UtilisateurSearchScreen(props: any) {
   );
 }
 
-const UtilisateurStackNavigator = () => {
-  return (
-    <StackNav.Navigator initialRouteName="ListeUtilisateurs">
-      <StackNav.Screen
-        name="ListeUtilisateurs"
-        component={UtilisateurSearchScreen}
-        options={{ headerShown: false }}
-      />
-      <StackNav.Screen
-        name="DetailsUtilisateur"
-        component={DetailsUtilisateur}
-        options={{ headerShown: false, title: "" }}
-      />
-    </StackNav.Navigator>
-  );
-};
-
-export default UtilisateurStackNavigator;
+export default RechercheUtilisateurScreen;
 
 const styles = StyleSheet.create({
   container: {
