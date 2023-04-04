@@ -6,11 +6,7 @@ import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
-import { createStackNavigator } from "@react-navigation/stack";
-import DetailsPublication from "../components/Publication/DetailsPublication";
 import ValidationPublicationComponent from "../components/Publication/ValidationPublicationComponent";
-
-const StackNav = createStackNavigator();
 
 const PER_PAGE = 15;
 
@@ -104,24 +100,7 @@ function ValidationRessourcesScreen(props: any) {
   );
 }
 
-const ValidationRessourcesStack = () => {
-  return (
-    <StackNav.Navigator initialRouteName="RechercheScreen">
-      <StackNav.Screen
-        name="RechercheScreen"
-        component={ValidationRessourcesScreen}
-        options={{ headerShown: false }}
-      />
-      <StackNav.Screen
-        name="DetailsPublication"
-        component={DetailsPublication}
-        options={{ headerShown: true, title: "" }}
-      />
-    </StackNav.Navigator>
-  );
-};
-
-export default ValidationRessourcesStack;
+export default ValidationRessourcesScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -8,13 +8,9 @@ import { storage } from "../../services/AuthentificationService";
 import PublicationService from "../../services/PublicationService";
 import SearchService from "../../services/SearchService";
 import { PublicationEntity } from "../../ressources/types/PublicationEntity";
-import { createStackNavigator } from "@react-navigation/stack";
-import DetailsPublication from "../../components/Publication/DetailsPublication";
 import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 15;
-
-const StackNav = createStackNavigator();
 
 function RessourceSearchScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -22,7 +18,6 @@ function RessourceSearchScreen(props: any) {
   );
   const [searchValue, setSeachValue] = React.useState("");
   const [listeResultats, setListeResultats] = useState<any[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -57,17 +52,6 @@ function RessourceSearchScreen(props: any) {
         setListeResultats(listePublications);
       });
     }
-  };
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    const params = { perPage: PER_PAGE };
-    PublicationService.GetListePublicationsUtilisateur(1, params).then(
-      (publications) => {
-        setListeResultats(publications);
-      }
-    );
-    setRefreshing(false);
   };
 
   useEffect(() => {
@@ -130,8 +114,6 @@ function RessourceSearchScreen(props: any) {
         initialNumToRender={PER_PAGE}
         data={listeResultats}
         renderItem={renderItem}
-        refreshing={refreshing}
-        // onRefresh={handleRefresh}
         keyExtractor={(item: any) => item.id.toString()}
       />
       <Spacer />
@@ -139,24 +121,7 @@ function RessourceSearchScreen(props: any) {
   );
 }
 
-const RessourceStackNavigator = () => {
-  return (
-    <StackNav.Navigator initialRouteName="RechercheScreen">
-      <StackNav.Screen
-        name="RechercheScreen"
-        component={RessourceSearchScreen}
-        options={{ headerShown: false }}
-      />
-      <StackNav.Screen
-        name="DetailsPublication"
-        component={DetailsPublication}
-        options={{ headerShown: false, title: "" }}
-      />
-    </StackNav.Navigator>
-  );
-};
-
-export default RessourceStackNavigator;
+export default RessourceSearchScreen;
 
 const styles = StyleSheet.create({
   container: {
