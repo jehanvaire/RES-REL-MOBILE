@@ -1,6 +1,6 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -40,6 +40,7 @@ const Publication = (props: any) => {
       status: props.status,
       raisonRefus: props.raisonRefus,
       dateCreation: JSON.stringify(props.dateCreation),
+      datePublication: JSON.stringify(props.datePublication),
       lienImage: props.lienImage,
     });
   }
@@ -76,14 +77,16 @@ const Publication = (props: any) => {
         AfficherPublication={AfficherPublication}
         LikePublication={LikePublication}
       >
-        <FastImage
-          style={styles.image}
-          source={{
-            uri: props.lienImage,
-            priority: FastImage.priority.normal,
-          }}
-          resizeMode={FastImage.resizeMode.contain}
-        />
+        <View>
+          <FastImage
+            style={styles.image}
+            source={{
+              uri: props.lienImage,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </View>
       </DoubleTap>
 
       <Stack direction="row" style={styles.footer}>

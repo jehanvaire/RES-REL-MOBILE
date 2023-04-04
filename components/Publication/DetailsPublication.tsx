@@ -5,7 +5,6 @@ import {
   Spacer,
   Stack,
   Text,
-  Image,
   ScrollView,
 } from "native-base";
 import { TouchableOpacity, StyleSheet } from "react-native";
@@ -41,23 +40,12 @@ const DetailsPublication = (props: any) => {
     console.log("TODO: afficher plus d'options");
   }
 
-  function AfficherPublication() {
-    props.navigation.navigate("DetailsPublication", {
-      auteur: props.auteur,
-      titre: props.titre,
-      contenu: props.contenu,
-      status: props.status,
-      raisonRefus: props.raisonRefus,
-      dateCreation: JSON.stringify(props.dateCreation),
-      lienImage: props.lienImage,
-    });
-  }
-
   const {
     auteur,
     titre,
     contenu,
     dateCreation,
+    datePublication,
     status,
     raisonRefus,
     lienImage,
