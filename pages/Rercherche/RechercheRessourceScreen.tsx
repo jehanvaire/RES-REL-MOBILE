@@ -64,6 +64,7 @@ function RessourceSearchScreen(props: any) {
 
   function AfficherPublication(publication: PublicationEntity) {
     props.navigation.navigate("DetailsPublication", {
+      id: publication.id,
       auteur: publication.auteur,
       titre: publication.titre,
       contenu: publication.contenu,
