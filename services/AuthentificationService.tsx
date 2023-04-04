@@ -9,7 +9,9 @@ const AuthContext = React.createContext({} as any);
 const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
 const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
 const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
+const token = "1|Amil0ejTi7exgNuUyJ42EIv2cD0jMb9DxQPmySp6"; // A ENLEVER QUAND LOGIN FONCTIONNEL
 export const storage = new MMKV();
+// storage.clearAll();
 
 // clear storage
 // TODO: a supprimer
@@ -17,7 +19,7 @@ export const storage = new MMKV();
 
 const getUtilisateurToken = () => {
   // Récupère le token de l'utilisateur
-  return fetch("https://run.mocky.io/v3/dd598227-c275-48e8-9840-c588293ead84", {
+  return fetch("https://api.victor-gombert.fr/api/v1", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -30,7 +32,7 @@ const getUtilisateurToken = () => {
 };
 
 const getUtilisateur = (token: string) => {
-  return fetch("https://run.mocky.io/v3/5910a865-8ebf-4fab-b27f-70f96551c5d4", {
+  return fetch("https://api.victor-gombert.fr/api/v1", {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -69,10 +71,11 @@ export const AuthContainer = ({ children }: any) => {
         try {
           const result = await getUtilisateurToken();
 
-          storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
+          // storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
+          storage.set(ACCESS_TOKEN_KEY, String(token));
 
           let user = (await getUtilisateur(
-            result.access_token
+            token
           )) as UtilisateurEntity;
 
           // Add all other user Attributes here
@@ -130,5 +133,7 @@ export const AuthContainer = ({ children }: any) => {
     </AuthContext.Provider>
   );
 };
-
+export function getTokenFromStorage() {
+  return storage.getString(ACCESS_TOKEN_KEY);
+};
 export const useAuth = () => useContext(AuthContext);

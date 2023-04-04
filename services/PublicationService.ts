@@ -1,9 +1,47 @@
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import BaseApi from "./baseApi";
 import axios from 'axios';
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+import { storage, getTokenFromStorage } from "./AuthentificationService";
+
 
 const API_URL = 'https://api.victor-gombert.fr/api/v1';
 
+const apiClient = axios.create({
+  baseURL: "https://api.victor-gombert.fr/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+apiClient.interceptors.request.use(
+  async (config) => {
+    const token = await getTokenFromStorage();
+    console.log("Token from storage:", token);
+    config.headers.Authorization = token ? `Bearer ${token}` : "";
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+
+export { apiClient };
+
+
+// Ajoutez cet intercepteur pour déboguer les erreurs
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    console.log('Error details:', error);
+    console.log('Error config:', error.config);
+    console.log('Error response:', error.response);
+    return Promise.reject(error);
+  }
+);
 class PublicationService {
   private baseUrl = "ressources";
 
@@ -122,9 +160,9 @@ class PublicationService {
   }
 
   public async CreerPublication(publication: FormData): Promise<any> {
-    try{
-      const response = await axios.post(
-        `${API_URL}/${this.baseUrl}`,
+    try {
+      const response = await apiClient.post(
+        `/${this.baseUrl}`,
         publication,
         {
           headers: {
@@ -138,32 +176,25 @@ class PublicationService {
       console.log(error);
       return null;
     }
-    // const response = await axios.post(
-    //   `${API_URL}/${this.baseUrl}`,
-    //   publication,
-    //   {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data',
-    //     },
-    //   }
-    // );
-    // return response;
   }
-
 
   public async AjouterPieceJointe(pieceJointe: FormData, idRessource: any) {
-    const response = await axios.post(
-      `${API_URL}/ressources/${idRessource}/attachments`,
-      pieceJointe,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-
-    return response.data;
-  }
+    try {
+      const response = await axios.post(
+        `${API_URL}/piecesJointes`,
+        pieceJointe,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }  
 }
 
 export default new PublicationService();

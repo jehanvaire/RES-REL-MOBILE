@@ -16,6 +16,8 @@ function CreationPublicationScreen() {
     const [contenu, setContenu] = useState('');
     const [lienPieceJointe, setLienPieceJointe] = useState('');
     const [fileInfo, setFileInfo] = useState<{ uri: string; type: string }>({ uri: '', type: '' });
+    const [Utilisateur , setUtilisateur] = useState('1');
+    const [Categorie , setCategorie] = useState('2');
 
 
     const LONGUEUR_MIN_TITRE = 5;
@@ -23,7 +25,6 @@ function CreationPublicationScreen() {
     const validateTitle = (text: string) => {
         if (text.length < LONGUEUR_MIN_TITRE) {
             console.warn(`Le titre doit contenir au moins ${LONGUEUR_MIN_TITRE} caractères.`);
-            return false;
         }
         return true;
     };
@@ -56,47 +57,52 @@ function CreationPublicationScreen() {
         );
     }, [navigation]);
 
-    const soumettre = async (publication: any, pieceJointe: any) => {
+    const soumettre = async (publication: any, pieceJointe: any, idCategorie: string, idUtilisateur: string) => {
         try {
-            const formData = new FormData();
-            if (pieceJointe) {
-                console.log('pieceJointe', pieceJointe);
+            const formDataPublication = new FormData();
+            formDataPublication.append('titre', publication.titre);
+            formDataPublication.append('contenu', publication.contenu);
+            formDataPublication.append('idCategorie', idCategorie);
+            formDataPublication.append('idUtilisateur', idUtilisateur);
 
-                const uri = pieceJointe;
-                console.log('uri', uri);
+            const response = await PublicationService.CreerPublication(formDataPublication);
+            if (response && response.data) {
+                if (pieceJointe) {
+                    const formDataPieceJointe = new FormData();
 
-                // Lire le fichier à partir de l'URI
-                const fileData = await RNFS.readFile(uri, 'base64');
-                console.log('fileData', fileData);
+                    const uri = pieceJointe;
+                    const tempPath = `${RNFS.CachesDirectoryPath}/${Date.now()}.tmp`;
+                    await RNFS.copyFile(uri, tempPath);
+                    const fileData = await RNFS.readFile(tempPath, 'base64');
+                    await RNFS.unlink(tempPath);
+                    const blob = new Blob([base64.toByteArray(fileData)], {
+                        type: pieceJointe.type,
+                    });
 
-                // Créer un blob à partir des données du fichier
-                const blob = new Blob([base64.toByteArray(fileData)], { type: pieceJointe.type });
-                console.log('blob', blob)
+                    formDataPieceJointe.append('file', blob, pieceJointe.name);
+                    formDataPieceJointe.append('idRessource', response.data.id);
 
-                formData.append('file', blob, pieceJointe.name);
-            }
-            console.log('formData 1', formData);
-            formData.append('titre', publication.titre);
-            formData.append('contenu', publication.contenu);
-            console.log('formData 2', formData);
-            try {
-                const response = await PublicationService.CreerPublication(formData);
-                console.log('Server response', response);
-                if (typeof response === 'object' && response !== null) {
-                    gererNavigation();
-                } else {
-                    console.error('Erreur lors de la soumission de la publication:', 'Réponse non-JSON reçue du serveur');
+                    // Ajouter la pièce jointe à la publication créée
+                    const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe, response.data.id);
+                    if (!pieceJointeResponse) {
+                        console.error("Erreur lors de l'ajout de la pièce jointe");
+                    }
                 }
-            } catch (error: any) {
-                console.error('Erreur lors de la soumission de la publication:', error.message);
+
+                gererNavigation();
+            } else {
+                console.error(
+                    'Erreur lors de la soumission de la publication:',
+                    'Réponse non-JSON reçue du serveur'
+                );
             }
-        } catch (erreur: any) {
-            console.error('Erreur lors de la soumission de la publication:', erreur.message);
+        } catch (error: any) {
+            console.error(
+                'Erreur lors de la soumission de la publication:',
+                error.message
+            );
         }
     };
-
-
-
 
     const selectionnerPieceJointe = async () => {
         try {
@@ -183,17 +189,27 @@ function CreationPublicationScreen() {
             )}
 
 
-            <Button
-                mode="contained"
-                onPress={() => soumettre({
-                    titre,
-                    contenu,
-                }, lienPieceJointe)}
+<Button
+            mode="contained"
+            onPress={() =>
+                soumettre(
+                    {
+                        titre,
+                        contenu,
+                        Categorie,
+                        Utilisateur,
+                    },
+                    lienPieceJointe,
+                    Categorie,
+                    Utilisateur
+                )
+            }
                 style={styles.boutonSoumettre}
                 disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
             >
                 Créer la publication
             </Button>
+
         </ScrollView>
     );
 }
