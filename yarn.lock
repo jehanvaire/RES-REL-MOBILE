@@ -2426,7 +2426,7 @@
     "@react-stately/toggle" "^3.2.1"
     "@react-types/checkbox" "^3.2.1"
 
-"@react-native-aria/checkbox@^0.2.2":
+"@react-native-aria/checkbox@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@react-native-aria/checkbox/-/checkbox-0.2.3.tgz"
   integrity sha512-YtWtXGg5tvOaV6v1CmbusXoOZvGRAVYygms9qNeUF7/B8/iDNGSKjlxHE5LVOLRtJO/B9ndZnr6RkL326ceyng==
@@ -2482,7 +2482,7 @@
 
 "@react-native-aria/overlays@0.3.3-rc.0":
   version "0.3.3-rc.0"
-  resolved "https://registry.npmjs.org/@react-native-aria/overlays/-/overlays-0.3.3-rc.0.tgz"
+  resolved "https://registry.yarnpkg.com/@react-native-aria/overlays/-/overlays-0.3.3-rc.0.tgz#9041ddd6f151e6edb50c971d29920c458aa41459"
   integrity sha512-RgaIYIHMltt0RdMrVwfXLAVxc22TIUY1Yx07HbQRMdt4LcSmU8pyp5CEtJ/MQCXceuqocnXfsUxyHOSnfhmfpA==
   dependencies:
     "@react-aria/interactions" "^3.3.2"
@@ -2741,6 +2741,13 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
+"@react-native-community/datetimepicker@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-7.0.0.tgz#b43e0242fe5d07584c81d7065ee94c6599d98feb"
+  integrity sha512-3xbTEKKQUW2S7Fuj654u1Yrn7gk1N9d9Y3xNPBB+uW5E9Yh7DbRqNJhAIliIaPRgEp5M5Hdz2HwtKnWjN/M8/g==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@react-native/assets/-/assets-1.0.0.tgz"
@@ -2808,6 +2815,14 @@
   integrity sha512-Bzy5skUFEnA/B2bOtBKf82tCKy85+oDz0pSKfB12XWI2ehTnnwWU2tcSYt6XEuy4M0P4Q91kVLwTEPrwFiI7GA==
   dependencies:
     "@react-navigation/elements" "^1.3.14"
+
+"@react-navigation/material-top-tabs@^6.6.2":
+  version "6.6.2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/material-top-tabs/-/material-top-tabs-6.6.2.tgz#ff68e597451a86d26421d5f516a1aa7e1fb30048"
+  integrity sha512-qq0iyMzWApeSvhxovurhk5hluAH2VYbSObTZIKt4KbVXZ0KP8ir1tRQ+IAwkMea+hCnd26glpXRVQI+YqXH0Gw==
+  dependencies:
+    color "^4.2.3"
+    warn-once "^0.1.0"
 
 "@react-navigation/native-stack@^6.9.9":
   version "6.9.9"
@@ -9756,6 +9771,11 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.npmjs.org/lodash.uniq/-/lodash.uniq-4.5.0.tgz"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
+lodash.uniqueid@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/lodash.uniqueid/-/lodash.uniqueid-4.0.1.tgz#3268f26a7c88e4f4b1758d679271814e31fa5b26"
+  integrity sha512-GQQWaIeGlL6DIIr06kj1j6sSmBxyNMwI8kaX9aKpHR/XsMTiaXDVPNPAkiboOTK9OJpTJF/dXT3xYoFQnj386Q==
+
 "lodash@>=3.5 <5", lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
@@ -10503,7 +10523,7 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-moment@^2.29.4:
+moment@^2.22.0, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
@@ -10608,17 +10628,17 @@ nanomatch@^1.2.9:
 
 native-base@^3.4.25:
   version "3.4.25"
-  resolved "https://registry.npmjs.org/native-base/-/native-base-3.4.25.tgz"
+  resolved "https://registry.yarnpkg.com/native-base/-/native-base-3.4.25.tgz#0b5871855be4c48ef72768e50db002d6a0e1ad23"
   integrity sha512-MOeqNji6eAXge9uWsKgfyna8kakdoQuynxoDlVgzTrXXT0o/UrmIUAz+xNPM7rjYHd0MM+UdohPilV1/Z5pB9Q==
   dependencies:
     "@react-aria/visually-hidden" "^3.2.1"
     "@react-native-aria/button" "^0.2.4"
-    "@react-native-aria/checkbox" "^0.2.2"
+    "@react-native-aria/checkbox" "^0.2.3"
     "@react-native-aria/combobox" "^0.2.4-alpha.0"
     "@react-native-aria/focus" "^0.2.6"
     "@react-native-aria/interactions" "^0.2.2"
     "@react-native-aria/listbox" "^0.2.4-alpha.3"
-    "@react-native-aria/overlays" "0.3.3-rc.0"
+    "@react-native-aria/overlays" "^0.3.3"
     "@react-native-aria/radio" "^0.2.4"
     "@react-native-aria/slider" "^0.2.5-alpha.1"
     "@react-native-aria/tabs" "^0.2.7"
@@ -10642,9 +10662,10 @@ native-base@^3.4.25:
     lodash.omit "^4.5.0"
     lodash.omitby "^4.6.0"
     lodash.pick "^4.4.0"
+    lodash.uniqueid "^4.0.1"
     stable-hash "^0.0.2"
     tinycolor2 "^1.4.2"
-    use-subscription "^1.8.0"
+    use-sync-external-store "^1.2.0"
 
 natural-orderby@^2.0.3:
   version "2.0.3"
@@ -12617,21 +12638,6 @@ react-native-codegen@^0.70.6:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-document-picker@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.npmjs.org/react-native-document-picker/-/react-native-document-picker-8.2.0.tgz"
-  integrity sha512-S/n4DIHWC0DTrtJnj2WZZleIfN4C2QjPMUpe8l/URt2Gc3/95dxkyfp4Dz4d7aZq5yEVFkdAvXv0nyWkM5w4MA==
-  dependencies:
-    invariant "^2.2.4"
-
-react-native-fs@^2.20.0:
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.20.0.tgz#05a9362b473bfc0910772c0acbb73a78dbc810f6"
-  integrity sha512-VkTBzs7fIDUiy/XajOSNk0XazFE9l+QlMAce7lGuebZcag5CnjszB+u4BdqzwaQOdcYb5wsJIsqq4kxInIRpJQ==
-  dependencies:
-    base-64 "^0.1.0"
-    utf8 "^3.0.0"
-
 react-native-gesture-handler@^2.9.0:
   version "2.9.0"
   resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.9.0.tgz"
@@ -12652,6 +12658,11 @@ react-native-mmkv@2.5.1:
   version "2.5.1"
   resolved "https://registry.npmjs.org/react-native-mmkv/-/react-native-mmkv-2.5.1.tgz"
   integrity sha512-5eQu25z3H6zf6w0NkJoTuFEFrbOu6luZxZ6+rK1W+XwY/rjPSFZFQPVtMaz3im90RbILFXXM/KrFGZrpaJJRoQ==
+
+react-native-pager-view@6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.0.1.tgz#353abf38d3c2b91ed7c586f10af0f94700f5b1dc"
+  integrity sha512-kOVNu+4JnR3Gpykviy4WbOAnQz8TgP6O2pRvne221oPUDQLYrvEE/FINR0P85TxbMgvKTPlLejGw0ZHQbezK/g==
 
 react-native-paper@^5.1.4:
   version "5.1.4"
@@ -12710,16 +12721,6 @@ react-native-svg@13.4.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
-
-react-native-video@^5.2.1:
-  version "5.2.1"
-  resolved "https://registry.npmjs.org/react-native-video/-/react-native-video-5.2.1.tgz"
-  integrity sha512-aJlr9MeTuQ0LpZ4n+EC9RvhoKeiPbLtI2Rxy8u7zo/wzGevbRpWHSBj9xZ5YDBXnAVXzuqyNIkGhdw7bfdIBZw==
-  dependencies:
-    deprecated-react-native-prop-types "^2.2.0"
-    keymirror "^0.1.1"
-    prop-types "^15.7.2"
-    shaka-player "^2.5.9"
 
 react-native-web@~0.18.7:
   version "0.18.12"
@@ -14877,7 +14878,7 @@ use-latest-callback@^0.1.5:
 
 use-subscription@^1.8.0:
   version "1.8.0"
-  resolved "https://registry.npmjs.org/use-subscription/-/use-subscription-1.8.0.tgz"
+  resolved "https://registry.yarnpkg.com/use-subscription/-/use-subscription-1.8.0.tgz#f118938c29d263c2bce12fc5585d3fe694d4dbce"
   integrity sha512-LISuG0/TmmoDoCRmV5XAqYkd3UCBNM0ML3gGBndze65WITcsExCD3DTvXXTLyNcOC0heFQZzluW88bN/oC1DQQ==
   dependencies:
     use-sync-external-store "^1.2.0"

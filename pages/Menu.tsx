@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import ProfilScreen from "./ProfilScreen";
-import SearchScreen from "./SearchScreen";
+import RechercheScreen from "./Rercherche/RechercheScreen";
 import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
-import ValidationRessourcesStack from "./ValidationPublicationScreen";
+import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
+import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
 
-const Tab = createMaterialBottomTabNavigator();
+const BottomTab = createMaterialBottomTabNavigator();
 
 // The authenticated view
 const Menu = () => {
   const [isAutorized, setIsAutorized] = useState(true);
 
   return (
-    <Tab.Navigator
-      initialRouteName="Menu"
+    <BottomTab.Navigator
+      initialRouteName="Recherche"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;
@@ -44,24 +44,24 @@ const Menu = () => {
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Menu" component={ListePublicationsScreen} />
-      <Tab.Screen name="Recherche" component={SearchScreen} />
-      <Tab.Screen
+      <BottomTab.Screen name="Menu" component={ListePublicationsScreen} />
+      <BottomTab.Screen name="Recherche" component={RechercheScreen} />
+      <BottomTab.Screen
         name="Notifications"
         component={NotificationScreen}
         options={{ tabBarBadge: 3 }}
       />
-      <Tab.Screen name="Profil" component={ProfilScreen} />
+      <BottomTab.Screen name="Profil" component={ProfilStackNavigator} />
 
       {isAutorized ? (
         <>
-          <Tab.Screen
+          <BottomTab.Screen
             name="Validation ressources"
-            component={ValidationRessourcesStack}
+            component={ValidationRessourcesStackNavigator}
           />
         </>
       ) : null}
-    </Tab.Navigator>
+    </BottomTab.Navigator>
   );
 };
 

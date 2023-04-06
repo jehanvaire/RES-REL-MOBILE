@@ -1,54 +1,12 @@
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
-import BaseApi from "./baseApi";
-import axios from 'axios';
-import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
-import { storage, getTokenFromStorage } from "./AuthentificationService";
-
-
-const API_URL = 'https://api.victor-gombert.fr/api/v1';
-
-const apiClient = axios.create({
-  baseURL: "https://api.victor-gombert.fr/api/v1",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-apiClient.interceptors.request.use(
-  async (config) => {
-    const token = await getTokenFromStorage();
-    console.log("Token from storage:", token);
-    config.headers.Authorization = token ? `Bearer ${token}` : "";
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-
-export { apiClient };
-
-
-// Ajoutez cet intercepteur pour déboguer les erreurs
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    console.log('Error details:', error);
-    console.log('Error config:', error.config);
-    console.log('Error response:', error.response);
-    return Promise.reject(error);
-  }
-);
-class PublicationService {
+import RestClient from "./RestClient";
+export class PublicationService {
   private baseUrl = "ressources";
 
-  private baseApi: BaseApi;
+  private restClient: RestClient;
 
   constructor() {
-    this.baseApi = new BaseApi();
+    this.restClient = new RestClient();
   }
 
   //   public static async getPublications(): Promise<any> {
@@ -88,11 +46,15 @@ class PublicationService {
     return data;
   }
 
-  public async GetAllPublications(): Promise<PublicationEntity[]> {
-    // fetch to get all publications using this url : https://api.victor-gombert.fr/api/v1/ressources
-    const response = await this.baseApi.get(this.baseUrl);
+  public async GetPublications(query: any = {}): Promise<PublicationEntity[]> {
+    const response = await this.restClient.get(this.baseUrl, query);
+    return response.data;
+  }
 
-    // console.log(response.data);
+  public async GetAllPublications(
+    filtres: any = {}
+  ): Promise<PublicationEntity[]> {
+    const response = await this.restClient.get(this.baseUrl, filtres);
 
     const listePublications = response.data.map((publication: any) => {
       return new PublicationEntity(
@@ -115,11 +77,10 @@ class PublicationService {
   }
 
   public async GetListePublicationsUtilisateur(
-    id: number
+    id: number,
+    params: any = {}
   ): Promise<PublicationEntity[]> {
-    const response = await this.baseApi.get(this.baseUrl);
-
-    // console.log(response.data);
+    const response = await this.restClient.get(this.baseUrl, params);
 
     const listePublications = response.data.map((publication: any) => {
       return new PublicationEntity(

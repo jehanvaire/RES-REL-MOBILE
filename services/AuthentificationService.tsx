@@ -83,7 +83,7 @@ export const AuthContainer = ({ children }: any) => {
           user.prenom = "Adrien";
           user.nom = "Bony";
           user.lienPhoto = "https://i.redd.it/flmx8fb1dzz41.jpg";
-          user.contenu = "Bonjour je suis une contenu";
+          user.contenu = "Bonjour je suis du contenu";
           user.dateNaissance = new Date("1995-01-01");
           user.dateInscription = new Date("2020-01-01");
 
@@ -110,7 +110,7 @@ export const AuthContainer = ({ children }: any) => {
         user.prenom = "Adrien";
         user.nom = "Bony";
         user.lienPhoto = "https://i.redd.it/flmx8fb1dzz41.jpg";
-        user.contenu = "Bonjour je suis une contenu";
+        user.contenu = "Bonjour je suis du contenu";
         user.dateNaissance = new Date("1995-01-01");
         user.dateInscription = new Date("2020-01-01");
 
