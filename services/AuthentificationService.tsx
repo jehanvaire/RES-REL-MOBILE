@@ -9,9 +9,9 @@ const AuthContext = React.createContext({} as any);
 const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
 const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
 const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
-const token = "1|Amil0ejTi7exgNuUyJ42EIv2cD0jMb9DxQPmySp6"; // A ENLEVER QUAND LOGIN FONCTIONNEL
+const token = "1|unpM1KOzRE0TsRY1UFOGQCR4DmAKZfpyR194pG1d"; // A ENLEVER QUAND LOGIN FONCTIONNEL
 export const storage = new MMKV();
-// storage.clearAll();
+//storage.clearAll();
 
 // clear storage
 // TODO: a supprimer

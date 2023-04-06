@@ -6,8 +6,6 @@ import Pdf from 'react-native-pdf';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import PublicationService from '../../services/PublicationService';
 import DocumentPicker from 'react-native-document-picker';
-import RNFS from 'react-native-fs';
-import base64 from 'base64-js';
 
 
 function CreationPublicationScreen() {
@@ -16,8 +14,8 @@ function CreationPublicationScreen() {
     const [contenu, setContenu] = useState('');
     const [lienPieceJointe, setLienPieceJointe] = useState('');
     const [fileInfo, setFileInfo] = useState<{ uri: string; type: string }>({ uri: '', type: '' });
-    const [Utilisateur , setUtilisateur] = useState('1');
-    const [Categorie , setCategorie] = useState('2');
+    const [Utilisateur] = useState('1001');
+    const [Categorie] = useState('2');
 
 
     const LONGUEUR_MIN_TITRE = 5;
@@ -57,52 +55,62 @@ function CreationPublicationScreen() {
         );
     }, [navigation]);
 
-    const soumettre = async (publication: any, pieceJointe: any, idCategorie: string, idUtilisateur: string) => {
+    const soumettre = async (
+        publication: any,
+        pieceJointe: any,
+        idCategorie: string,
+        idUtilisateur: string
+    ) => {
         try {
+            let formDataPieceJointe: FormData | null = null;
+            let pieceJointeId: number | null = null;
+
+            if (fileInfo.type && pieceJointe && pieceJointe.uri) {
+                formDataPieceJointe = new FormData();
+
+                const blob = await (await fetch(pieceJointe.uri)).blob();
+                formDataPieceJointe.append("file", blob, pieceJointe.name);
+
+                // Créer la pièce jointe et récupérer l'ID de la pièce jointe
+                const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe);
+                if (pieceJointeResponse) {
+                    pieceJointeId = pieceJointeResponse.id;
+                } else {
+                    console.error("Erreur lors de l'ajout de la pièce jointe");
+                }
+            }
+
             const formDataPublication = new FormData();
-            formDataPublication.append('titre', publication.titre);
-            formDataPublication.append('contenu', publication.contenu);
-            formDataPublication.append('idCategorie', idCategorie);
-            formDataPublication.append('idUtilisateur', idUtilisateur);
+            formDataPublication.append("titre", publication.titre);
+            formDataPublication.append("contenu", publication.contenu);
+            formDataPublication.append("idCategorie", idCategorie);
+            formDataPublication.append("idUtilisateur", idUtilisateur);
+            if (pieceJointeId) {
+                formDataPublication.append("idPieceJointe", pieceJointeId.toString());
+            }
 
             const response = await PublicationService.CreerPublication(formDataPublication);
-            if (response && response.data) {
-                if (pieceJointe) {
-                    const formDataPieceJointe = new FormData();
 
-                    const uri = pieceJointe;
-                    const tempPath = `${RNFS.CachesDirectoryPath}/${Date.now()}.tmp`;
-                    await RNFS.copyFile(uri, tempPath);
-                    const fileData = await RNFS.readFile(tempPath, 'base64');
-                    await RNFS.unlink(tempPath);
-                    const blob = new Blob([base64.toByteArray(fileData)], {
-                        type: pieceJointe.type,
-                    });
-
-                    formDataPieceJointe.append('file', blob, pieceJointe.name);
-                    formDataPieceJointe.append('idRessource', response.data.id);
-
-                    // Ajouter la pièce jointe à la publication créée
-                    const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe, response.data.id);
-                    if (!pieceJointeResponse) {
-                        console.error("Erreur lors de l'ajout de la pièce jointe");
-                    }
-                }
-
+            if (response && response.status === 200) {
                 gererNavigation();
             } else {
                 console.error(
-                    'Erreur lors de la soumission de la publication:',
-                    'Réponse non-JSON reçue du serveur'
+                    "Erreur lors de la création de la publication. Veuillez vérifier la réponse du serveur."
                 );
             }
         } catch (error: any) {
             console.error(
-                'Erreur lors de la soumission de la publication:',
+                "Erreur lors de la soumission de la publication:",
                 error.message
             );
         }
     };
+
+
+
+
+
+
 
     const selectionnerPieceJointe = async () => {
         try {
@@ -189,26 +197,26 @@ function CreationPublicationScreen() {
             )}
 
 
-<Button
-            mode="contained"
-            onPress={() =>
-                soumettre(
+            <Button
+                mode="contained"
+                onPress={() => soumettre(
                     {
                         titre,
                         contenu,
                         Categorie,
                         Utilisateur,
                     },
-                    lienPieceJointe,
+                    fileInfo.type ? { uri: fileInfo.uri, type: fileInfo.type } : null,
                     Categorie,
                     Utilisateur
-                )
-            }
+                )}
                 style={styles.boutonSoumettre}
                 disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
             >
                 Créer la publication
             </Button>
+
+
 
         </ScrollView>
     );
