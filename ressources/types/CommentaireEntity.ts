@@ -1,11 +1,16 @@
-class CommentaireEntity {
+import { UtilisateurEntity } from "./UtilisateurEntity";
+
+export default class CommentaireEntity {
   _id: number;
   _contenu: string;
   _nombreReponses: number;
   _supprime: number;
   _nombreSignalements: number;
   _idUtilisateur: number;
+  _utilisateur: UtilisateurEntity;
   _idRessource: number;
+  _reponses: CommentaireEntity[];
+  _estReponse: boolean;
 
   constructor(
     id: number,
@@ -14,7 +19,10 @@ class CommentaireEntity {
     supprime: number,
     nombreSignalements: number,
     idUtilisateur: number,
-    idRessource: number
+    utilisateur: UtilisateurEntity,
+    idRessource: number,
+    reponses: CommentaireEntity[],
+    estReponse: boolean
   ) {
     this._id = id;
     this._contenu = contenu;
@@ -22,7 +30,10 @@ class CommentaireEntity {
     this._supprime = supprime;
     this._nombreSignalements = nombreSignalements;
     this._idUtilisateur = idUtilisateur;
+    this._utilisateur = utilisateur;
     this._idRessource = idRessource;
+    this._reponses = reponses;
+    this._estReponse = estReponse;
   }
 
   get id(): number {
@@ -75,5 +86,29 @@ class CommentaireEntity {
 
   set idRessource(value: number) {
     this._idRessource = value;
+  }
+
+  get reponses(): CommentaireEntity[] {
+    return this._reponses;
+  }
+
+  set reponses(value: CommentaireEntity[]) {
+    this._reponses = value;
+  }
+
+  get estReponse(): boolean {
+    return this._estReponse;
+  }
+
+  set estReponse(value: boolean) {
+    this._estReponse = value;
+  }
+
+  get utilisateur(): UtilisateurEntity {
+    return this._utilisateur;
+  }
+
+  set utilisateur(value: UtilisateurEntity) {
+    this._utilisateur = value;
   }
 }

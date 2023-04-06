@@ -42,6 +42,7 @@ const DetailsPublication = (props: any) => {
     console.log("ID publication: ", id);
     props.navigation.navigate("EspaceCommentaireScreen", {
       id: id,
+      titre: titre,
     });
   }
 

@@ -1,7 +1,9 @@
+import CommentaireEntity from "../ressources/types/CommentaireEntity";
 import RestClient from "./RestClient";
 
 class CommentaireService {
-  private baseUrl = "commentaires";
+  private baseUrlCommentaires = "commentaires";
+  private baseUrlReponses = "reponsesCommentaires";
 
   private restClient: RestClient;
   constructor() {
@@ -11,18 +13,18 @@ class CommentaireService {
   public async GetCommentairePourUneRessource(
     params: any = {}
   ): Promise<CommentaireEntity[]> {
-    const response = await this.restClient.get(this.baseUrl, params);
+    const response = await this.restClient.get(
+      this.baseUrlCommentaires,
+      params
+    );
+    console.log(response);
     return response.data;
   }
 
   public async GetReponsesPourUnCommentaire(
-    id: number,
     params: any = {}
   ): Promise<CommentaireEntity[]> {
-    const response = await this.restClient.get(
-      `${this.baseUrl}/${id}/reponses`,
-      params
-    );
+    const response = await this.restClient.get(this.baseUrlReponses, params);
     return response.data;
   }
 }
