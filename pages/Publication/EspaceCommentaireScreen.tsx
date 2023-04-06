@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import CommentaireService from "../../services/CommentaireService";
 import CommentaireEntity from "../../ressources/types/CommentaireEntity";
+import { Input, Stack } from "native-base";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 function EspaceCommentaireScreen(props: any) {
   const [listeCommentaires, setListeCommentaires] = useState<
@@ -39,6 +47,10 @@ function EspaceCommentaireScreen(props: any) {
     );
   }, []);
 
+  const onSend = (text: string) => {
+    console.log("onSend", text);
+  };
+
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
       <Text style={styles.contenuCommentaire}>{item.contenu} COMMENTAIRE</Text>
@@ -59,6 +71,13 @@ function EspaceCommentaireScreen(props: any) {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
       ></FlatList>
+
+      <Stack direction="row" style={styles.inputStack}>
+        <Input mx="3" placeholder="Input" w="85%" />
+        <TouchableOpacity onPress={() => {}}>
+          <Ionicons name="send-outline" size={25} color="#4183F4" />
+        </TouchableOpacity>
+      </Stack>
     </View>
   );
 }
@@ -72,6 +91,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  inputStack: {
+    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: 50,
   },
   contenuCommentaire: {
     fontSize: 15,
