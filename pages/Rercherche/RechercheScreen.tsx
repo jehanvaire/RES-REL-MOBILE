@@ -82,7 +82,7 @@ const RechercheScreen = () => {
               style={styles.textInput}
               onChangeText={setSeachValue}
               value={searchValue}
-              placeholder="Ressource, utilisateur, catégoie..."
+              placeholder="Ressource, utilisateur, catégorie..."
               returnKeyType="search"
             />
             <TouchableOpacity>
