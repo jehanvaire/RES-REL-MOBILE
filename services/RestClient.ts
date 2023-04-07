@@ -6,6 +6,8 @@ interface Params {
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
 
+  private token = "1|x6Y5BDn2kEBOHe1UATIejquEZFnP6zhbOhJRNpLT";
+
   async get(path: string, params?: Params): Promise<any> {
     const url = this.baseUrl + path;
 
@@ -19,7 +21,11 @@ export default class RestClient {
 
   async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await axios.post(url, body);
+    const response = await axios.post(url, body, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {

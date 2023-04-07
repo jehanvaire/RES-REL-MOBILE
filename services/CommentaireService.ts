@@ -17,7 +17,6 @@ class CommentaireService {
       this.baseUrlCommentaires,
       params
     );
-    console.log(response);
     return response.data;
   }
 
@@ -25,6 +24,21 @@ class CommentaireService {
     params: any = {}
   ): Promise<CommentaireEntity[]> {
     const response = await this.restClient.get(this.baseUrlReponses, params);
+    return response.data;
+  }
+
+  public async PostCommentaire(params: any = {}): Promise<CommentaireEntity> {
+    const response = await this.restClient.post(
+      this.baseUrlCommentaires,
+      params
+    );
+    return response.data;
+  }
+
+  public async PostReponseCommentaire(
+    params: any = {}
+  ): Promise<CommentaireEntity> {
+    const response = await this.restClient.post(this.baseUrlReponses, params);
     return response.data;
   }
 }

@@ -17,9 +17,11 @@ function EspaceCommentaireScreen(props: any) {
   >([]);
   const { id, titre } = props.route.params;
 
+  const [commentaire, setCommentaire] = useState("");
+
   useEffect(() => {
     const params = {
-      "idRessource[equals]=": 876,
+      "idRessource[equals]=": id,
       include: "utilisateur",
     };
     CommentaireService.GetCommentairePourUneRessource(params).then(
@@ -47,8 +49,26 @@ function EspaceCommentaireScreen(props: any) {
     );
   }, []);
 
-  const onSend = (text: string) => {
-    console.log("onSend", text);
+  const sendCommentaire = () => {
+    console.log("onSend", commentaire, id, 1);
+    const params = {
+      contenu: commentaire,
+      idRessource: id,
+      idUtilisateur: 1,
+    };
+
+    // const params = {
+    //   contenu: commentaire,
+    //   idCommentaire: id,
+    //   idUtilisateur: 1,
+    // };
+    CommentaireService.PostCommentaire(params).then(
+      (commentaire: CommentaireEntity) => {
+        const listeCommentairesTemp = listeCommentaires;
+        listeCommentairesTemp.push(commentaire);
+        setListeCommentaires(listeCommentairesTemp);
+      }
+    );
   };
 
   const renderItem = ({ item }: any) => (
@@ -73,8 +93,17 @@ function EspaceCommentaireScreen(props: any) {
       ></FlatList>
 
       <Stack direction="row" style={styles.inputStack}>
-        <Input mx="3" placeholder="Input" w="85%" />
-        <TouchableOpacity onPress={() => {}}>
+        <Input
+          mx="3"
+          placeholder="Input"
+          w="85%"
+          onChangeText={setCommentaire}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            sendCommentaire();
+          }}
+        >
           <Ionicons name="send-outline" size={25} color="#4183F4" />
         </TouchableOpacity>
       </Stack>
