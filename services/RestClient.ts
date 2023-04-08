@@ -45,7 +45,11 @@ export default class RestClient {
 
   async delete(path: string): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await axios.delete(url);
+    const response = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {

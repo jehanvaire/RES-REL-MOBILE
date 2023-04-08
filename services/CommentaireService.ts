@@ -41,6 +41,15 @@ class CommentaireService {
     const response = await this.restClient.post(this.baseUrlReponses, params);
     return response;
   }
+
+  public async SupprimerCommentaire(
+    idCommentaire: number
+  ): Promise<CommentaireEntity> {
+    const response = await this.restClient.delete(
+      this.baseUrlCommentaires + "/" + idCommentaire
+    );
+    return response;
+  }
 }
 
 export default new CommentaireService();

@@ -9,15 +9,18 @@ import {
 } from "react-native";
 import CommentaireService from "../../services/CommentaireService";
 import CommentaireEntity from "../../ressources/types/CommentaireEntity";
-import { Input, Stack } from "native-base";
+import { Button, Input, Modal, Popover, Stack } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 function EspaceCommentaireScreen(props: any) {
   const [listeCommentaires, setListeCommentaires] = useState<
     CommentaireEntity[]
   >([]);
-  const [reponseSelectionnee, setReponseSelectionnee] =
-    useState<CommentaireEntity>({} as CommentaireEntity);
+  const [itemSelectionne, setItemSelectionne] = useState<CommentaireEntity>(
+    {} as CommentaireEntity
+  );
+  const [popoverVisible, setPopoverVisible] = useState(false);
+
   const { id, titre } = props.route.params;
 
   const [commentaire, setCommentaire] = useState("");
@@ -96,21 +99,39 @@ function EspaceCommentaireScreen(props: any) {
     );
   };
 
+  const supprimerCommentaire = (commentaireId: number) => {
+    CommentaireService.SupprimerCommentaire(commentaireId).then(() => {
+      const listeCommentairesTemp = listeCommentaires.filter(
+        (commentaire) => commentaire.id !== commentaireId
+      );
+      setListeCommentaires(listeCommentairesTemp);
+    });
+  };
+
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
       <TouchableOpacity
         onLongPress={() => {
-          setReponseSelectionnee(item);
+          setItemSelectionne(item);
+          // Open popover menu
         }}
       >
-        <Text style={styles.contenuCommentaire}>
+        <Text style={[styles.contenuCommentaire, styles.commentaire]}>
           {item.contenu} COMMENTAIRE
         </Text>
       </TouchableOpacity>
+
       {item.reponses?.map((reponse: CommentaireEntity) => (
-        <Text key={reponse.id} style={styles.contenuReponse}>
-          {reponse.contenu} REPONSE
-        </Text>
+        <TouchableOpacity
+          key={reponse.id + item.id}
+          onLongPress={() => {
+            setItemSelectionne(item);
+          }}
+        >
+          <Text style={[styles.contenuReponse, styles.commentaire]}>
+            {reponse.contenu} REPONSE
+          </Text>
+        </TouchableOpacity>
       ))}
     </View>
   );
@@ -167,28 +188,24 @@ const styles = StyleSheet.create({
     height: 50,
   },
   contenuCommentaire: {
-    fontSize: 15,
-    fontWeight: "bold",
-    marginTop: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    marginRight: 30,
-    marginLeft: 5,
     borderColor: "#4183F4",
     backgroundColor: "#4183F4",
+    marginLeft: 5,
+    marginRight: 5,
   },
   contenuReponse: {
+    borderColor: "#FF9393",
+    backgroundColor: "#FF9393",
+    marginLeft: 30,
+    marginRight: 5,
+  },
+  commentaire: {
     fontSize: 15,
     fontWeight: "bold",
     marginTop: 10,
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
-    marginLeft: 30,
-    marginRight: 5,
-    borderColor: "#FF9393",
-    backgroundColor: "#FF9393",
   },
 });
 
