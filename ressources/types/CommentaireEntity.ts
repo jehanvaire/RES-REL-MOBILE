@@ -6,6 +6,7 @@ export default class CommentaireEntity {
   _nombreReponses: number;
   _supprime: number;
   _nombreSignalements: number;
+  _datePublication: Date;
   _idUtilisateur: number;
   _utilisateur: UtilisateurEntity;
   _idRessource: number;
@@ -18,6 +19,7 @@ export default class CommentaireEntity {
     nombreReponses: number,
     supprime: number,
     nombreSignalements: number,
+    datePublication: Date,
     idUtilisateur: number,
     utilisateur: UtilisateurEntity,
     idRessource: number,
@@ -29,6 +31,7 @@ export default class CommentaireEntity {
     this._nombreReponses = nombreReponses;
     this._supprime = supprime;
     this._nombreSignalements = nombreSignalements;
+    this._datePublication = datePublication;
     this._idUtilisateur = idUtilisateur;
     this._utilisateur = utilisateur;
     this._idRessource = idRessource;
@@ -70,6 +73,14 @@ export default class CommentaireEntity {
 
   set nombreSignalements(value: number) {
     this._nombreSignalements = value;
+  }
+
+  get datePublication(): Date {
+    return this._datePublication;
+  }
+
+  set datePublication(value: Date) {
+    this._datePublication = value;
   }
 
   get idUtilisateur(): number {

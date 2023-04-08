@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import CommentaireService from "../../services/CommentaireService";
 import CommentaireEntity from "../../ressources/types/CommentaireEntity";
@@ -15,9 +16,12 @@ function EspaceCommentaireScreen(props: any) {
   const [listeCommentaires, setListeCommentaires] = useState<
     CommentaireEntity[]
   >([]);
+  const [reponseSelectionnee, setReponseSelectionnee] =
+    useState<CommentaireEntity>({} as CommentaireEntity);
   const { id, titre } = props.route.params;
 
   const [commentaire, setCommentaire] = useState("");
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     const params = {
@@ -50,31 +54,60 @@ function EspaceCommentaireScreen(props: any) {
   }, []);
 
   const sendCommentaire = () => {
-    console.log("onSend", commentaire, id, 1);
     const params = {
       contenu: commentaire,
       idRessource: id,
       idUtilisateur: 1,
     };
 
-    // const params = {
-    //   contenu: commentaire,
-    //   idCommentaire: id,
-    //   idUtilisateur: 1,
-    // };
     CommentaireService.PostCommentaire(params).then(
-      (commentaire: CommentaireEntity) => {
+      (nouveauCommentaire: CommentaireEntity) => {
+        nouveauCommentaire.estReponse = false;
         const listeCommentairesTemp = listeCommentaires;
-        listeCommentairesTemp.push(commentaire);
+        listeCommentairesTemp.push(nouveauCommentaire);
         setListeCommentaires(listeCommentairesTemp);
+        setCommentaire("");
+        if (inputRef.current) {
+          inputRef.current.blur();
+        }
+      }
+    );
+  };
+
+  const sendReponseCommentaire = (commentaireId: number) => {
+    const params = {
+      contenu: commentaire,
+      idCommentaire: commentaireId,
+      idUtilisateur: 1,
+    };
+
+    CommentaireService.PostReponseCommentaire(params).then(
+      (reponse: CommentaireEntity) => {
+        reponse.estReponse = true;
+        console.log(reponse);
+        const listeCommentairesTemp = listeCommentaires;
+        listeCommentairesTemp.push(reponse);
+        setListeCommentaires(listeCommentairesTemp);
+        setCommentaire("");
+        if (inputRef.current) {
+          inputRef.current.blur();
+        }
       }
     );
   };
 
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
-      <Text style={styles.contenuCommentaire}>{item.contenu} COMMENTAIRE</Text>
-      {item.reponses.map((reponse: CommentaireEntity) => (
+      <TouchableOpacity
+        onLongPress={() => {
+          setReponseSelectionnee(item);
+        }}
+      >
+        <Text style={styles.contenuCommentaire}>
+          {item.contenu} COMMENTAIRE
+        </Text>
+      </TouchableOpacity>
+      {item.reponses?.map((reponse: CommentaireEntity) => (
         <Text key={reponse.id} style={styles.contenuReponse}>
           {reponse.contenu} REPONSE
         </Text>
@@ -87,8 +120,10 @@ function EspaceCommentaireScreen(props: any) {
       <Text style={styles.title}>{titre}</Text>
 
       <FlatList
+        style={{ width: "100%" }}
         data={listeCommentaires}
         renderItem={renderItem}
+        removeClippedSubviews={true}
         keyExtractor={(item) => item.id.toString()}
       ></FlatList>
 
@@ -98,6 +133,8 @@ function EspaceCommentaireScreen(props: any) {
           placeholder="Input"
           w="85%"
           onChangeText={setCommentaire}
+          value={commentaire}
+          ref={inputRef}
         />
         <TouchableOpacity
           onPress={() => {

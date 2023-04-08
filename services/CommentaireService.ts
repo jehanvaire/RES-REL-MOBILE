@@ -32,14 +32,14 @@ class CommentaireService {
       this.baseUrlCommentaires,
       params
     );
-    return response.data;
+    return response;
   }
 
   public async PostReponseCommentaire(
     params: any = {}
   ): Promise<CommentaireEntity> {
     const response = await this.restClient.post(this.baseUrlReponses, params);
-    return response.data;
+    return response;
   }
 }
 
