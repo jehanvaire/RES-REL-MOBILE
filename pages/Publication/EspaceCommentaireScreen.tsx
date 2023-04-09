@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import CommentaireService from "../../services/CommentaireService";
 import CommentaireEntity from "../../ressources/types/CommentaireEntity";
-import { Button, Input, Modal, Popover, Stack } from "native-base";
+import { Button, Input, Modal, Popover, Stack, Menu } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 function EspaceCommentaireScreen(props: any) {
@@ -108,30 +108,80 @@ function EspaceCommentaireScreen(props: any) {
     });
   };
 
-  const renderItem = ({ item }: any) => (
-    <View key={item.id}>
-      <TouchableOpacity
-        onLongPress={() => {
-          setItemSelectionne(item);
-          // Open popover menu
+  // create a native base menu component that opens on long press
+  const CommentaireMenuComponent = ({ item, estReponse }: any) => {
+    return (
+      <Menu
+        key={item.id}
+        isOpen={popoverVisible}
+        onClose={() => setPopoverVisible(false)}
+        placement="bottom"
+        trigger={(triggerProps) => {
+          return (
+            <TouchableOpacity
+              {...triggerProps}
+              onLongPress={() => {
+                console.log("long press", item.contenu);
+                setItemSelectionne(item);
+                setPopoverVisible(true);
+              }}
+            >
+              <Text
+                style={[
+                  estReponse
+                    ? styles.contenuReponse
+                    : styles.contenuCommentaire,
+                  styles.commentaire,
+                ]}
+              >
+                {item.contenu}
+              </Text>
+            </TouchableOpacity>
+          );
         }}
       >
-        <Text style={[styles.contenuCommentaire, styles.commentaire]}>
-          {item.contenu} COMMENTAIRE
-        </Text>
-      </TouchableOpacity>
+        {item.id === itemSelectionne.id &&
+        item.estReponse === itemSelectionne.estReponse ? (
+          <>
+            <Menu.Item
+              onPress={() => {
+                sendReponseCommentaire(itemSelectionne.id);
+              }}
+            >
+              Répondre
+            </Menu.Item>
+            <Menu.Item
+              onPress={() => {
+                supprimerCommentaire(itemSelectionne.id);
+              }}
+            >
+              Supprimer
+            </Menu.Item>
+          </>
+        ) : null}
+      </Menu>
+    );
+  };
+
+  const renderItem = ({ item }: any) => (
+    <View key={item.id}>
+      <CommentaireMenuComponent key={item.id} item={item} estReponse={false} />
 
       {item.reponses?.map((reponse: CommentaireEntity) => (
-        <TouchableOpacity
-          key={reponse.id + item.id}
-          onLongPress={() => {
-            setItemSelectionne(item);
-          }}
-        >
-          <Text style={[styles.contenuReponse, styles.commentaire]}>
-            {reponse.contenu} REPONSE
-          </Text>
-        </TouchableOpacity>
+        // <TouchableOpacity
+        //   key={reponse.id + item.id}
+        //   onLongPress={() => {
+        //     setItemSelectionne(item);
+        //     // Open popover menu
+        //     setPopoverVisible(true);
+        //     console.log(itemSelectionne);
+        //   }}
+        // >
+        //   <Text style={[styles.contenuReponse, styles.commentaire]}>
+        //     {reponse.contenu} REPONSE
+        //   </Text>
+        // </TouchableOpacity>
+        <CommentaireMenuComponent key={item.id} item={item} estReponse={true} />
       ))}
     </View>
   );
