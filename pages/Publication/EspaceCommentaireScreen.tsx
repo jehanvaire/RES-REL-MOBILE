@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import CommentaireService from "../../services/CommentaireService";
 import CommentaireEntity from "../../ressources/types/CommentaireEntity";
-import { Button, Input, Modal, Popover, Stack, Menu } from "native-base";
+import { Input, Stack, Menu, Popover, Spacer } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 function EspaceCommentaireScreen(props: any) {
@@ -19,7 +19,10 @@ function EspaceCommentaireScreen(props: any) {
   const [itemSelectionne, setItemSelectionne] = useState<CommentaireEntity>(
     {} as CommentaireEntity
   );
-  const [popoverVisible, setPopoverVisible] = useState(false);
+  const [reponseA, setReponseA] = useState<CommentaireEntity>(
+    {} as CommentaireEntity
+  );
+  const [afficheMenu, setAfficheMenu] = useState(false);
 
   const { id, titre } = props.route.params;
 
@@ -92,6 +95,7 @@ function EspaceCommentaireScreen(props: any) {
         listeCommentairesTemp.push(reponse);
         setListeCommentaires(listeCommentairesTemp);
         setCommentaire("");
+        setReponseA({} as CommentaireEntity);
         if (inputRef.current) {
           inputRef.current.blur();
         }
@@ -108,22 +112,21 @@ function EspaceCommentaireScreen(props: any) {
     });
   };
 
-  // create a native base menu component that opens on long press
   const CommentaireMenuComponent = ({ item, estReponse }: any) => {
     return (
       <Menu
         key={item.id}
-        isOpen={popoverVisible}
-        onClose={() => setPopoverVisible(false)}
-        placement="bottom"
+        isOpen={afficheMenu}
+        onClose={() => setAfficheMenu(false)}
+        placement="bottom right"
         trigger={(triggerProps) => {
           return (
             <TouchableOpacity
+              style={{ zIndex: 0 }}
               {...triggerProps}
               onLongPress={() => {
-                console.log("long press", item.contenu);
                 setItemSelectionne(item);
-                setPopoverVisible(true);
+                setAfficheMenu(true);
               }}
             >
               <Text
@@ -141,24 +144,27 @@ function EspaceCommentaireScreen(props: any) {
         }}
       >
         {item.id === itemSelectionne.id &&
-        item.estReponse === itemSelectionne.estReponse ? (
-          <>
-            <Menu.Item
-              onPress={() => {
-                sendReponseCommentaire(itemSelectionne.id);
-              }}
-            >
-              Répondre
-            </Menu.Item>
-            <Menu.Item
-              onPress={() => {
-                supprimerCommentaire(itemSelectionne.id);
-              }}
-            >
-              Supprimer
-            </Menu.Item>
-          </>
-        ) : null}
+          item.estReponse === itemSelectionne.estReponse && (
+            <>
+              <Menu.Item
+                style={{ zIndex: 2 }}
+                onPress={() => {
+                  setReponseA(itemSelectionne);
+                  console.log("bonjour", reponseA, itemSelectionne);
+                }}
+              >
+                Répondre
+              </Menu.Item>
+              <Menu.Item
+                style={{ zIndex: 2 }}
+                onPress={() => {
+                  supprimerCommentaire(itemSelectionne.id);
+                }}
+              >
+                Supprimer
+              </Menu.Item>
+            </>
+          )}
       </Menu>
     );
   };
@@ -168,20 +174,11 @@ function EspaceCommentaireScreen(props: any) {
       <CommentaireMenuComponent key={item.id} item={item} estReponse={false} />
 
       {item.reponses?.map((reponse: CommentaireEntity) => (
-        // <TouchableOpacity
-        //   key={reponse.id + item.id}
-        //   onLongPress={() => {
-        //     setItemSelectionne(item);
-        //     // Open popover menu
-        //     setPopoverVisible(true);
-        //     console.log(itemSelectionne);
-        //   }}
-        // >
-        //   <Text style={[styles.contenuReponse, styles.commentaire]}>
-        //     {reponse.contenu} REPONSE
-        //   </Text>
-        // </TouchableOpacity>
-        <CommentaireMenuComponent key={item.id} item={item} estReponse={true} />
+        <CommentaireMenuComponent
+          key={reponse.id}
+          item={reponse}
+          estReponse={true}
+        />
       ))}
     </View>
   );
@@ -198,6 +195,23 @@ function EspaceCommentaireScreen(props: any) {
         keyExtractor={(item) => item.id.toString()}
       ></FlatList>
 
+      {reponseA.id && (
+        <Stack direction="row" style={styles.inputStack}>
+          <Text style={styles.textReponse}>
+            Réponse à {reponseA.utilisateur?.prenom} :{" "}
+            {reponseA.contenu.substring(0, 20)}
+          </Text>
+          <Spacer />
+          <TouchableOpacity
+            onPress={() => {
+              setReponseA({} as CommentaireEntity);
+            }}
+          >
+            <Ionicons name="close-circle-outline" size={25} color="#4183F4" />
+          </TouchableOpacity>
+        </Stack>
+      )}
+
       <Stack direction="row" style={styles.inputStack}>
         <Input
           mx="3"
@@ -209,7 +223,9 @@ function EspaceCommentaireScreen(props: any) {
         />
         <TouchableOpacity
           onPress={() => {
-            sendCommentaire();
+            reponseA.estReponse === true
+              ? sendReponseCommentaire(reponseA.id)
+              : sendCommentaire();
           }}
         >
           <Ionicons name="send-outline" size={25} color="#4183F4" />
@@ -228,6 +244,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  textReponse: {
+    marginLeft: 30,
   },
   inputStack: {
     marginTop: 10,
