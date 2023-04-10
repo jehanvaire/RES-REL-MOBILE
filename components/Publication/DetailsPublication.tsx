@@ -39,7 +39,6 @@ const DetailsPublication = (props: any) => {
   }
 
   function ShowCommentsSection() {
-    console.log("ID publication: ", id);
     props.navigation.navigate("EspaceCommentaireScreen", {
       id: id,
       titre: titre,

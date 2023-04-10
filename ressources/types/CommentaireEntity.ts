@@ -1,20 +1,22 @@
 import { UtilisateurEntity } from "./UtilisateurEntity";
 
 export default class CommentaireEntity {
-  _id: number;
-  _contenu: string;
-  _nombreReponses: number;
-  _supprime: number;
-  _nombreSignalements: number;
-  _datePublication: Date;
-  _idUtilisateur: number;
-  _utilisateur: UtilisateurEntity;
-  _idRessource: number;
-  _reponses: CommentaireEntity[];
-  _estReponse: boolean;
+  private _id: number;
+  private _idCommentaire: number;
+  private _contenu: string;
+  private _nombreReponses: number;
+  private _supprime: number;
+  private _nombreSignalements: number;
+  private _datePublication: Date;
+  private _idUtilisateur: number;
+  private _utilisateur: UtilisateurEntity;
+  private _idRessource: number;
+  private _reponses: CommentaireEntity[];
+  private _estReponse: boolean;
 
   constructor(
     id: number,
+    idCommentaire: number,
     contenu: string,
     nombreReponses: number,
     supprime: number,
@@ -27,6 +29,7 @@ export default class CommentaireEntity {
     estReponse: boolean
   ) {
     this._id = id;
+    this._idCommentaire = idCommentaire;
     this._contenu = contenu;
     this._nombreReponses = nombreReponses;
     this._supprime = supprime;
@@ -45,6 +48,14 @@ export default class CommentaireEntity {
 
   get contenu(): string {
     return this._contenu;
+  }
+
+  get idCommentaire(): number {
+    return this._idCommentaire;
+  }
+
+  set idCommentaire(value: number) {
+    this._idCommentaire = value;
   }
 
   set contenu(value: string) {

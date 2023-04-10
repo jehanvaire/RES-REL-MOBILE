@@ -42,9 +42,6 @@ function RessourceSearchScreen(props: any) {
         utilisateurQuery: searchValue,
       };
       SearchService.Search(params).then((result) => {
-        result.forEach((element) => {
-          console.log(element.titre);
-        });
         setListeResultats(result);
       });
     } else {
