@@ -25,13 +25,13 @@ const ModalOptionsComponent = () => {
         commentaireASupprimer.id
       ).then(() => {
         CommentaireService.setAfficherModalMenu(false);
-        // CommentaireService.setRechargerCommentaires(true);
+        CommentaireService.setCommentaireASupprimer(commentaireASupprimer);
       });
     } else {
       CommentaireService.SupprimerCommentaire(commentaireASupprimer.id).then(
         () => {
           CommentaireService.setAfficherModalMenu(false);
-          // CommentaireService.setRechargerCommentaires(true);
+          CommentaireService.setCommentaireASupprimer(commentaireASupprimer);
         }
       );
     }

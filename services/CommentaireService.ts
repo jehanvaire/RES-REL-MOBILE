@@ -14,7 +14,9 @@ class CommentaireService {
     {} as CommentaireEntity
   );
 
-  private rechargerCommentaires = new BehaviorSubject<boolean>(false);
+  private commentaireASupprimer = new BehaviorSubject<CommentaireEntity>(
+    {} as CommentaireEntity
+  );
 
   private restClient: RestClient;
   constructor() {
@@ -95,12 +97,12 @@ class CommentaireService {
     return this.reponseACommentaire.asObservable();
   }
 
-  public setRechargerCommentaires(recharger: boolean) {
-    this.rechargerCommentaires.next(recharger);
+  public setCommentaireASupprimer(item: CommentaireEntity) {
+    this.commentaireASupprimer.next(item);
   }
 
-  public getRechargerCommentaires(): Observable<boolean> {
-    return this.rechargerCommentaires.asObservable();
+  public getCommentaireASupprimer(): Observable<CommentaireEntity> {
+    return this.commentaireASupprimer.asObservable();
   }
 }
 

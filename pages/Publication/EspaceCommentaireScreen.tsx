@@ -23,6 +23,9 @@ function EspaceCommentaireScreen(props: any) {
     {} as CommentaireEntity
   );
 
+  const [commentaireASupprimer, setCommentaireASupprimer] =
+    useState<CommentaireEntity>({} as CommentaireEntity);
+
   const { id, titre } = props.route.params;
 
   // Contenu commentaire à envoyer
@@ -67,15 +70,61 @@ function EspaceCommentaireScreen(props: any) {
       setReponseA(item);
     });
 
-    // CommentaireService.getRechargerCommentaires().subscribe((recharger) => {});
+    CommentaireService.getCommentaireASupprimer().subscribe((item) => {
+      setCommentaireASupprimer(item);
+      supprimerCommentaire();
+    });
   }, []);
+
+  const supprimerCommentaire = () => {
+    let listeCommentairesTemp = listeCommentaires;
+    if (commentaireASupprimer.estReponse) {
+      const commentaireParent = listeCommentairesTemp.find(
+        (commentaire) =>
+          commentaire.id === commentaireASupprimer.idCommentaire &&
+          !commentaire.estReponse
+      );
+      console.log(commentaireParent);
+      // if (commentaireParent) {
+      //   if (commentaireParent.reponses.length > 0) {
+      //     commentaireParent.reponses = commentaireParent.reponses.filter(
+      //       (reponse) => reponse.id !== commentaireASupprimer.id
+      //     );
+      //   }
+      // }
+    }
+    // else {
+    //   listeCommentairesTemp = listeCommentairesTemp.filter(
+    //     (commentaire) => commentaire.id !== commentaireASupprimer.id
+    //   );
+    // }
+    // setListeCommentaires(listeCommentairesTemp);
+  };
 
   // Ajouter le nouveau commentaire à la liste, vider le champ commentaire et fermer le clavier
   const setNouvelleListeCommentaires = (
     nouveauCommentaire: CommentaireEntity
   ) => {
     const listeCommentairesTemp = listeCommentaires;
-    listeCommentairesTemp.push(nouveauCommentaire);
+
+    if (nouveauCommentaire.estReponse) {
+      const commentaireParent = listeCommentairesTemp.find(
+        (commentaire) =>
+          commentaire.id === nouveauCommentaire.idCommentaire &&
+          !commentaire.estReponse
+      );
+      if (commentaireParent) {
+        if (commentaireParent.reponses) {
+          commentaireParent.reponses.push(nouveauCommentaire);
+        } else {
+          commentaireParent.reponses = [nouveauCommentaire];
+        }
+      }
+    } else {
+      nouveauCommentaire.reponses = [];
+      listeCommentairesTemp.push(nouveauCommentaire);
+    }
+
     setListeCommentaires(listeCommentairesTemp);
     setCommentaire("");
     if (inputRef.current) {
