@@ -19,7 +19,7 @@ const Publication = (props: any) => {
   }
 
   function ShowCommentsSection() {
-    console.log("TODO: show comments section");
+    props.navigation.navigate("EspaceCommentaireScreen");
   }
 
   function SauvegarderPublication() {
@@ -34,6 +34,7 @@ const Publication = (props: any) => {
 
   function AfficherPublication() {
     props.navigation.navigate("DetailsPublication", {
+      id: props.id,
       auteur: props.auteur,
       titre: props.titre,
       contenu: props.contenu,
