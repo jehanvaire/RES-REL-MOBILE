@@ -1,6 +1,6 @@
-import { Box, ScrollView, View , } from "native-base";
+import { Box, ScrollView, View, } from "native-base";
 import React, { useState } from "react";
-import { StyleSheet, Text , TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Publication from "../components/Publication/Publication";
@@ -8,9 +8,9 @@ import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum
 import CreationPublicationScreen from "../components/Publication/CreationPublicationScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import AjouterPJScreen from "../components/Ressource/AjouterPJScreen"; 
+import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
 
-function ListePublicationsScreen({navigation}: any) {
+function ListePublicationsScreen({ navigation }: any) {
   const navigateToCreation = () => {
     navigation.navigate("CreationPublicationScreen");
   };
@@ -74,11 +74,11 @@ const StackNav = createStackNavigator();
 
 
 const ListePublicationStack = () => {
-  return(
+  return (
     <StackNav.Navigator initialRouteName="ListePublicationsScreen">
-      <StackNav.Screen name="ListePublicationsScreen" component={ListePublicationsScreen} options={{headerShown: false}}/>
-      <StackNav.Screen name="CreationPublicationScreen" component={CreationPublicationScreen}/>
-      <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen}/>
+      <StackNav.Screen name="ListePublicationsScreen" component={ListePublicationsScreen} options={{ headerShown: false }} />
+      <StackNav.Screen name="CreationPublicationScreen" component={CreationPublicationScreen} />
+      <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} />
     </StackNav.Navigator>
   )
 }

@@ -1,7 +1,10 @@
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import RestClient from "./RestClient";
+import { getTokenFromStorage } from "./AuthentificationService";
+
 export class PublicationService {
   private baseUrl = "ressources";
+  private pieceJointeUrl = "piecesJointes";
 
   private restClient: RestClient;
 
@@ -122,16 +125,17 @@ export class PublicationService {
 
   public async CreerPublication(publication: FormData): Promise<any> {
     try {
-      const response = await apiClient.post(
-        `/${this.baseUrl}`,
-        publication,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      console.log(response);
+      console.log("publication", publication);
+
+      const token = getTokenFromStorage();
+
+      const response = await this.restClient.post(this.baseUrl, publication, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       return response;
     } catch (error) {
       console.log(error);
@@ -139,23 +143,25 @@ export class PublicationService {
     }
   }
 
-  public async AjouterPieceJointe(pieceJointe: FormData, idRessource: any) {
+  public async AjouterPieceJointe(pieceJointe: FormData): Promise<any | null> {
     try {
-      const response = await axios.post(
-        `${API_URL}/piecesJointes`,
-        pieceJointe,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      return response.data;
+      console.log("pieceJointe", pieceJointe);
+
+      const token = getTokenFromStorage();
+
+      const response = await this.restClient.post(this.pieceJointeUrl, pieceJointe, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response;
     } catch (error) {
       console.log(error);
       return null;
     }
-  }  
+  }
 }
 
 export default new PublicationService();

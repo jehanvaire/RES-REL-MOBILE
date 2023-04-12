@@ -1,11 +1,15 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, StyleSheet, View, Image, Text } from 'react-native';
+import { ScrollView, StyleSheet, View, Image, Text, Platform } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import Video from 'react-native-video';
 import Pdf from 'react-native-pdf';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import PublicationService from '../../services/PublicationService';
-import DocumentPicker from 'react-native-document-picker';
+import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
+import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
+// import { FileSystem } from 'react-native-unimodules';
+
 
 
 function CreationPublicationScreen() {
@@ -13,10 +17,20 @@ function CreationPublicationScreen() {
     const [titre, setTitre] = useState('');
     const [contenu, setContenu] = useState('');
     const [lienPieceJointe, setLienPieceJointe] = useState('');
-    const [fileInfo, setFileInfo] = useState<{ uri: string; type: string }>({ uri: '', type: '' });
-    const [Utilisateur] = useState('1001');
-    const [Categorie] = useState('2');
+    const [fileInfo, setFileInfo] = useState<{
+        uri: string;
+        type: string;
+        name: string;
+        size: number;
+    }>({
+        uri: '',
+        type: '',
+        name: '',
+        size: 0,
+    });
 
+    const [Utilisateur] = useState('1050');
+    const [Categorie] = useState('2');
 
     const LONGUEUR_MIN_TITRE = 5;
 
@@ -57,41 +71,51 @@ function CreationPublicationScreen() {
 
     const soumettre = async (
         publication: any,
-        pieceJointe: any,
-        idCategorie: string,
-        idUtilisateur: string
+        fileInfo: { uri: string; type: string; name: string; size: number } | null,
     ) => {
         try {
-            let formDataPieceJointe: FormData | null = null;
             let pieceJointeId: number | null = null;
+            if (fileInfo && fileInfo.uri) {
+                // Copy the file to an accessible location
+                const accessibleFileUri = RNFS.CachesDirectoryPath + '/' + fileInfo.name;
+                await RNFS.copyFile(fileInfo.uri, accessibleFileUri);
 
-            if (fileInfo.type && pieceJointe && pieceJointe.uri) {
-                formDataPieceJointe = new FormData();
+                // Read the file with RNFetchBlob
+                const data = await RNFetchBlob.fs.readFile(accessibleFileUri, 'base64');
 
-                const blob = await (await fetch(pieceJointe.uri)).blob();
-                formDataPieceJointe.append("file", blob, pieceJointe.name);
+                const formDataPieceJointe = new FormData();
+                formDataPieceJointe.append('file', `data:${fileInfo.type};base64,${data}`);
+                formDataPieceJointe.append('idUtilisateur', publication.Utilisateur);
+                formDataPieceJointe.append('typeFichier', fileInfo.type);
+                formDataPieceJointe.append('nomFichier', fileInfo.name);
+                formDataPieceJointe.append('tailleFichier', fileInfo.size.toString());
+                formDataPieceJointe.append('dateCreation', new Date().toISOString());
 
-                // Créer la pièce jointe et récupérer l'ID de la pièce jointe
                 const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe);
-                if (pieceJointeResponse) {
-                    pieceJointeId = pieceJointeResponse.id;
+                console.log('Piece jointe:', pieceJointeResponse);
+                if (pieceJointeResponse?.data?.id) {
+                    pieceJointeId = pieceJointeResponse.data.id;
                 } else {
-                    console.error("Erreur lors de l'ajout de la pièce jointe");
+                    console.error('Erreur lors de l\'ajout de la pièce jointe');
                 }
             }
-
             const formDataPublication = new FormData();
             formDataPublication.append("titre", publication.titre);
             formDataPublication.append("contenu", publication.contenu);
-            formDataPublication.append("idCategorie", idCategorie);
-            formDataPublication.append("idUtilisateur", idUtilisateur);
+            formDataPublication.append("idUtilisateur", publication.Utilisateur);
+            formDataPublication.append("idCategorie", publication.Categorie);
+            if (publication.lienPieceJointe) {
+                formDataPublication.append("lienPieceJointe", publication.lienPieceJointe);
+            }
             if (pieceJointeId) {
                 formDataPublication.append("idPieceJointe", pieceJointeId.toString());
             }
 
-            const response = await PublicationService.CreerPublication(formDataPublication);
+            console.log(formDataPublication);
 
-            if (response && response.status === 200) {
+            const response = await PublicationService.CreerPublication(formDataPublication);
+            console.log("Response:", response);
+            if (response) {
                 gererNavigation();
             } else {
                 console.error(
@@ -99,13 +123,9 @@ function CreationPublicationScreen() {
                 );
             }
         } catch (error: any) {
-            console.error(
-                "Erreur lors de la soumission de la publication:",
-                error.message
-            );
+            console.error("Erreur lors de la soumission de la publication:", error.message);
         }
     };
-
 
 
 
@@ -120,9 +140,20 @@ function CreationPublicationScreen() {
                     DocumentPicker.types.video,
                     DocumentPicker.types.pdf,
                 ],
+            }) as unknown as DocumentPickerResponse;
+
+            console.log('Fichier sélectionné:', result);
+
+            const tempPath = `${RNFS.TemporaryDirectoryPath}/${result.name}`;
+            await RNFS.copyFile(result.uri, tempPath);
+
+            setLienPieceJointe(tempPath);
+            setFileInfo({
+                uri: tempPath,
+                type: result.type || '',
+                name: result.name || '',
+                size: result.size || 0,
             });
-            setLienPieceJointe(result[0].uri);
-            setFileInfo({ uri: result[0].uri, type: result[0].type || '' });
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 // L'utilisateur a annulé la sélection de fichier
@@ -131,39 +162,35 @@ function CreationPublicationScreen() {
             }
         }
     };
+
     const renderPieceJointe = () => {
-        if (!fileInfo || !fileInfo.hasOwnProperty("type")) {
+        if (!fileInfo || !fileInfo.hasOwnProperty('type')) {
             return <Text>Type de fichier non pris en charge</Text>;
         }
         const typeMime = fileInfo.type;
 
+        const uri =
+            Platform.OS === 'android' ? fileInfo.uri : fileInfo.uri.replace('file://', '');
+
         if (typeMime.startsWith('image/')) {
-            return (
-                <Image
-                    source={{ uri: fileInfo.uri }}
-                    style={styles.imagePieceJointe}
-                />
-            );
+            return <Image source={{ uri }} style={styles.imagePieceJointe} />;
         } else if (typeMime.startsWith('video/')) {
             return (
                 <Video
-                    source={{ uri: fileInfo.uri }}
+                    source={{ uri }}
                     style={styles.videoPieceJointe}
                     resizeMode="contain"
                     controls
                 />
             );
         } else if (typeMime === 'application/pdf') {
-            return (
-                <Pdf
-                    source={{ uri: fileInfo.uri }}
-                    style={styles.pdfPieceJointe}
-                />
-            );
+            return <Pdf source={{ uri }} style={styles.pdfPieceJointe} />;
         } else {
             return <Text>Type de fichier non pris en charge</Text>;
         }
     };
+
+
 
     return (
         <ScrollView style={styles.conteneur}>
@@ -189,7 +216,7 @@ function CreationPublicationScreen() {
                 Sélectionner une pièce jointe
             </Button>
 
-            {lienPieceJointe.length > 0 && (
+            {lienPieceJointe && lienPieceJointe.length > 0 && (
                 <View style={styles.previewPieceJointe}>
                     <Text style={styles.titrePieceJointe}>Pièce jointe :</Text>
                     {renderPieceJointe()}
@@ -197,24 +224,27 @@ function CreationPublicationScreen() {
             )}
 
 
+
             <Button
                 mode="contained"
-                onPress={() => soumettre(
-                    {
-                        titre,
-                        contenu,
-                        Categorie,
-                        Utilisateur,
-                    },
-                    fileInfo.type ? { uri: fileInfo.uri, type: fileInfo.type } : null,
-                    Categorie,
-                    Utilisateur
-                )}
+                onPress={() =>
+                    soumettre(
+                        {
+                            titre,
+                            contenu,
+                            Categorie,
+                            Utilisateur,
+                            lienPieceJointe,
+                        },
+                        fileInfo.type ? fileInfo : null
+                    )
+                }
                 style={styles.boutonSoumettre}
                 disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
             >
                 Créer la publication
             </Button>
+
 
 
 

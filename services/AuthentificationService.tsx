@@ -9,7 +9,7 @@ const AuthContext = React.createContext({} as any);
 const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
 const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
 const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
-const token = "1|unpM1KOzRE0TsRY1UFOGQCR4DmAKZfpyR194pG1d"; // A ENLEVER QUAND LOGIN FONCTIONNEL
+const token = "7|9XL11G9Zvs3G4tOyWJwKjnDuPa29YPzpgm3orBRx"; // A ENLEVER QUAND LOGIN FONCTIONNEL
 export const storage = new MMKV();
 //storage.clearAll();
 
