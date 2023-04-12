@@ -23,9 +23,6 @@ function EspaceCommentaireScreen(props: any) {
     {} as CommentaireEntity
   );
 
-  const [commentaireASupprimer, setCommentaireASupprimer] =
-    useState<CommentaireEntity>({} as CommentaireEntity);
-
   const { id, titre } = props.route.params;
 
   // Contenu commentaire à envoyer
@@ -33,6 +30,22 @@ function EspaceCommentaireScreen(props: any) {
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
+    loadCommentaires();
+  }, []);
+
+  useEffect(() => {
+    CommentaireService.setReponseACommentaire({} as CommentaireEntity);
+    // Récupérer le commentaire sur lequel on répond
+    CommentaireService.getReponseACommentaire().subscribe((item) => {
+      setReponseA(item);
+    });
+
+    CommentaireService.getCommentaireASupprimer().subscribe(() => {
+      loadCommentaires();
+    });
+  }, []);
+
+  function loadCommentaires() {
     const params = {
       "idRessource[equals]=": id,
       include: "utilisateur",
@@ -61,45 +74,7 @@ function EspaceCommentaireScreen(props: any) {
         });
       }
     );
-  }, []);
-
-  useEffect(() => {
-    CommentaireService.setReponseACommentaire({} as CommentaireEntity);
-    // Récupérer le commentaire sur lequel on répond
-    CommentaireService.getReponseACommentaire().subscribe((item) => {
-      setReponseA(item);
-    });
-
-    CommentaireService.getCommentaireASupprimer().subscribe((item) => {
-      setCommentaireASupprimer(item);
-      supprimerCommentaire();
-    });
-  }, []);
-
-  const supprimerCommentaire = () => {
-    let listeCommentairesTemp = listeCommentaires;
-    if (commentaireASupprimer.estReponse) {
-      const commentaireParent = listeCommentairesTemp.find(
-        (commentaire) =>
-          commentaire.id === commentaireASupprimer.idCommentaire &&
-          !commentaire.estReponse
-      );
-      console.log(commentaireParent);
-      // if (commentaireParent) {
-      //   if (commentaireParent.reponses.length > 0) {
-      //     commentaireParent.reponses = commentaireParent.reponses.filter(
-      //       (reponse) => reponse.id !== commentaireASupprimer.id
-      //     );
-      //   }
-      // }
-    }
-    // else {
-    //   listeCommentairesTemp = listeCommentairesTemp.filter(
-    //     (commentaire) => commentaire.id !== commentaireASupprimer.id
-    //   );
-    // }
-    // setListeCommentaires(listeCommentairesTemp);
-  };
+  }
 
   // Ajouter le nouveau commentaire à la liste, vider le champ commentaire et fermer le clavier
   const setNouvelleListeCommentaires = (
