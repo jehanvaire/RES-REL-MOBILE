@@ -1,30 +1,52 @@
 export class UtilisateurEntity {
-  // Attributs
+  // id! : number;
+  // nom!: string;
+  // prenom!: string;
+  // mail!: string;
+  // bio!: string;
+  // dateNaissance!: Date;
+  // dateInscription!: Date;
+  // lienPhoto!: string;
+
+  // constructor(init?: Partial<UtilisateurEntity>) {
+  //   Object.assign(this, init);
+  // }
+  // // Attributs
+
+  private _id: number;
   private _nom: string;
   private _prenom: string;
-  private _email: string;
-  private _contenu: string;
+  private _mail: string;
+  private _bio: string;
   private _dateNaissance: Date;
   private _dateInscription: Date;
-  private _lienPhoto: string;
 
   // Constructeur
   constructor(
+    id: number,
     nom: string,
     prenom: string,
-    email: string,
-    contenu: string,
+    mail: string,
+    bio: string,
     dateNaissance: Date,
-    dateInscription: Date,
-    lienPhoto: string
+    dateInscription: Date
   ) {
+    this._id = id;
     this._nom = nom;
     this._prenom = prenom;
-    this._email = email;
-    this._contenu = contenu;
+    this._mail = mail;
+    this._bio = bio;
     this._dateNaissance = dateNaissance;
     this._dateInscription = dateInscription;
-    this._lienPhoto = lienPhoto;
+  }
+
+  // Getters et Setters
+  get id(): number {
+    return this._id;
+  }
+
+  set id(value: number) {
+    this._id = value;
   }
 
   get nom(): string {
@@ -43,20 +65,20 @@ export class UtilisateurEntity {
     this._prenom = value;
   }
 
-  get email(): string {
-    return this._email;
+  get mail(): string {
+    return this._mail;
   }
 
-  set email(value: string) {
-    this._email = value;
+  set mail(value: string) {
+    this._mail = value;
   }
 
-  get contenu(): string {
-    return this._contenu;
+  get bio(): string {
+    return this._bio;
   }
 
-  set contenu(value: string) {
-    this._contenu = value;
+  set bio(value: string) {
+    this._bio = value;
   }
 
   get dateNaissance(): Date {
@@ -73,13 +95,5 @@ export class UtilisateurEntity {
 
   set dateInscription(value: Date) {
     this._dateInscription = value;
-  }
-
-  get lienPhoto(): string {
-    return this._lienPhoto;
-  }
-
-  set lienPhoto(value: string) {
-    this._lienPhoto = value;
   }
 }

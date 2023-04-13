@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RechercheScreen from "./Rercherche/RechercheScreen";
@@ -6,16 +6,33 @@ import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
+import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import { storage } from "../services/AuthentificationService";
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 
 const BottomTab = createMaterialBottomTabNavigator();
 
 // The authenticated view
-const Menu = () => {
+const Menu = ({ props }: any) => {
   const [isAutorized, setIsAutorized] = useState(true);
+  const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
+    {} as UtilisateurEntity
+  );
+  const [loading, setIsLoading] = useState(true);
 
-  return (
+  useEffect(() => {
+    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+    var user = JSON.parse(user_json) as UtilisateurEntity;
+    setUtilisateur(user);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [utilisateur]);
+
+  return loading ? null : (
     <BottomTab.Navigator
-      initialRouteName="Recherche"
+      initialRouteName="Menu"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;
@@ -51,7 +68,14 @@ const Menu = () => {
         component={NotificationScreen}
         options={{ tabBarBadge: 3 }}
       />
-      <BottomTab.Screen name="Profil" component={ProfilStackNavigator} />
+      <BottomTab.Screen
+        name="Profil"
+        component={ProfilStackNavigator}
+        initialParams={{
+          currentUser: true,
+          utilisateur: utilisateur,
+        }}
+      />
 
       {isAutorized ? (
         <>

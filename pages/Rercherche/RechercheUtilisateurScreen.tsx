@@ -6,7 +6,6 @@ import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
 import SearchService from "../../services/SearchService";
-import { PublicationEntity } from "../../ressources/types/PublicationEntity";
 
 const PER_PAGE = 15;
 
@@ -32,15 +31,10 @@ function RechercheUtilisateurScreen(props: any) {
     });
   }, []);
 
-  function AfficherUtilisateur(publication: PublicationEntity) {
+  function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
+    console.log("AfficherUtilisateur", utilisateurSelectionne);
     props.navigation.navigate("DetailsUtilisateur", {
-      auteur: publication.auteur,
-      titre: publication.titre,
-      contenu: publication.contenu,
-      status: publication.status,
-      raisonRefus: publication.raisonRefus,
-      dateCreation: publication.dateCreation,
-      lienImage: publication.lienImage,
+      utilisateur: utilisateurSelectionne,
     });
   }
 
@@ -57,7 +51,7 @@ function RechercheUtilisateurScreen(props: any) {
             <Avatar
               style={styles.avatar}
               source={{
-                uri: item.cheminPhoto,
+                uri: "https://picsum.photos/200/300",
               }}
             ></Avatar>
             <Text style={styles.nomPrenom}>
