@@ -1,13 +1,14 @@
 import React, { useState, useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Image, Text, Platform } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import Video from 'react-native-video';
 import Pdf from 'react-native-pdf';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import PublicationService from '../../services/PublicationService';
 import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
+import { WebView } from 'react-native-webview'
+
 // import { FileSystem } from 'react-native-unimodules';
 
 
@@ -18,18 +19,19 @@ function CreationPublicationScreen() {
     const [contenu, setContenu] = useState('');
     const [lienPieceJointe, setLienPieceJointe] = useState('');
     const [fileInfo, setFileInfo] = useState<{
-        uri: string;
-        type: string;
-        name: string;
-        size: number;
+        uri: string | null;
+        type: string | null;
+        name: string | null;
+        size: number | null;
     }>({
-        uri: '',
-        type: '',
-        name: '',
-        size: 0,
+        uri: null,
+        type: null,
+        name: null,
+        size: null,
     });
+    
 
-    const [Utilisateur] = useState('1050');
+    const [Utilisateur] = useState('1051');
     const [Categorie] = useState('2');
 
     const LONGUEUR_MIN_TITRE = 5;
@@ -71,7 +73,7 @@ function CreationPublicationScreen() {
 
     const soumettre = async (
         publication: any,
-        fileInfo: { uri: string; type: string; name: string; size: number } | null,
+        fileInfo: { uri: string | null; type: string | null; name: string | null; size: number | null } | null,
     ) => {
         try {
             let pieceJointeId: number | null = null;
@@ -79,41 +81,40 @@ function CreationPublicationScreen() {
                 // Copy the file to an accessible location
                 const accessibleFileUri = RNFS.CachesDirectoryPath + '/' + fileInfo.name;
                 await RNFS.copyFile(fileInfo.uri, accessibleFileUri);
-
+    
                 // Read the file with RNFetchBlob
                 const data = await RNFetchBlob.fs.readFile(accessibleFileUri, 'base64');
-
+    
                 const formDataPieceJointe = new FormData();
-                formDataPieceJointe.append('file', `data:${fileInfo.type};base64,${data}`);
                 formDataPieceJointe.append('idUtilisateur', publication.Utilisateur);
-                formDataPieceJointe.append('typeFichier', fileInfo.type);
-                formDataPieceJointe.append('nomFichier', fileInfo.name);
-                formDataPieceJointe.append('tailleFichier', fileInfo.size.toString());
-                formDataPieceJointe.append('dateCreation', new Date().toISOString());
-
+                formDataPieceJointe.append('type', fileInfo.type ?? '');
+                formDataPieceJointe.append('titre', fileInfo.name ?? '');
+                formDataPieceJointe.append('description', 'Description de la pièce jointe');
+                formDataPieceJointe.append('file', `data:${fileInfo.type ?? ''}${data}`);
+    
                 const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe);
                 console.log('Piece jointe:', pieceJointeResponse);
-                if (pieceJointeResponse?.data?.id) {
-                    pieceJointeId = pieceJointeResponse.data.id;
+                if (pieceJointeResponse?.data?.data?.id) {
+                    pieceJointeId = pieceJointeResponse.data.data.id;
+                    console.log('Piece jointe ID:', pieceJointeId)
                 } else {
                     console.error('Erreur lors de l\'ajout de la pièce jointe');
-                }
+                }                
             }
-            const formDataPublication = new FormData();
-            formDataPublication.append("titre", publication.titre);
-            formDataPublication.append("contenu", publication.contenu);
-            formDataPublication.append("idUtilisateur", publication.Utilisateur);
-            formDataPublication.append("idCategorie", publication.Categorie);
-            if (publication.lienPieceJointe) {
-                formDataPublication.append("lienPieceJointe", publication.lienPieceJointe);
-            }
-            if (pieceJointeId) {
-                formDataPublication.append("idPieceJointe", pieceJointeId.toString());
-            }
-
-            console.log(formDataPublication);
-
-            const response = await PublicationService.CreerPublication(formDataPublication);
+    
+            const publicationData = {
+                id: publication.id,
+                titre: publication.titre,
+                contenu: publication.contenu,
+                idUtilisateur: publication.Utilisateur,
+                idCategorie: publication.Categorie,
+                lienPieceJointe: publication.lienPieceJointe,
+                idPieceJointe: pieceJointeId,
+            };
+    
+            console.log(publicationData);
+    
+            const response = await PublicationService.CreerPublication(publicationData);
             console.log("Response:", response);
             if (response) {
                 gererNavigation();
@@ -126,7 +127,7 @@ function CreationPublicationScreen() {
             console.error("Erreur lors de la soumission de la publication:", error.message);
         }
     };
-
+    
 
 
 
@@ -134,61 +135,78 @@ function CreationPublicationScreen() {
 
     const selectionnerPieceJointe = async () => {
         try {
-            const result = await DocumentPicker.pick({
+            const result = (await DocumentPicker.pickMultiple({
                 type: [
                     DocumentPicker.types.images,
                     DocumentPicker.types.video,
                     DocumentPicker.types.pdf,
                 ],
-            }) as unknown as DocumentPickerResponse;
-
+            }))[0];
             console.log('Fichier sélectionné:', result);
-
-            const tempPath = `${RNFS.TemporaryDirectoryPath}/${result.name}`;
-            await RNFS.copyFile(result.uri, tempPath);
-
-            setLienPieceJointe(tempPath);
+    
+            const androidContentUri = result.uri.startsWith('content://');
+            let filePath = result.uri;
+    
+            if (androidContentUri) {
+                const tempPath = `${RNFS.CachesDirectoryPath}/${result.name}`;
+                await RNFS.copyFile(result.uri, tempPath);
+                filePath = tempPath;
+            }
+    
+            setLienPieceJointe(filePath);
+    
+            // Mettre à jour les informations de fileInfo
             setFileInfo({
-                uri: tempPath,
-                type: result.type || '',
-                name: result.name || '',
-                size: result.size || 0,
+                uri: filePath,
+                type: result.type,
+                name: result.name,
+                size: result.size,
             });
+    
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
-                // L'utilisateur a annulé la sélection de fichier
+                console.log('Annulation du choix de fichier');
             } else {
                 throw err;
             }
         }
     };
-
+    
+      
+      
+      
+      
     const renderPieceJointe = () => {
-        if (!fileInfo || !fileInfo.hasOwnProperty('type')) {
+        if (!fileInfo || fileInfo.uri === null || !fileInfo.hasOwnProperty('type') || !fileInfo.type) {
             return <Text>Type de fichier non pris en charge</Text>;
         }
         const typeMime = fileInfo.type;
-
+      
         const uri =
-            Platform.OS === 'android' ? fileInfo.uri : fileInfo.uri.replace('file://', '');
-
+          Platform.OS === 'android'
+            ? 'file://' + fileInfo.uri
+            : fileInfo.uri.replace('file://', '');
+      
         if (typeMime.startsWith('image/')) {
-            return <Image source={{ uri }} style={styles.imagePieceJointe} />;
+          return <Image source={{ uri }} style={styles.imagePieceJointe} />;
         } else if (typeMime.startsWith('video/')) {
-            return (
-                <Video
-                    source={{ uri }}
-                    style={styles.videoPieceJointe}
-                    resizeMode="contain"
-                    controls
-                />
-            );
+          return (
+            <WebView
+              source={{ uri }}
+              style={styles.videoPieceJointe}
+              allowsFullscreenVideo={true}
+              javaScriptEnabled={true}
+              mediaPlaybackRequiresUserAction={false}
+            />
+          );
         } else if (typeMime === 'application/pdf') {
-            return <Pdf source={{ uri }} style={styles.pdfPieceJointe} />;
+          return <Pdf source={{ uri }} style={styles.pdfPieceJointe} />;
         } else {
-            return <Text>Type de fichier non pris en charge</Text>;
+          return <Text>Type de fichier non pris en charge</Text>;
         }
-    };
+      };
+      
+      
 
 
 
@@ -225,25 +243,33 @@ function CreationPublicationScreen() {
 
 
 
-            <Button
-                mode="contained"
-                onPress={() =>
-                    soumettre(
-                        {
-                            titre,
-                            contenu,
-                            Categorie,
-                            Utilisateur,
-                            lienPieceJointe,
-                        },
-                        fileInfo.type ? fileInfo : null
-                    )
-                }
-                style={styles.boutonSoumettre}
-                disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
-            >
-                Créer la publication
-            </Button>
+<Button
+    mode="contained"
+    onPress={() =>
+        soumettre(
+            {
+                titre,
+                contenu,
+                Categorie,
+                Utilisateur,
+                lienPieceJointe,
+            },
+            fileInfo.type
+                ? {
+                      uri: fileInfo.uri ?? '',
+                      type: fileInfo.type ?? '',
+                      name: fileInfo.name ?? '',
+                      size: fileInfo.size ?? 0,
+                  }
+                : null
+        )
+    }
+    style={styles.boutonSoumettre}
+    disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
+>
+    Créer la publication
+</Button>
+
 
 
 

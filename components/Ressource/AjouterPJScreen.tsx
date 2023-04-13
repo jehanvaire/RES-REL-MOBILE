@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
-import RNFetchBlob from 'rn-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob'
 
 function AjouterPjScreen({ soumettre }: any) {
     const [lien, setLien] = useState('');

@@ -1,13 +1,13 @@
 import axios from "axios";
-import { storage } from "./AuthentificationService";
-import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+
 
 // interface Params {
 //   [key: string]: string;
 // }
+
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
-
+  private token: string = "";
   async get(path: string, params: any = {}): Promise<any> {
     const url = this.baseUrl + path;
 
@@ -19,21 +19,20 @@ export default class RestClient {
     }
   }
 
-  async post(path: string, body: any, config: any = {}): Promise<any> {
+  async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    const defaultConfig = {};
-    const mergedConfig = { ...defaultConfig, ...config }
-
-    const token = storage.getString(AuthentificationEnum.ACCESS_TOKEN_KEY);
-    console.log("token ici", token);
-
-    const response = await axios.post(url, body, mergedConfig);
+    const response = await axios.post(url, body, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
       throw new Error(response.data.error || "Something went wrong");
     }
   }
+  
 
 
   async put(path: string, body: any): Promise<any> {
