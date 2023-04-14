@@ -74,60 +74,55 @@ function CreationPublicationScreen() {
     const soumettre = async (
         publication: any,
         fileInfo: { uri: string | null; type: string | null; name: string | null; size: number | null } | null,
-    ) => {
+      ) => {
         try {
-            let pieceJointeId: number | null = null;
-            if (fileInfo && fileInfo.uri) {
-                // Copy the file to an accessible location
-                const accessibleFileUri = RNFS.CachesDirectoryPath + '/' + fileInfo.name;
-                await RNFS.copyFile(fileInfo.uri, accessibleFileUri);
-    
-                // Read the file with RNFetchBlob
-                const data = await RNFetchBlob.fs.readFile(accessibleFileUri, 'base64');
-    
-                const formDataPieceJointe = new FormData();
-                formDataPieceJointe.append('idUtilisateur', publication.Utilisateur);
-                formDataPieceJointe.append('type', fileInfo.type ?? '');
-                formDataPieceJointe.append('titre', fileInfo.name ?? '');
-                formDataPieceJointe.append('description', 'Description de la pièce jointe');
-                formDataPieceJointe.append('file', `data:${fileInfo.type ?? ''}${data}`);
-    
-                const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe);
-                console.log('Piece jointe:', pieceJointeResponse);
-                if (pieceJointeResponse?.data?.data?.id) {
-                    pieceJointeId = pieceJointeResponse.data.data.id;
-                    console.log('Piece jointe ID:', pieceJointeId)
-                } else {
-                    console.error('Erreur lors de l\'ajout de la pièce jointe');
-                }                
-            }
-    
-            const publicationData = {
-                id: publication.id,
-                titre: publication.titre,
-                contenu: publication.contenu,
-                idUtilisateur: publication.Utilisateur,
-                idCategorie: publication.Categorie,
-                lienPieceJointe: publication.lienPieceJointe,
-                idPieceJointe: pieceJointeId,
-            };
-    
-            console.log(publicationData);
-    
-            const response = await PublicationService.CreerPublication(publicationData);
-            console.log("Response:", response);
-            if (response) {
-                gererNavigation();
+          let pieceJointeId: number | null = null;
+          if (fileInfo && fileInfo.uri) {
+            const formDataPieceJointe = new FormData();
+            formDataPieceJointe.append('idUtilisateur', publication.Utilisateur);
+            formDataPieceJointe.append('type', fileInfo.type ?? '');
+            formDataPieceJointe.append('titre', fileInfo.name ?? '');
+            formDataPieceJointe.append('description', 'Description de la pièce jointe');
+            
+            const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe, fileInfo);
+            console.log('Piece jointe:', pieceJointeResponse);
+            if (pieceJointeResponse?.data?.id) {
+              pieceJointeId = pieceJointeResponse.data.id;
+              console.log('Piece jointe ID:', pieceJointeId);
             } else {
-                console.error(
-                    "Erreur lors de la création de la publication. Veuillez vérifier la réponse du serveur."
-                );
+              console.error('Erreur lors de l\'ajout de la pièce jointe');
             }
+          }
+          const formDataPublication = new FormData();
+          formDataPublication.append("titre", publication.titre);
+          formDataPublication.append("contenu", publication.contenu);
+          formDataPublication.append("idUtilisateur", publication.Utilisateur);
+          formDataPublication.append("idCategorie", publication.Categorie);
+          if (publication.lienPieceJointe) {
+            formDataPublication.append("lienPieceJointe", publication.lienPieceJointe);
+          }
+          if (pieceJointeId) {
+            formDataPublication.append("idPieceJointe", pieceJointeId.toString());
+          }
+      
+          console.log(formDataPublication);
+      
+          const response = await PublicationService.CreerPublication(formDataPublication);
+          console.log("Response:", response);
+          if (response) {
+            gererNavigation();
+          } else {
+            console.error(
+              "Erreur lors de la création de la publication. Veuillez vérifier la réponse du serveur."
+            );
+          }
         } catch (error: any) {
-            console.error("Erreur lors de la soumission de la publication:", error.message);
+          console.error("Erreur lors de la soumission de la publication:", error.message);
         }
-    };
-    
+      };
+      
+      
+
 
 
 
@@ -269,6 +264,8 @@ function CreationPublicationScreen() {
 >
     Créer la publication
 </Button>
+
+
 
 
 

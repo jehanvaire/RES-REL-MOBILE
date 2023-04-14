@@ -1,7 +1,6 @@
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import RestClient from "./RestClient";
-import { getTokenFromStorage } from "./AuthentificationService";
-import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
+import RNFetchBlob from 'rn-fetch-blob';
 
 export class PublicationService {
   private baseUrl = "ressources";
@@ -124,40 +123,19 @@ export class PublicationService {
     return data;
   }
 
-  public async CreerPublication(publicationData: { id: number; titre: any; contenu: any; idUtilisateur: any; idCategorie: any; lienPieceJointe: any; idPieceJointe: number | null }, pieceJointe?: File): Promise<any> {
+  public async CreerPublication(publicationData: FormData, pieceJointe?: File): Promise<any> {
     try {
-      const newPublicationData = new PublicationEntity(
-        publicationData.id,
-        publicationData.titre,
-        "auteur",
-        publicationData.contenu,
-        StatusPublicationEnum.ENATTENTE,
-        null,
-        new Date(),
-        new Date(),
-        "",
-        publicationData.idCategorie,
-        publicationData.idUtilisateur,
-        {}
-      );
+      const formData = new FormData();
   
-      // Créer la publication sans la pièce jointe
-      const response = await this.restClient.post(this.baseUrl, newPublicationData);
+      // Ajouter la ressource en tant que chaîne de caractères JSON
+      formData.append("ressource", JSON.stringify(publicationData));
   
-      // Si la création de la publication a réussi et qu'il y a une pièce jointe, envoyez la pièce jointe et mettez à jour la publication
-      if (response && pieceJointe) {
-        const formData = new FormData();
+      // Ajouter la pièce jointe si elle existe
+      if (pieceJointe) {
         formData.append("pieceJointe", pieceJointe);
-  
-        const pieceJointeResponse = await this.AjouterPieceJointe(formData);
-  
-        if (pieceJointeResponse) {
-          // Mettre à jour la publication avec l'ID de la pièce jointe
-          const updatedPublicationData = { ...newPublicationData, idPieceJointe: pieceJointeResponse.data.id };
-          await this.restClient.put(`${this.baseUrl}/${newPublicationData.id}`, updatedPublicationData);
-        }
       }
   
+      const response = await this.restClient.post(this.baseUrl, formData);
       return response;
     } catch (error) {
       console.log("AAAAAAAAAAAAAA", error);
@@ -166,20 +144,37 @@ export class PublicationService {
   }
   
   
-  
-  
-  
-  public async AjouterPieceJointe(pieceJointe: FormData): Promise<any | null> {
-    console.log("AjouterPieceJointe", pieceJointe);
+  public async AjouterPieceJointe(pieceJointe: FormData, fileInfo: { uri: string | null; type: string | null; name: string | null; size: number | null }): Promise<any | null> {
     try {
-      const response = await this.restClient.post('piecesJointes', pieceJointe);
+      console.log('Début de l\'envoi de la pièce jointe');
+      const response = await RNFetchBlob.fetch(
+        'POST',
+        'https://your-api-url.com/piecesJointes',
+        {
+          'Content-Type': 'multipart/form-data',
+        },
+        [
+          ...Array.from(pieceJointe.entries()).map(([key, value]) => ({ name: key, data: value })),
+          {
+            name: 'file',
+            filename: fileInfo.name ?? '',
+            type: fileInfo.type ?? '',
+            data: RNFetchBlob.wrap(fileInfo.uri ?? ''),
+          },
+        ],
+      );
+      console.log('Réponse de l\'API pour l\'ajout de pièce jointe:', response);
   
       return response;
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log('Erreur lors de l\'ajout de la pièce jointe:');
+      console.log('Message d\'erreur:', error.message);
+      console.log('Erreur complète:', error);
       return null;
     }
   }
+  
+  
   
 }
 
