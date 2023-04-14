@@ -12,7 +12,7 @@ import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 15;
 
-function RessourceSearchScreen(props: any) {
+function RechercheRessourceScreen(props: any) {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -119,7 +119,7 @@ function RessourceSearchScreen(props: any) {
   );
 }
 
-export default RessourceSearchScreen;
+export default RechercheRessourceScreen;
 
 const styles = StyleSheet.create({
   container: {

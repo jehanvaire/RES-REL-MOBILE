@@ -57,20 +57,7 @@ export class PublicationService {
     const response = await this.restClient.get(this.baseUrl, filtres);
 
     const listePublications = response.data.map((publication: any) => {
-      return new PublicationEntity(
-        publication.id,
-        publication.titre,
-        publication.auteur,
-        publication.contenu,
-        publication.status,
-        publication.raisonRefus,
-        publication.dateCreation,
-        publication.datePublication,
-        "https://picsum.photos/200/300",
-        publication.idCategorie,
-        publication.idUtilisateur,
-        publication.navigation
-      );
+      return new PublicationEntity(publication);
     });
 
     return listePublications;
@@ -83,20 +70,7 @@ export class PublicationService {
     const response = await this.restClient.get(this.baseUrl, params);
 
     const listePublications = response.data.map((publication: any) => {
-      return new PublicationEntity(
-        publication.id,
-        publication.titre,
-        publication.auteur,
-        publication.contenu,
-        publication.status,
-        publication.raisonRefus,
-        publication.dateCreation,
-        publication.datePublication,
-        "https://picsum.photos/200/300",
-        publication.idCategorie,
-        publication.idUtilisateur,
-        publication.navigation
-      );
+      return new PublicationEntity(publication);
     });
 
     return listePublications;

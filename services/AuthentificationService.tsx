@@ -105,6 +105,7 @@ export const AuthContainer = ({ children }: any) => {
 
         // Add all other user Attributes here
         // TODO: à supprimer après
+        user.id = 1;
         user.prenom = "Adrien";
         user.nom = "Bony";
         user.lienPhoto = "https://i.redd.it/flmx8fb1dzz41.jpg";
