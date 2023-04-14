@@ -20,7 +20,7 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
   const [showModal, setShowModal] = React.useState(false);
   function AfficherPublication(publication: PublicationEntity) {
     navigation.navigate("DetailsPublication", {
-      auteur: publication.auteur,
+      auteur: publication.utilisateur.nom,
       titre: publication.titre,
       contenu: publication.contenu,
       status: publication.status,

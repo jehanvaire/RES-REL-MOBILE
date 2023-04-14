@@ -40,12 +40,16 @@ function RechercheRessourceScreen(props: any) {
       const params = {
         ressourceQuery: searchValue,
         utilisateurQuery: searchValue,
+        include: "utilisateur",
       };
       SearchService.Search(params).then((result) => {
         setListeResultats(result);
       });
     } else {
-      PublicationService.GetAllPublications().then((listePublications) => {
+      const params = {
+        include: "utilisateur",
+      };
+      PublicationService.GetPublications(params).then((listePublications) => {
         setListeResultats(listePublications);
       });
     }
@@ -60,9 +64,10 @@ function RechercheRessourceScreen(props: any) {
   }, [searchValue]);
 
   function AfficherPublication(publication: PublicationEntity) {
+    console.log(publication.utilisateur.nom);
+
     props.navigation.navigate("DetailsPublication", {
       id: publication.id,
-      auteur: publication.auteur,
       titre: publication.titre,
       contenu: publication.contenu,
       status: publication.status,
@@ -70,6 +75,8 @@ function RechercheRessourceScreen(props: any) {
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
       lienImage: publication.lienImage,
+      auteur:
+        publication.utilisateur.nom + " " + publication.utilisateur.prenom,
     });
   }
 
@@ -88,7 +95,9 @@ function RechercheRessourceScreen(props: any) {
               {item.titre.length > 20 ? "..." : ""}
             </Text>
             <Spacer />
-            <Text style={styles.auteurPrewiew}>Adrien</Text>
+            <Text style={styles.auteurPrewiew}>
+              {item.utilisateur?.nom} {item.utilisateur?.prenom}
+            </Text>
             <FastImage
               style={styles.imagePrewiew}
               source={{
@@ -105,6 +114,7 @@ function RechercheRessourceScreen(props: any) {
 
   return (
     <View style={styles.container}>
+      {/* TODO: ajouter un texte "Applications suggérées" si searchValue est vide */}
       <FlatList
         style={{ width: "100%" }}
         removeClippedSubviews={true}
@@ -128,26 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "column",
   },
-  searchStack: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-  },
-  textInput: {
-    height: 40,
-    fontSize: 15,
-    paddingLeft: 10,
-    marginRight: 10,
-    borderRadius: 15,
-    width: "75%",
-    borderColor: "gray",
-    borderWidth: 1,
-  },
-  searchIcon: {
-    color: "black",
-    marginTop: 5,
-    marginRight: 10,
-  },
   listePublications: {
     padding: 10,
     width: "100%",
@@ -160,7 +150,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   titrePreview: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 10,

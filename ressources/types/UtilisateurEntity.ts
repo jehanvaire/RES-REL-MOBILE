@@ -6,7 +6,7 @@ export class UtilisateurEntity {
   bio!: string;
   dateNaissance!: Date;
   dateInscription!: Date;
-  lienPhoto!: string;
+  image!: any;
 
   constructor(init?: Partial<UtilisateurEntity>) {
     Object.assign(this, init);

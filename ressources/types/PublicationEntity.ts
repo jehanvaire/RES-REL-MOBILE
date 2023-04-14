@@ -1,17 +1,18 @@
 import { StatusPublicationEnum } from "../enums/StatusPublicationEnum";
+import { UtilisateurEntity } from "./UtilisateurEntity";
 
 export class PublicationEntity {
   id!: number;
   titre!: string;
-  auteur!: string;
   contenu!: string;
   status!: StatusPublicationEnum;
   raisonRefus!: any;
   dateCreation!: Date;
   datePublication!: Date;
-  lienImage!: string;
+  image!: any;
   idCategorie!: number;
   idUtilisateur!: number;
+  utilisateur!: UtilisateurEntity;
   navigation!: any;
 
   constructor(init?: Partial<PublicationEntity>) {

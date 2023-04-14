@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Publication from "../components/Publication/Publication";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import UtilisateurService from "../services/UtilisateurService";
 
 const PER_PAGE = 10;
 
@@ -24,16 +25,24 @@ function ProfilScreen(props: any) {
 
   useEffect(() => {
     fetchListePublicationsUtilisateur();
+    const params = {
+      id: utilisateur.id,
+    };
+    UtilisateurService.GetPhotoUtilisateur(params).then((photo) => {
+      console.log(photo);
+      utilisateur.image = photo;
+    });
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
     // Get the list of publications
-    const params = { page: 1, perPage: PER_PAGE };
-    const listePublications =
-      await PublicationService.GetListePublicationsUtilisateur(
-        utilisateur.id,
-        params
-      );
+    const params = {
+      page: 1,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": utilisateur.id,
+      include: "utilisateur",
+    };
+    const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
   };
 
@@ -41,37 +50,44 @@ function ProfilScreen(props: any) {
     const nextPage = page + 1;
     setPage(nextPage);
 
-    const params = { page: nextPage, perPage: PER_PAGE };
-    PublicationService.GetListePublicationsUtilisateur(1, params).then(
-      (publications) => {
-        setListePublications([...listePublications, ...publications]);
-      }
-    );
+    const params = {
+      page: nextPage,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": utilisateur.id,
+      include: "utilisateur",
+    };
+    PublicationService.GetPublications(params).then((publications) => {
+      setListePublications([...listePublications, ...publications]);
+    });
   };
 
   const handleRefresh = () => {
     setRefreshing(true);
     const firstPage = 1;
     setPage(firstPage);
-    const params = { page: firstPage, perPage: PER_PAGE };
-    PublicationService.GetListePublicationsUtilisateur(1, params).then(
-      (publications) => {
-        setListePublications(publications);
-      }
-    );
+    const params = {
+      page: firstPage,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": utilisateur.id,
+      include: "utilisateur",
+    };
+    PublicationService.GetPublications(params).then((publications) => {
+      setListePublications(publications);
+    });
     setRefreshing(false);
   };
 
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
       <Publication
-        auteur={item.auteur}
+        id={item.idUtilisateur}
+        auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
         titre={item.titre}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
         dateCreation={item.dateCreation}
-        lienImage="https://picsum.photos/200/300"
+        image={item.image}
         navigation={navigation}
       />
     </View>
@@ -103,7 +119,7 @@ function ProfilScreen(props: any) {
 
         <Description contenu={utilisateur.bio ?? ""}></Description>
 
-        <Text style={styles.title}>Publications</Text>
+        <Text style={styles.title}>Publications {utilisateur.id}</Text>
         <Box
           style={{
             width: "100%",

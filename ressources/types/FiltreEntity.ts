@@ -42,4 +42,5 @@ interface FiltresRequete {
   "status[equals]="?: string;
   ressourceQuery?: string;
   utilisateurQuery?: string;
+  include?: string;
 }

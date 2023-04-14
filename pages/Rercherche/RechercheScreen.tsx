@@ -42,6 +42,7 @@ const RechercheScreen = () => {
         "status[equals]=": "APPROVED",
         ressourceQuery: searchValue,
         utilisateurQuery: searchValue,
+        include: "utilisateur",
       };
       SearchService.Search(params).then((listeResultats) => {
         SearchService.SetListeResultats(listeResultats);
@@ -52,12 +53,13 @@ const RechercheScreen = () => {
         "datePublication[lowerThanEquals]=": filtres.value.dateFin,
         "partage[equals]=": "PUBLIC",
         "status[equals]=": "APPROVED",
+        include: "utilisateur",
       };
       if (filtres.value.categorie === 0) {
         filtresRequete["idCategorie[equals]="] = filtres.value.categorie;
       }
 
-      PublicationService.GetAllPublications(filtresRequete).then(
+      PublicationService.GetPublications(filtresRequete).then(
         (listeResultats) => {
           SearchService.SetListeResultats(listeResultats);
         }
