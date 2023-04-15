@@ -1,9 +1,11 @@
 import { View, Text } from "react-native";
 
-export default function GestionComptesUtilisateursScreen() {
+const GestionComptesUtilisateursScreen = () => {
   return (
     <View>
       <Text>Gestion des comptes utilisateurs</Text>
     </View>
   );
-}
+};
+
+export default GestionComptesUtilisateursScreen;

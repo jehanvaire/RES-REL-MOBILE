@@ -1,13 +1,11 @@
-import { Center } from "native-base";
 import React, { useEffect, useState } from "react";
 
-import { StyleSheet, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { View } from "native-base";
 
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
-
-export default function NotificationScreen(props: any) {
+const NotificationScreen = (props: any) => {
   const [user_storage, setUserStorage] = useState<any | null>(null);
   useEffect(() => {
     setUserStorage(storage.getString(AuthentificationEnum.CURRENT_USER));
@@ -18,7 +16,9 @@ export default function NotificationScreen(props: any) {
       <Text>Nofitications</Text>
     </View>
   );
-}
+};
+
+export default NotificationScreen;
 
 const styles = StyleSheet.create({
   container: {

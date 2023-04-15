@@ -9,16 +9,20 @@ import StatistiquesScreen from "../../pages/MenuProfilUtilisateur/StatistiquesSc
 import ProfilScreen from "../../pages/ProfilScreen";
 import DetailsPublication from "../Publication/DetailsPublication";
 import Publication from "../Publication/Publication";
+import React from "react";
 
 export const StackNav = createStackNavigator();
 
-const ProfilStackNavigator = () => {
+const ProfilStackNavigator = (props: any) => {
+  const { utilisateur } = props.route.params;
+
   return (
     <StackNav.Navigator initialRouteName="ProfilScreen">
       <StackNav.Screen
         name="ProfilScreen"
         component={ProfilScreen}
         options={{ headerShown: false }}
+        initialParams={{ utilisateur: utilisateur }}
       />
       <StackNav.Screen
         name="Publication"

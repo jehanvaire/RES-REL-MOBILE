@@ -42,6 +42,7 @@ const RechercheScreen = () => {
         "status[equals]=": "APPROVED",
         ressourceQuery: searchValue,
         utilisateurQuery: searchValue,
+        include: "utilisateur",
       };
       SearchService.Search(params).then((listeResultats) => {
         SearchService.SetListeResultats(listeResultats);
@@ -52,12 +53,13 @@ const RechercheScreen = () => {
         "datePublication[lowerThanEquals]=": filtres.value.dateFin,
         "partage[equals]=": "PUBLIC",
         "status[equals]=": "APPROVED",
+        include: "utilisateur",
       };
       if (filtres.value.categorie === 0) {
         filtresRequete["idCategorie[equals]="] = filtres.value.categorie;
       }
 
-      PublicationService.GetAllPublications(filtresRequete).then(
+      PublicationService.GetPublications(filtresRequete).then(
         (listeResultats) => {
           SearchService.SetListeResultats(listeResultats);
         }
@@ -124,37 +126,5 @@ const styles = StyleSheet.create({
     color: "black",
     marginTop: 5,
     marginRight: 10,
-  },
-  listePublications: {
-    padding: 10,
-    width: "100%",
-  },
-  publicationPreview: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  titrePreview: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-  },
-  auteurPrewiew: {
-    fontSize: 15,
-    marginTop: 15,
-    marginBottom: 15,
-    marginRight: 10,
-  },
-  imagePrewiew: {
-    height: 42,
-    width: 42,
-    borderRadius: 10,
-    marginTop: 4,
-    marginBottom: 4,
-    marginRight: 4,
   },
 });

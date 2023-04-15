@@ -1,9 +1,11 @@
 import { View, Text } from "react-native";
 
-export default function FavorisScreen() {
+const FavorisScreen = () => {
   return (
     <View>
       <Text>Favoris</Text>
     </View>
   );
-}
+};
+
+export default FavorisScreen;

@@ -9,16 +9,15 @@ import { Image } from "native-base";
 import React from "react";
 import { useAuth } from "../../services/AuthentificationService";
 import images from "../../ressources/ListeImagesLocales";
-import { FooterAuthentification } from "./FooterAuthentification";
-import { color } from "native-base/lib/typescript/theme/styled-system";
+import FooterAuthentification from "./FooterAuthentification";
 
-export default function Connexion({ navigation }: any) {
+const ConnexionSreen = () => {
   const auth = useAuth();
   const onConnexion = () => {
     auth.register();
   };
   return (
-    <View style={styles.view}>
+    <View style={styles.container}>
       <Image source={images.logo2} alt="logo_slogan" style={styles.image} />
 
       <TextInput style={styles.input} placeholder="Email" />
@@ -34,10 +33,12 @@ export default function Connexion({ navigation }: any) {
       <FooterAuthentification />
     </View>
   );
-}
+};
+
+export default ConnexionSreen;
 
 const styles = StyleSheet.create({
-  view: {
+  container: {
     alignItems: "center",
     flex: 1,
     flexDirection: "column",

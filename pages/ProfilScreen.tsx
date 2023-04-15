@@ -2,89 +2,96 @@ import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { View } from "native-base";
-import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
-import { storage } from "../services/AuthentificationService";
 import PublicationService from "../services/PublicationService";
-import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
 import Description from "../components/Description";
 import MenuHamburgerProfil from "../components/MenuHamburgerProfil";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Publication from "../components/Publication/Publication";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
+import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import UtilisateurService from "../services/UtilisateurService";
 
 const PER_PAGE = 10;
 
-function ProfilScreen({ navigation }: any) {
+const ProfilScreen = (props: any) => {
+  const { navigation } = props;
+  const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
     PublicationEntity[]
   >([]);
-  const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
-    {} as UtilisateurEntity
-  );
 
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetchListePublicationsUtilisateur();
+    const params = {
+      id: utilisateur.id,
+    };
+    UtilisateurService.GetPhotoUtilisateur(params).then((photo) => {
+      console.log(photo);
+      utilisateur.image = photo;
+    });
+  }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
     // Get the list of publications
-    const params = { page: 1, perPage: PER_PAGE };
-    const listePublications =
-      await PublicationService.GetListePublicationsUtilisateur(1, params);
+    const params = {
+      page: 1,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": utilisateur.id,
+      include: "utilisateur",
+    };
+    const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
   };
 
   const handleLoadMore = () => {
-    if (!loading) {
-      const nextPage = page + 1;
-      setPage(nextPage);
+    const nextPage = page + 1;
+    setPage(nextPage);
 
-      const params = { page: nextPage, perPage: PER_PAGE };
-      PublicationService.GetListePublicationsUtilisateur(1, params).then(
-        (publications) => {
-          setListePublications([...listePublications, ...publications]);
-        }
-      );
-    }
+    const params = {
+      page: nextPage,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": utilisateur.id,
+      include: "utilisateur",
+    };
+    PublicationService.GetPublications(params).then((publications) => {
+      setListePublications([...listePublications, ...publications]);
+    });
   };
 
   const handleRefresh = () => {
-    if (!loading) {
-      setRefreshing(true);
-      const firstPage = 1;
-      setPage(firstPage);
-      const params = { page: firstPage, perPage: PER_PAGE };
-      PublicationService.GetListePublicationsUtilisateur(1, params).then(
-        (publications) => {
-          setListePublications(publications);
-        }
-      );
-      setRefreshing(false);
-    }
+    setRefreshing(true);
+    const firstPage = 1;
+    setPage(firstPage);
+    const params = {
+      page: firstPage,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": utilisateur.id,
+      include: "utilisateur",
+    };
+    PublicationService.GetPublications(params).then((publications) => {
+      setListePublications(publications);
+    });
+    setRefreshing(false);
   };
 
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
       <Publication
-        auteur={item.auteur}
+        id={item.idUtilisateur}
+        auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
         titre={item.titre}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
         dateCreation={item.dateCreation}
-        lienImage={item.lienImage}
+        image={item.image}
         navigation={navigation}
       />
     </View>
   );
-
-  useEffect(() => {
-    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
-    fetchListePublicationsUtilisateur();
-
-    var user = JSON.parse(user_json) as UtilisateurEntity;
-    setUtilisateur(user);
-  }, []);
 
   return (
     <GestureHandlerRootView>
@@ -93,7 +100,7 @@ function ProfilScreen({ navigation }: any) {
           <Avatar
             size={100}
             source={{
-              uri: utilisateur.lienPhoto,
+              uri: "https://picsum.photos/200/300",
             }}
           ></Avatar>
 
@@ -110,9 +117,9 @@ function ProfilScreen({ navigation }: any) {
           </Center>
         </Stack>
 
-        <Description contenu={utilisateur.contenu ?? ""}></Description>
+        <Description contenu={utilisateur.bio ?? ""}></Description>
 
-        <Text style={styles.title}>Publications</Text>
+        <Text style={styles.title}>Publications {utilisateur.id}</Text>
         <Box
           style={{
             width: "100%",
@@ -139,7 +146,7 @@ function ProfilScreen({ navigation }: any) {
       </View>
     </GestureHandlerRootView>
   );
-}
+};
 
 export default ProfilScreen;
 

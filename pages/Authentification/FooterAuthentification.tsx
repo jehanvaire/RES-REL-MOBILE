@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export const FooterAuthentification = () => {
+const FooterAuthentification = () => {
   return (
     <View style={styles.footer}>
       <Text style={{ color: "whitesmoke" }}>
@@ -9,6 +9,8 @@ export const FooterAuthentification = () => {
     </View>
   );
 };
+
+export default FooterAuthentification;
 
 const styles = StyleSheet.create({
   footer: {

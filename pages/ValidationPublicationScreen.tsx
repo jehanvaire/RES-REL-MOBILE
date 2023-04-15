@@ -10,7 +10,7 @@ import ValidationPublicationComponent from "../components/Publication/Validation
 
 const PER_PAGE = 15;
 
-function ValidationRessourcesScreen(props: any) {
+const ValidationRessourcesScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -31,8 +31,7 @@ function ValidationRessourcesScreen(props: any) {
 
   const fetchPublicationsEnAttente = async () => {
     const params = { page: 1, perPage: PER_PAGE };
-    const listePublications =
-      await PublicationService.GetListePublicationsUtilisateur(1, params);
+    const listePublications = await PublicationService.GetPublications(params);
     setListePublicationsEnAttente(listePublications);
   };
 
@@ -41,14 +40,12 @@ function ValidationRessourcesScreen(props: any) {
       const nextPage = page + 1;
       setPage(nextPage);
       const params = { page: nextPage, perPage: PER_PAGE };
-      PublicationService.GetListePublicationsUtilisateur(1, params).then(
-        (publications) => {
-          setListePublicationsEnAttente([
-            ...listePublicationsEnAttente,
-            ...publications,
-          ]);
-        }
-      );
+      PublicationService.GetPublications(params).then((publications) => {
+        setListePublicationsEnAttente([
+          ...listePublicationsEnAttente,
+          ...publications,
+        ]);
+      });
     }
   };
 
@@ -58,11 +55,9 @@ function ValidationRessourcesScreen(props: any) {
       const firstPage = 1;
       setPage(firstPage);
       const params = { page: firstPage, perPage: PER_PAGE };
-      PublicationService.GetListePublicationsUtilisateur(1, params).then(
-        (publications) => {
-          setListePublicationsEnAttente(publications);
-        }
-      );
+      PublicationService.GetPublications(params).then((publications) => {
+        setListePublicationsEnAttente(publications);
+      });
       setRefreshing(false);
     }
   };
@@ -98,7 +93,7 @@ function ValidationRessourcesScreen(props: any) {
       />
     </View>
   );
-}
+};
 
 export default ValidationRessourcesScreen;
 

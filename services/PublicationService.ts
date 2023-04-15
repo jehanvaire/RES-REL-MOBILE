@@ -46,57 +46,11 @@ export class PublicationService {
     return data;
   }
 
-  public async GetPublications(query: any = {}): Promise<PublicationEntity[]> {
-    const response = await this.restClient.get(this.baseUrl, query);
-    return response.data;
-  }
-
-  public async GetAllPublications(
-    filtres: any = {}
-  ): Promise<PublicationEntity[]> {
-    const response = await this.restClient.get(this.baseUrl, filtres);
-
-    const listePublications = response.data.map((publication: any) => {
-      return new PublicationEntity(
-        publication.id,
-        publication.titre,
-        publication.auteur,
-        publication.contenu,
-        publication.status,
-        publication.raisonRefus,
-        publication.dateCreation,
-        publication.datePublication,
-        "https://picsum.photos/200/300",
-        publication.idCategorie,
-        publication.idUtilisateur,
-        publication.navigation
-      );
-    });
-
-    return listePublications;
-  }
-
-  public async GetListePublicationsUtilisateur(
-    id: number,
-    params: any = {}
-  ): Promise<PublicationEntity[]> {
+  public async GetPublications(params: any = {}): Promise<PublicationEntity[]> {
     const response = await this.restClient.get(this.baseUrl, params);
 
     const listePublications = response.data.map((publication: any) => {
-      return new PublicationEntity(
-        publication.id,
-        publication.titre,
-        publication.auteur,
-        publication.contenu,
-        publication.status,
-        publication.raisonRefus,
-        publication.dateCreation,
-        publication.datePublication,
-        "https://picsum.photos/200/300",
-        publication.idCategorie,
-        publication.idUtilisateur,
-        publication.navigation
-      );
+      return new PublicationEntity(publication);
     });
 
     return listePublications;

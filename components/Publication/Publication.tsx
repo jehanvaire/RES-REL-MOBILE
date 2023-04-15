@@ -12,6 +12,7 @@ const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
   function LikePublication() {
+    console.log(props);
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log(res);
@@ -51,7 +52,7 @@ const Publication = (props: any) => {
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
-            uri: "https://i.imgflip.com/2xc9z0.png",
+            uri: "https://i.imgflip.com/2xc9z0.png", // TODO: changer l'avatar
           }}
         ></Avatar>
 
@@ -148,10 +149,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
-  },
-  button: {
-    padding: 5,
-    fontSize: 25,
   },
   footer: {
     margin: 20,

@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import RechercheUtilisateurScreen from "../../../pages/Rercherche/RechercheUtilisateurScreen";
-import DetailsUtilisateur from "../../Publication/DetailsUtilisateur";
+import ProfilScreen from "../../../pages/ProfilScreen";
 
 const StackNav = createStackNavigator();
 
@@ -14,7 +14,7 @@ const UtilisateurStackNavigator = () => {
       />
       <StackNav.Screen
         name="DetailsUtilisateur"
-        component={DetailsUtilisateur}
+        component={ProfilScreen}
         options={{ headerShown: false, title: "" }}
       />
     </StackNav.Navigator>
