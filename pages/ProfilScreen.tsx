@@ -13,7 +13,7 @@ import UtilisateurService from "../services/UtilisateurService";
 
 const PER_PAGE = 10;
 
-function ProfilScreen(props: any) {
+const ProfilScreen = (props: any) => {
   const { navigation } = props;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
@@ -146,7 +146,7 @@ function ProfilScreen(props: any) {
       </View>
     </GestureHandlerRootView>
   );
-}
+};
 
 export default ProfilScreen;
 

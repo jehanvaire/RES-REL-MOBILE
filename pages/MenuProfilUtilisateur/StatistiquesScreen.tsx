@@ -1,9 +1,11 @@
 import { View, Text } from "react-native";
 
-export default function StatistiquesScreen() {
+const StatistiquesScreen = () => {
   return (
     <View>
       <Text>Statistiques</Text>
     </View>
   );
-}
+};
+
+export default StatistiquesScreen;

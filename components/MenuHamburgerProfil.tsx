@@ -183,7 +183,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     color: "red",
   },
-  red: {
-    color: "red",
-  },
 });

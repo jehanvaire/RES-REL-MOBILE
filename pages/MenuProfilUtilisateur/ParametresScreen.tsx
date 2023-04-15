@@ -1,9 +1,11 @@
 import { View, Text } from "react-native";
 
-export default function ParametresScreen() {
+const ParametresScreen = () => {
   return (
     <View>
       <Text>Parametres</Text>
     </View>
   );
-}
+};
+
+export default ParametresScreen;

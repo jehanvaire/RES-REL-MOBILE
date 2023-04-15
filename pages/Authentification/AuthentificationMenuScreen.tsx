@@ -1,14 +1,12 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { Image } from "native-base";
-import { useAuth } from "../../services/AuthentificationService";
 import images from "../../ressources/ListeImagesLocales";
-import { FooterAuthentification } from "./FooterAuthentification";
+import FooterAuthentification from "./FooterAuthentification";
 
-// The registration view
-const Authentification = ({ navigation }: any) => {
+const AuthentificationMenu = ({ navigation }: any) => {
   return (
-    <View style={styles.view}>
+    <View style={styles.container}>
       <Image
         source={images.resre_logo_slogan}
         alt="logo_slogan"
@@ -35,8 +33,10 @@ const Authentification = ({ navigation }: any) => {
   );
 };
 
+export default AuthentificationMenu;
+
 const styles = StyleSheet.create({
-  view: {
+  container: {
     alignItems: "center",
     flex: 1,
     flexDirection: "column",
@@ -71,5 +71,3 @@ const styles = StyleSheet.create({
     height: 200,
   },
 });
-
-export default Authentification;

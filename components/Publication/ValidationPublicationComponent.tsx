@@ -3,10 +3,8 @@ import {
   Spacer,
   Center,
   Text,
-  Image,
   Modal,
   FormControl,
-  Input,
   Button,
   TextArea,
 } from "native-base";
@@ -26,7 +24,7 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
       status: publication.status,
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
-      lienImage: publication.lienImage,
+      lienImage: publication.image,
     });
   }
 
@@ -155,6 +153,5 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontSize: 18,
-    // fontWeight: "bold",
   },
 });

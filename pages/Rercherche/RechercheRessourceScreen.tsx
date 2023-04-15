@@ -12,7 +12,7 @@ import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 15;
 
-function RechercheRessourceScreen(props: any) {
+const RechercheRessourceScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -74,7 +74,7 @@ function RechercheRessourceScreen(props: any) {
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
-      lienImage: publication.lienImage,
+      lienImage: publication.image,
       auteur:
         publication.utilisateur.nom + " " + publication.utilisateur.prenom,
     });
@@ -127,7 +127,7 @@ function RechercheRessourceScreen(props: any) {
       <Spacer />
     </View>
   );
-}
+};
 
 export default RechercheRessourceScreen;
 

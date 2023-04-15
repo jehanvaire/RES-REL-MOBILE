@@ -165,21 +165,12 @@ function Filtre() {
 export default Filtre;
 
 const styles = StyleSheet.create({
-  MainContainer: {
-    flex: 1,
-    padding: 6,
-    alignItems: "center",
-    backgroundColor: "white",
-  },
-
   text: {
     fontSize: 15,
     padding: 3,
     marginBottom: 10,
     textAlign: "center",
   },
-
-  // Style for iOS ONLY...
   datePicker: {
     justifyContent: "center",
     alignItems: "flex-start",

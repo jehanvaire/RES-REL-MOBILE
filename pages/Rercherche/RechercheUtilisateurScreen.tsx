@@ -9,7 +9,7 @@ import SearchService from "../../services/SearchService";
 
 const PER_PAGE = 15;
 
-function RechercheUtilisateurScreen(props: any) {
+const RechercheUtilisateurScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -87,7 +87,7 @@ function RechercheUtilisateurScreen(props: any) {
       )}
     </View>
   );
-}
+};
 
 export default RechercheUtilisateurScreen;
 

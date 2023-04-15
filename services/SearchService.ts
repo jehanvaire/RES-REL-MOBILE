@@ -1,5 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import RestClient from "./RestClient";
 class SearchService {
   private baseUrl = "search";

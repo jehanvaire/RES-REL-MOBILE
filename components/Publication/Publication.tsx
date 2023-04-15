@@ -150,10 +150,6 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 1,
   },
-  button: {
-    padding: 5,
-    fontSize: 25,
-  },
   footer: {
     margin: 20,
     marginVertical: 10,

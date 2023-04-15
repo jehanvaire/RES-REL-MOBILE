@@ -10,7 +10,7 @@ import ValidationPublicationComponent from "../components/Publication/Validation
 
 const PER_PAGE = 15;
 
-function ValidationRessourcesScreen(props: any) {
+const ValidationRessourcesScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -93,7 +93,7 @@ function ValidationRessourcesScreen(props: any) {
       />
     </View>
   );
-}
+};
 
 export default ValidationRessourcesScreen;
 
