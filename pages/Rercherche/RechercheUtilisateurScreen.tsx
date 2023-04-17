@@ -5,7 +5,7 @@ import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import SearchService from "../../services/SearchService";
+import RechercheService from "../../services/RechercheService";
 
 const PER_PAGE = 15;
 
@@ -21,7 +21,7 @@ const RechercheUtilisateurScreen = (props: any) => {
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
 
-    SearchService.GetListeResultats().subscribe((result) => {
+    RechercheService.GetListeResUtilisateurs().subscribe((result) => {
       if (result !== undefined) {
         result = result.filter((item) => item.mail);
         setListeResultats(result);

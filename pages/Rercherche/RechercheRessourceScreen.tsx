@@ -5,8 +5,7 @@ import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import PublicationService from "../../services/PublicationService";
-import SearchService from "../../services/SearchService";
+import RechercheService from "../../services/RechercheService";
 import { PublicationEntity } from "../../ressources/types/PublicationEntity";
 import FastImage from "react-native-fast-image";
 
@@ -16,7 +15,6 @@ const RechercheRessourceScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
-  const [searchValue, setSeachValue] = React.useState("");
   const [listeResultats, setListeResultats] = useState<any[]>([]);
 
   useEffect(() => {
@@ -25,7 +23,7 @@ const RechercheRessourceScreen = (props: any) => {
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
 
-    SearchService.GetListeResultats().subscribe((result) => {
+    RechercheService.GetListeResRessources().subscribe((result) => {
       if (result) {
         result = result.filter((item) => item.titre);
         setListeResultats(result);
@@ -34,34 +32,6 @@ const RechercheRessourceScreen = (props: any) => {
       }
     });
   }, []);
-
-  const startSearch = () => {
-    if (searchValue !== "") {
-      const params = {
-        ressourceQuery: searchValue,
-        utilisateurQuery: searchValue,
-        include: "utilisateur",
-      };
-      SearchService.Search(params).then((result) => {
-        setListeResultats(result);
-      });
-    } else {
-      const params = {
-        include: "utilisateur",
-      };
-      PublicationService.GetPublications(params).then((listePublications) => {
-        setListeResultats(listePublications);
-      });
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startSearch();
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [searchValue]);
 
   function AfficherPublication(publication: PublicationEntity) {
     console.log(publication.utilisateur.nom);

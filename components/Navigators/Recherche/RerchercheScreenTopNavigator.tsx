@@ -13,6 +13,8 @@ function RechercheScreenTopNavigator() {
         tabBarIndicatorStyle: {
           backgroundColor: "red", // changer la couleur de l'indicateur
         },
+        // hide bar
+        tabBarStyle: { display: "none" },
       }}
     >
       <TopNav.Screen

@@ -6,7 +6,12 @@ const StackNav = createStackNavigator();
 
 const UtilisateurStackNavigator = () => {
   return (
-    <StackNav.Navigator initialRouteName="ListeUtilisateurs">
+    <StackNav.Navigator
+      initialRouteName="ListeUtilisateurs"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <StackNav.Screen
         name="ListeUtilisateurs"
         component={RechercheUtilisateurScreen}
@@ -15,7 +20,7 @@ const UtilisateurStackNavigator = () => {
       <StackNav.Screen
         name="DetailsUtilisateur"
         component={ProfilScreen}
-        options={{ headerShown: false, title: "" }}
+        options={{ headerShown: true, title: "" }}
       />
     </StackNav.Navigator>
   );

@@ -7,6 +7,7 @@ export class UtilisateurEntity {
   dateNaissance!: Date;
   dateInscription!: Date;
   image!: any;
+  role!: number;
 
   constructor(init?: Partial<UtilisateurEntity>) {
     Object.assign(this, init);

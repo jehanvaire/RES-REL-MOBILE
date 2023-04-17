@@ -83,6 +83,7 @@ export const AuthContainer = ({ children }: any) => {
           user.bio = "Bonjour je suis du contenu";
           user.dateNaissance = new Date("1995-01-01");
           user.dateInscription = new Date("2020-01-01");
+          user.role = 1;
 
           storage.set(CURRENT_USER, JSON.stringify(user));
 
@@ -110,6 +111,7 @@ export const AuthContainer = ({ children }: any) => {
         user.contenu = "Bonjour je suis du contenu";
         user.dateNaissance = new Date("1995-01-01");
         user.dateInscription = new Date("2020-01-01");
+        user.role = 1;
 
         storage.set(CURRENT_USER, JSON.stringify(user));
 
