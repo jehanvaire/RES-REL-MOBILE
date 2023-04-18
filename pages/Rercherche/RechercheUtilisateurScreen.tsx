@@ -5,9 +5,10 @@ import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import SearchService from "../../services/SearchService";
+import RechercheService from "../../services/RechercheService";
 
 const PER_PAGE = 15;
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const RechercheUtilisateurScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -21,7 +22,7 @@ const RechercheUtilisateurScreen = (props: any) => {
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
 
-    SearchService.GetListeResultats().subscribe((result) => {
+    RechercheService.GetListeResUtilisateurs().subscribe((result) => {
       if (result !== undefined) {
         result = result.filter((item) => item.mail);
         setListeResultats(result);
@@ -32,7 +33,7 @@ const RechercheUtilisateurScreen = (props: any) => {
   }, []);
 
   function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
-    console.log("AfficherUtilisateur", utilisateurSelectionne);
+    RechercheService.SetAfficheHeader(false);
     props.navigation.navigate("DetailsUtilisateur", {
       utilisateur: utilisateurSelectionne,
     });
@@ -51,7 +52,7 @@ const RechercheUtilisateurScreen = (props: any) => {
             <Avatar
               style={styles.avatar}
               source={{
-                uri: "https://picsum.photos/200/300",
+                uri: apiURL + "/" + item.id + "/download",
               }}
             ></Avatar>
             <Text style={styles.nomPrenom}>

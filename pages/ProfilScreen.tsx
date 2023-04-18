@@ -1,6 +1,6 @@
 import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList } from "react-native";
+import { StyleSheet, FlatList, BackHandler } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import Description from "../components/Description";
@@ -9,12 +9,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Publication from "../components/Publication/Publication";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
-import UtilisateurService from "../services/UtilisateurService";
+import RechercheService from "../services/RechercheService";
 
 const PER_PAGE = 10;
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const ProfilScreen = (props: any) => {
   const { navigation } = props;
+  const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
     PublicationEntity[]
@@ -28,10 +30,18 @@ const ProfilScreen = (props: any) => {
     const params = {
       id: utilisateur.id,
     };
-    UtilisateurService.GetPhotoUtilisateur(params).then((photo) => {
-      console.log(photo);
-      utilisateur.image = photo;
-    });
+  }, []);
+
+  useEffect(() => {
+    const retourHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        RechercheService.SetAfficheHeader(true);
+        navigation.goBack();
+        return true;
+      }
+    );
+    return () => retourHandler.remove();
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
@@ -87,20 +97,24 @@ const ProfilScreen = (props: any) => {
         status={item.status}
         raisonRefus={item.raisonRefus}
         dateCreation={item.dateCreation}
-        image={item.image}
         navigation={navigation}
+        utilisateurId={utilisateur.id}
       />
     </View>
   );
 
   return (
     <GestureHandlerRootView>
-      <View style={styles.container}>
+      <View
+        style={
+          autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
+        }
+      >
         <Stack direction="row" style={styles.header}>
           <Avatar
             size={100}
             source={{
-              uri: "https://picsum.photos/200/300",
+              uri: apiURL + "/" + utilisateur.id + "/download",
             }}
           ></Avatar>
 
@@ -155,6 +169,11 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignItems: "center",
     justifyContent: "center",
+  },
+  containerAutreUtilisateur: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 50,
   },
   header: {
     margin: 10,

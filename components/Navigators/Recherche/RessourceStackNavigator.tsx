@@ -7,7 +7,12 @@ const StackNav = createStackNavigator();
 
 const RessourceStackNavigator = () => {
   return (
-    <StackNav.Navigator initialRouteName="RechercheScreen">
+    <StackNav.Navigator
+      initialRouteName="RechercheScreen"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <StackNav.Screen
         name="RechercheScreen"
         component={RechercheRessourceScreen}

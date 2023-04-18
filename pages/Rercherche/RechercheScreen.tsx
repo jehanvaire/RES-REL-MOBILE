@@ -6,7 +6,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
-import SearchService from "../../services/SearchService";
+import RechercheService from "../../services/RechercheService";
 import PublicationService from "../../services/PublicationService";
 import { BehaviorSubject } from "rxjs";
 import Filtre from "../../components/Filtre";
@@ -17,7 +17,9 @@ const RechercheScreen = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
-  const [searchValue, setSeachValue] = React.useState("");
+
+  const [searchValue, setSeachValue] = useState("");
+  const [afficheHeader, setAfficheHeader] = useState(true);
 
   const filtres = new BehaviorSubject<FiltreEntity>({} as FiltreEntity);
 
@@ -31,24 +33,35 @@ const RechercheScreen = () => {
       setSeachValue("");
       startSearch();
     });
+
+    RechercheService.GetAfficheHeader().subscribe((affiche) => {
+      setAfficheHeader(affiche);
+    });
   }, []);
 
   const startSearch = () => {
     if (searchValue !== "") {
-      const params: FiltresRequete = {
-        "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
-        "datePublication[lowerThanEquals]=": filtres.value.dateFin,
-        "partage[equals]=": "PUBLIC",
-        "status[equals]=": "APPROVED",
-        ressourceQuery: searchValue,
-        utilisateurQuery: searchValue,
-        include: "utilisateur",
+      const params = {
+        query: {
+          ressource: {
+            // "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
+            // "datePublication[lowerThanEquals]=": filtres.value.dateFin,
+            // "partage[equals]=": "PUBLIC",
+            // "status[equals]=": "APPROVED",
+            q: searchValue,
+            include: ["utilisateur"],
+          },
+          utilisateur: {
+            q: searchValue,
+          },
+        },
       };
-      SearchService.Search(params).then((listeResultats) => {
-        SearchService.SetListeResultats(listeResultats);
+      RechercheService.Chercher(params).then((listeResultats) => {
+        RechercheService.SetListeResRessources(listeResultats.ressources);
+        RechercheService.SetListeResUtilisateurs(listeResultats.utilisateurs);
       });
     } else {
-      const filtresRequete: FiltresRequete = {
+      const filtresRequete: any = {
         "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
         "datePublication[lowerThanEquals]=": filtres.value.dateFin,
         "partage[equals]=": "PUBLIC",
@@ -61,7 +74,7 @@ const RechercheScreen = () => {
 
       PublicationService.GetPublications(filtresRequete).then(
         (listeResultats) => {
-          SearchService.SetListeResultats(listeResultats);
+          RechercheService.SetListeResRessources(listeResultats);
         }
       );
     }
@@ -71,14 +84,15 @@ const RechercheScreen = () => {
     const timer = setTimeout(() => {
       startSearch();
     }, 250);
-
     return () => clearTimeout(timer);
   }, [searchValue]);
 
   return (
     <>
       <View style={{ marginTop: 50, width: "100%" }}>
-        <Center style={styles.searchStack}>
+        <Center
+          style={[styles.searchStack, afficheHeader ? null : styles.cache]}
+        >
           <Stack direction="row">
             <TextInput
               style={styles.textInput}
@@ -126,5 +140,8 @@ const styles = StyleSheet.create({
     color: "black",
     marginTop: 5,
     marginRight: 10,
+  },
+  cache: {
+    display: "none",
   },
 });
