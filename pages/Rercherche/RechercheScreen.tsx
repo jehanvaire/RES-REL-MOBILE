@@ -13,14 +13,13 @@ import Filtre from "../../components/Filtre";
 import FiltreService from "../../services/FiltreService";
 import RechercheScreenTopNavigator from "../../components/Navigators/Recherche/RerchercheScreenTopNavigator";
 
-// a revoir
-const cache = true;
-
 const RechercheScreen = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
-  const [searchValue, setSeachValue] = React.useState("");
+
+  const [searchValue, setSeachValue] = useState("");
+  const [afficheHeader, setAfficheHeader] = useState(true);
 
   const filtres = new BehaviorSubject<FiltreEntity>({} as FiltreEntity);
 
@@ -33,6 +32,10 @@ const RechercheScreen = () => {
       filtres.next(nouveauxFiltres);
       setSeachValue("");
       startSearch();
+    });
+
+    RechercheService.GetAfficheHeader().subscribe((affiche) => {
+      setAfficheHeader(affiche);
     });
   }, []);
 
@@ -87,7 +90,9 @@ const RechercheScreen = () => {
   return (
     <>
       <View style={{ marginTop: 50, width: "100%" }}>
-        <Center style={[styles.searchStack, cache ? styles.cache : null]}>
+        <Center
+          style={[styles.searchStack, afficheHeader ? null : styles.cache]}
+        >
           <Stack direction="row">
             <TextInput
               style={styles.textInput}

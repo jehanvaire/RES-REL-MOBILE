@@ -32,7 +32,7 @@ const RechercheUtilisateurScreen = (props: any) => {
   }, []);
 
   function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
-    console.log("AfficherUtilisateur", utilisateurSelectionne);
+    RechercheService.SetAfficheHeader(false);
     props.navigation.navigate("DetailsUtilisateur", {
       utilisateur: utilisateurSelectionne,
     });

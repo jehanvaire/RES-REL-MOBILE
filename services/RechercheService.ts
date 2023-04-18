@@ -8,7 +8,7 @@ class RechercheService {
   private listeResRessources = new BehaviorSubject<any[]>([]);
   private listeResUtilisateurs = new BehaviorSubject<any[]>([]);
 
-  private afficheHeader = new BehaviorSubject<boolean>(false);
+  private afficheHeader = new BehaviorSubject<boolean>(true);
 
   constructor() {
     this.restClient = new RestClient();

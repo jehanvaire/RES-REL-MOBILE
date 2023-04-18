@@ -1,3 +1,4 @@
+import { Image } from "react-native";
 export class UtilisateurEntity {
   id!: number;
   nom!: string;
@@ -6,7 +7,7 @@ export class UtilisateurEntity {
   bio!: string;
   dateNaissance!: Date;
   dateInscription!: Date;
-  image!: any;
+  image!: ArrayBuffer;
   role!: number;
 
   constructor(init?: Partial<UtilisateurEntity>) {

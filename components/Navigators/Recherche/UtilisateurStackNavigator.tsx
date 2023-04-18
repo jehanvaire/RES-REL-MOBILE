@@ -20,7 +20,8 @@ const UtilisateurStackNavigator = () => {
       <StackNav.Screen
         name="DetailsUtilisateur"
         component={ProfilScreen}
-        options={{ headerShown: true, title: "" }}
+        options={{ headerShown: false, title: "" }}
+        initialParams={{ autreUtilisateur: true }}
       />
     </StackNav.Navigator>
   );

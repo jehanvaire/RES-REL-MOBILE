@@ -1,6 +1,6 @@
 import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList } from "react-native";
+import { StyleSheet, FlatList, BackHandler, Image } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import Description from "../components/Description";
@@ -10,11 +10,14 @@ import Publication from "../components/Publication/Publication";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
 import UtilisateurService from "../services/UtilisateurService";
+import RechercheService from "../services/RechercheService";
+import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 10;
 
 const ProfilScreen = (props: any) => {
   const { navigation } = props;
+  const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
     PublicationEntity[]
@@ -29,9 +32,20 @@ const ProfilScreen = (props: any) => {
       id: utilisateur.id,
     };
     UtilisateurService.GetPhotoUtilisateur(params).then((photo) => {
-      console.log(photo);
       utilisateur.image = photo;
     });
+  }, []);
+
+  useEffect(() => {
+    const retourHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        RechercheService.SetAfficheHeader(true);
+        navigation.goBack();
+        return true;
+      }
+    );
+    return () => retourHandler.remove();
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
@@ -95,14 +109,20 @@ const ProfilScreen = (props: any) => {
 
   return (
     <GestureHandlerRootView>
-      <View style={styles.container}>
+      <View
+        style={
+          autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
+        }
+      >
         <Stack direction="row" style={styles.header}>
-          <Avatar
-            size={100}
-            source={{
-              uri: "https://picsum.photos/200/300",
+          <FastImage
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 50,
+              marginLeft: 10,
             }}
-          ></Avatar>
+          />
 
           <Center marginLeft={2}>
             <Text style={styles.title}>
@@ -155,6 +175,11 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignItems: "center",
     justifyContent: "center",
+  },
+  containerAutreUtilisateur: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 50,
   },
   header: {
     margin: 10,

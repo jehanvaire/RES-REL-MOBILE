@@ -9,7 +9,7 @@ class UtilisateurService {
     this.restClient = new RestClient();
   }
 
-  public async GetPhotoUtilisateur(params: any = {}): Promise<Image> {
+  public async GetPhotoUtilisateur(params: any = {}): Promise<ArrayBuffer> {
     const image = await this.restClient.get(
       `${this.baseUrl}/${params.id}/download`,
       params

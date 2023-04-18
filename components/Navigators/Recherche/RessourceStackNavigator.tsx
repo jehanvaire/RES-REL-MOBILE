@@ -11,7 +11,6 @@ const RessourceStackNavigator = () => {
       initialRouteName="RechercheScreen"
       screenOptions={{
         headerShown: false,
-        headerStyle: { display: "none" },
       }}
     >
       <StackNav.Screen
