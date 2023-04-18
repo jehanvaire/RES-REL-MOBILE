@@ -8,14 +8,6 @@ class UtilisateurService {
   constructor() {
     this.restClient = new RestClient();
   }
-
-  public async GetPhotoUtilisateur(params: any = {}): Promise<ArrayBuffer> {
-    const image = await this.restClient.get(
-      `${this.baseUrl}/${params.id}/download`,
-      params
-    );
-    return image;
-  }
 }
 
 export default new UtilisateurService();

@@ -8,6 +8,8 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
@@ -52,7 +54,7 @@ const Publication = (props: any) => {
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
-            uri: "https://i.imgflip.com/2xc9z0.png", // TODO: changer l'avatar
+            uri: apiURL + "/" + props.utilisateurId + "/download",
           }}
         ></Avatar>
 

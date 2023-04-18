@@ -8,6 +8,7 @@ import { storage } from "../../services/AuthentificationService";
 import RechercheService from "../../services/RechercheService";
 
 const PER_PAGE = 15;
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const RechercheUtilisateurScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -51,7 +52,7 @@ const RechercheUtilisateurScreen = (props: any) => {
             <Avatar
               style={styles.avatar}
               source={{
-                uri: "https://picsum.photos/200/300",
+                uri: apiURL + "/" + item.id + "/download",
               }}
             ></Avatar>
             <Text style={styles.nomPrenom}>

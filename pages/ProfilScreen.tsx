@@ -1,6 +1,6 @@
 import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, BackHandler, Image } from "react-native";
+import { StyleSheet, FlatList, BackHandler } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import Description from "../components/Description";
@@ -9,11 +9,10 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Publication from "../components/Publication/Publication";
 import { PublicationEntity } from "../ressources/types/PublicationEntity";
 import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
-import UtilisateurService from "../services/UtilisateurService";
 import RechercheService from "../services/RechercheService";
-import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 10;
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const ProfilScreen = (props: any) => {
   const { navigation } = props;
@@ -31,9 +30,6 @@ const ProfilScreen = (props: any) => {
     const params = {
       id: utilisateur.id,
     };
-    UtilisateurService.GetPhotoUtilisateur(params).then((photo) => {
-      utilisateur.image = photo;
-    });
   }, []);
 
   useEffect(() => {
@@ -101,8 +97,8 @@ const ProfilScreen = (props: any) => {
         status={item.status}
         raisonRefus={item.raisonRefus}
         dateCreation={item.dateCreation}
-        image={item.image}
         navigation={navigation}
+        utilisateurId={utilisateur.id}
       />
     </View>
   );
@@ -115,14 +111,12 @@ const ProfilScreen = (props: any) => {
         }
       >
         <Stack direction="row" style={styles.header}>
-          <FastImage
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 50,
-              marginLeft: 10,
+          <Avatar
+            size={100}
+            source={{
+              uri: apiURL + "/" + utilisateur.id + "/download",
             }}
-          />
+          ></Avatar>
 
           <Center marginLeft={2}>
             <Text style={styles.title}>
