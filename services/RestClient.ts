@@ -10,6 +10,11 @@ import { getTokenFromStorage } from "./AuthentificationService";
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
   private token = getTokenFromStorage();
+
+  public getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   async get(path: string, params: any = {}): Promise<any> {
     const url = this.baseUrl + path;
 

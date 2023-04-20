@@ -5,9 +5,11 @@ import Pdf from 'react-native-pdf';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import PublicationService from '../../services/PublicationService';
 import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
-import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
 import { WebView } from 'react-native-webview'
+import { Menu, Portal, Provider } from 'react-native-paper';
+
 
 // import { FileSystem } from 'react-native-unimodules';
 
@@ -29,10 +31,21 @@ function CreationPublicationScreen() {
         name: null,
         size: null,
     });
-    
+
+    const [categorie, setCategorie] = useState('');
+    const [menuVisible, setMenuVisible] = useState(false);
+
+    const ouvrirMenu = () => setMenuVisible(true);
+    const fermerMenu = () => setMenuVisible(false);
+    const selectionnerCategorie = (value: string) => {
+        setCategorie(value);
+        fermerMenu();
+    };
+
+
 
     const [Utilisateur] = useState('1051');
-    const [Categorie] = useState('2');
+    const [Categorie] = categorie;
 
     const LONGUEUR_MIN_TITRE = 5;
 
@@ -73,59 +86,59 @@ function CreationPublicationScreen() {
 
     const soumettre = async (
         publication: any,
-        fileInfo: { uri: string | null; type: string | null; name: string | null; size: number | null } | null,
-      ) => {
+        fileInfo: {
+            uri: string | null;
+            type: string | null;
+            name: string | null;
+            size: number | null;
+        } | null,
+    ) => {
         try {
-          let pieceJointeId: number | null = null;
-          if (fileInfo && fileInfo.uri) {
-            const formDataPieceJointe = new FormData();
-            formDataPieceJointe.append('idUtilisateur', publication.Utilisateur);
-            formDataPieceJointe.append('type', fileInfo.type ?? '');
-            formDataPieceJointe.append('titre', fileInfo.name ?? '');
-            formDataPieceJointe.append('description', 'Description de la pièce jointe');
-            
-            const pieceJointeResponse = await PublicationService.AjouterPieceJointe(formDataPieceJointe, fileInfo);
-            console.log('Piece jointe:', pieceJointeResponse);
-            if (pieceJointeResponse?.data?.id) {
-              pieceJointeId = pieceJointeResponse.data.id;
-              console.log('Piece jointe ID:', pieceJointeId);
-            } else {
-              console.error('Erreur lors de l\'ajout de la pièce jointe');
+            let pieceJointeId: number | null = null;
+            if (fileInfo && fileInfo.uri && fileInfo.type && fileInfo.name) {
+                const formDataPieceJointe = new FormData();
+                formDataPieceJointe.append('file', {
+                    uri: fileInfo.uri,
+                    type: fileInfo.type,
+                    name: fileInfo.name,
+                } as unknown as Blob);
+
+                const pieceJointeResponse = await PublicationService.AjouterPieceJointe(
+                    fileInfo
+                );
+                console.log('Piece jointe:', pieceJointeResponse);
+                if (pieceJointeResponse?.data?.id) {
+                    pieceJointeId = pieceJointeResponse.data.id;
+                    console.log('Piece jointe ID:', pieceJointeId);
+                } else {
+                    console.error('Erreur lors de l\'ajout de la pièce jointe');
+                }
             }
-          }
-          const formDataPublication = new FormData();
-          formDataPublication.append("titre", publication.titre);
-          formDataPublication.append("contenu", publication.contenu);
-          formDataPublication.append("idUtilisateur", publication.Utilisateur);
-          formDataPublication.append("idCategorie", publication.Categorie);
-          if (publication.lienPieceJointe) {
-            formDataPublication.append("lienPieceJointe", publication.lienPieceJointe);
-          }
-          if (pieceJointeId) {
-            formDataPublication.append("idPieceJointe", pieceJointeId.toString());
-          }
-      
-          console.log(formDataPublication);
-      
-          const response = await PublicationService.CreerPublication(formDataPublication);
-          console.log("Response:", response);
-          if (response) {
-            gererNavigation();
-          } else {
-            console.error(
-              "Erreur lors de la création de la publication. Veuillez vérifier la réponse du serveur."
-            );
-          }
+            const publicationData = {
+                titre: publication.titre,
+                contenu: publication.contenu,
+                idUtilisateur: publication.Utilisateur,
+                idCategorie: publication.Categorie,
+                lienPieceJointe: publication.lienPieceJointe,
+                idPieceJointe: pieceJointeId,
+            };
+
+            console.log(publicationData);
+
+            const response = await PublicationService.CreerPublication(publicationData);
+
+            console.log("Response:", response);
+            if (response) {
+                gererNavigation();
+            } else {
+                console.error(
+                    "Erreur lors de la création de la publication. Veuillez vérifier la réponse du serveur."
+                );
+            }
         } catch (error: any) {
-          console.error("Erreur lors de la soumission de la publication:", error.message);
+            console.error("Erreur lors de la soumission de la publication:", error.message);
         }
-      };
-      
-      
-
-
-
-
+    };
 
 
     const selectionnerPieceJointe = async () => {
@@ -138,18 +151,18 @@ function CreationPublicationScreen() {
                 ],
             }))[0];
             console.log('Fichier sélectionné:', result);
-    
+
             const androidContentUri = result.uri.startsWith('content://');
             let filePath = result.uri;
-    
+
             if (androidContentUri) {
                 const tempPath = `${RNFS.CachesDirectoryPath}/${result.name}`;
                 await RNFS.copyFile(result.uri, tempPath);
                 filePath = tempPath;
             }
-    
+
             setLienPieceJointe(filePath);
-    
+
             // Mettre à jour les informations de fileInfo
             setFileInfo({
                 uri: filePath,
@@ -157,7 +170,7 @@ function CreationPublicationScreen() {
                 name: result.name,
                 size: result.size,
             });
-    
+
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 console.log('Annulation du choix de fichier');
@@ -166,47 +179,50 @@ function CreationPublicationScreen() {
             }
         }
     };
-    
-      
-      
-      
-      
+
+
+
+
+
     const renderPieceJointe = () => {
         if (!fileInfo || fileInfo.uri === null || !fileInfo.hasOwnProperty('type') || !fileInfo.type) {
             return <Text>Type de fichier non pris en charge</Text>;
         }
         const typeMime = fileInfo.type;
-      
+
         const uri =
-          Platform.OS === 'android'
-            ? 'file://' + fileInfo.uri
-            : fileInfo.uri.replace('file://', '');
-      
+            Platform.OS === 'android'
+                ? 'file://' + fileInfo.uri
+                : fileInfo.uri.replace('file://', '');
+
         if (typeMime.startsWith('image/')) {
-          return <Image source={{ uri }} style={styles.imagePieceJointe} />;
+            return <Image source={{ uri }} style={styles.imagePieceJointe} />;
         } else if (typeMime.startsWith('video/')) {
-          return (
-            <WebView
-              source={{ uri }}
-              style={styles.videoPieceJointe}
-              allowsFullscreenVideo={true}
-              javaScriptEnabled={true}
-              mediaPlaybackRequiresUserAction={false}
-            />
-          );
+            return (
+                <WebView
+                    source={{ uri }}
+                    style={styles.videoPieceJointe}
+                    allowsFullscreenVideo={true}
+                    javaScriptEnabled={true}
+                    mediaPlaybackRequiresUserAction={false}
+                />
+            );
         } else if (typeMime === 'application/pdf') {
-          return <Pdf source={{ uri }} style={styles.pdfPieceJointe} />;
+            return <Pdf source={{ uri }} style={styles.pdfPieceJointe} />;
         } else {
-          return <Text>Type de fichier non pris en charge</Text>;
+            return <Text>Type de fichier non pris en charge</Text>;
         }
-      };
-      
-      
+    };
+
+
 
 
 
     return (
         <ScrollView style={styles.conteneur}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Créer une publication</Text>
+            </View>
             <TextInput
                 label="Titre"
                 value={titre}
@@ -221,6 +237,24 @@ function CreationPublicationScreen() {
                 multiline
                 numberOfLines={4}
             />
+            <Portal>
+                <Menu
+                    visible={menuVisible}
+                    onDismiss={fermerMenu}
+                    anchor={
+                        <Button onPress={ouvrirMenu} style={styles.boutonCategorie}>
+                            Catégorie: {categorie || "Sélectionner"}
+                        </Button>
+                    }
+                    style={styles.menuStyle}
+                >
+                    <Menu.Item onPress={() => selectionnerCategorie("Catégorie 1")} title="Catégorie 1" />
+                    <Menu.Item onPress={() => selectionnerCategorie("Catégorie 2")} title="Catégorie 2" />
+                    <Menu.Item onPress={() => selectionnerCategorie("Catégorie 3")} title="Catégorie 3" />
+                    {/* Ajoutez d'autres catégories ici */}
+                </Menu>
+            </Portal>
+
             <Button
                 mode="contained"
                 onPress={selectionnerPieceJointe}
@@ -236,41 +270,32 @@ function CreationPublicationScreen() {
                 </View>
             )}
 
-
-
-<Button
-    mode="contained"
-    onPress={() =>
-        soumettre(
-            {
-                titre,
-                contenu,
-                Categorie,
-                Utilisateur,
-                lienPieceJointe,
-            },
-            fileInfo.type
-                ? {
-                      uri: fileInfo.uri ?? '',
-                      type: fileInfo.type ?? '',
-                      name: fileInfo.name ?? '',
-                      size: fileInfo.size ?? 0,
-                  }
-                : null
-        )
-    }
-    style={styles.boutonSoumettre}
-    disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
->
-    Créer la publication
-</Button>
-
-
-
-
-
-
-
+            <Button
+                mode="contained"
+                onPress={() =>
+                    soumettre(
+                        {
+                            titre,
+                            contenu,
+                            Categorie,
+                            Utilisateur,
+                            lienPieceJointe,
+                        },
+                        fileInfo.type
+                            ? {
+                                uri: fileInfo.uri ?? '',
+                                type: fileInfo.type ?? '',
+                                name: fileInfo.name ?? '',
+                                size: fileInfo.size ?? 0,
+                            }
+                            : null
+                    )
+                }
+                style={styles.boutonSoumettre}
+                disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
+            >
+                Soumettre une publication
+            </Button>
         </ScrollView>
     );
 }
@@ -284,12 +309,16 @@ const styles = StyleSheet.create({
     },
     input: {
         marginBottom: 16,
+        backgroundColor: '#F5F5F5',
+        borderRadius: 30,
     },
     boutonSoumettre: {
         marginTop: 16,
+        backgroundColor: '#4183F4',
     },
     boutonSelectionFichier: {
         marginBottom: 16,
+        backgroundColor: '#4183F4',
     },
     previewPieceJointe: {
         alignItems: 'center',
@@ -315,5 +344,27 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 250,
         marginBottom: 16,
+    },
+    boutonCategorie: {
+        marginBottom: 16,
+        backgroundColor: '#F5F5F5',
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        paddingHorizontal: 16,
+    },
+    menuStyle: {
+        marginTop: 50,
+        marginLeft: 16,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
     },
 });

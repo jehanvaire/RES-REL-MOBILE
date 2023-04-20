@@ -9,6 +9,7 @@ import CreationPublicationScreen from "../components/Publication/CreationPublica
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
+import { Provider as PaperProvider } from "react-native-paper";
 
 function ListePublicationsScreen({ navigation }: any) {
   const navigateToCreation = () => {
@@ -72,12 +73,26 @@ function CustomButton({ onPress }: { onPress: () => void }) {
 }
 const StackNav = createStackNavigator();
 
+const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
+  return (props: any) => {
+    return (
+      <PaperProvider>
+        <WrappedComponent {...props} />
+      </PaperProvider>
+    );
+  };
+};
+
+const WrappedCreationPublicationScreen = withPaperProvider(
+  CreationPublicationScreen
+);
+
 
 const ListePublicationStack = () => {
   return (
     <StackNav.Navigator initialRouteName="ListePublicationsScreen">
       <StackNav.Screen name="ListePublicationsScreen" component={ListePublicationsScreen} options={{ headerShown: false }} />
-      <StackNav.Screen name="CreationPublicationScreen" component={CreationPublicationScreen} />
+      <StackNav.Screen name="CreationPublicationScreen" component={WrappedCreationPublicationScreen} />
       <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} />
     </StackNav.Navigator>
   )

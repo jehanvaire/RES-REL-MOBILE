@@ -123,19 +123,41 @@ export class PublicationService {
     return data;
   }
 
-  public async CreerPublication(publicationData: FormData, pieceJointe?: File): Promise<any> {
+  public async CreerPublication(publicationData: any, pieceJointe?: File): Promise<any> {
     try {
+      console.log('Début de l\'envoi de la publication');
       const formData = new FormData();
   
-      // Ajouter la ressource en tant que chaîne de caractères JSON
-      formData.append("ressource", JSON.stringify(publicationData));
-  
-      // Ajouter la pièce jointe si elle existe
       if (pieceJointe) {
-        formData.append("pieceJointe", pieceJointe);
+        // Préparez les informations sur le fichier
+        const fileInfo = {
+          uri: publicationData.lienPieceJointe,
+          type: pieceJointe.type,
+          name: pieceJointe.name,
+          size: pieceJointe.size,
+        };
+        
+        // Créez un objet FormData pour la pièce jointe
+        const pieceJointeResponse = await this.AjouterPieceJointe(fileInfo);
+  
+        // Ajoutez l'idPièceJointe à publicationData
+        if (pieceJointeResponse && pieceJointeResponse.data && pieceJointeResponse.data.id) {
+          publicationData.idPieceJointe = pieceJointeResponse.data.id;
+        } else {
+          throw new Error("Failed to upload the attachment");
+        }
       }
   
+      // Ajouter la ressource en tant que chaîne de caractères JSON
+      Object.entries(publicationData).forEach(([key, value]) => {
+        if (key !== 'lienPieceJointe' && value !== null && value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
+  
+      console.log("formData avant envoi: ", formData);
       const response = await this.restClient.post(this.baseUrl, formData);
+      console.log('Réponse de l\'API pour la création de publication:', response);
       return response;
     } catch (error) {
       console.log("AAAAAAAAAAAAAA", error);
@@ -144,36 +166,40 @@ export class PublicationService {
   }
   
   
-  public async AjouterPieceJointe(pieceJointe: FormData, fileInfo: { uri: string | null; type: string | null; name: string | null; size: number | null }): Promise<any | null> {
+  
+  public async AjouterPieceJointe(fileInfo: { uri: string | null; type: string | null; name: string | null; size: number | null }): Promise<any | null> {
     try {
       console.log('Début de l\'envoi de la pièce jointe');
-      const response = await RNFetchBlob.fetch(
-        'POST',
-        'https://your-api-url.com/piecesJointes',
-        {
-          'Content-Type': 'multipart/form-data',
-        },
-        [
-          ...Array.from(pieceJointe.entries()).map(([key, value]) => ({ name: key, data: value })),
-          {
-            name: 'file',
-            filename: fileInfo.name ?? '',
-            type: fileInfo.type ?? '',
-            data: RNFetchBlob.wrap(fileInfo.uri ?? ''),
-          },
-        ],
-      );
-      console.log('Réponse de l\'API pour l\'ajout de pièce jointe:', response);
   
-      return response;
-    } catch (error: any) {
+      if (!fileInfo.uri || !fileInfo.type || !fileInfo.name) {
+        throw new Error('Invalid fileInfo provided');
+      }
+  
+      const response = await RNFetchBlob.fetch('POST', `${this.restClient.getBaseUrl()}/${this.pieceJointeUrl}`, {
+        'Content-Type': 'multipart/form-data',
+      }, [
+        {
+          name: 'file',
+          filename: fileInfo.name,
+          type: fileInfo.type,
+          data: RNFetchBlob.wrap(fileInfo.uri),
+        },
+      ]);
+
+      console.log('Raw response:', response.text());
+  
+      const jsonResponse = response.json();
+  
+      console.log('Réponse de l\'API pour l\'ajout de pièce jointe:', jsonResponse);
+      return jsonResponse;
+    }
+    catch (error: any) {
       console.log('Erreur lors de l\'ajout de la pièce jointe:');
       console.log('Message d\'erreur:', error.message);
       console.log('Erreur complète:', error);
       return null;
     }
   }
-  
   
   
 }
