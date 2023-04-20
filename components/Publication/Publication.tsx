@@ -50,7 +50,10 @@ const Publication = (props: any) => {
   }
 
   return (
-    <Box style={styles.container}>
+    <Box style={[
+      styles.container,
+      styles.shadow
+    ]}>
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
@@ -65,7 +68,7 @@ const Publication = (props: any) => {
         <Spacer />
 
         <Center>
-          <Text>
+          <Text style={styles.date}>
             {moment(props.dateCreation).fromNow() === "Invalid date"
               ? "quelques secondes"
               : moment(props.dateCreation).fromNow()}
@@ -75,7 +78,6 @@ const Publication = (props: any) => {
 
       <Text style={styles.titre}>{props.titre}</Text>
 
-      <Description contenu={props.contenu}></Description>
 
       <DoubleTap
         AfficherPublication={AfficherPublication}
@@ -88,10 +90,13 @@ const Publication = (props: any) => {
               uri: props.lienImage,
               priority: FastImage.priority.normal,
             }}
-            resizeMode={FastImage.resizeMode.contain}
+            resizeMode={FastImage.resizeMode.cover}
           />
         </View>
       </DoubleTap>
+
+      
+      <Description contenu={props.contenu}></Description>
 
       <Stack direction="row" style={styles.footer}>
         <TouchableOpacity onPress={LikePublication}>
@@ -121,6 +126,8 @@ const Publication = (props: any) => {
         </TouchableOpacity>
       </Stack>
     </Box>
+
+
   );
 };
 
@@ -130,10 +137,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "whitesmoke",
     marginVertical: 7,
+    borderRadius: 10,
   },
   header: {
     margin: 10,
-    marginTop: 5,
+    marginTop: 10,
   },
   titre: {
     fontSize: 26,
@@ -141,6 +149,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     textBreakStrategy: "simple",
     marginHorizontal: 10,
+    textAlign: "center",
   },
   contenu: {
     fontSize: 16,
@@ -155,5 +164,19 @@ const styles = StyleSheet.create({
   footer: {
     margin: 20,
     marginVertical: 10,
+    //TODO background FFFFFF on the footer (voir maquette)
   },
+  date: {
+    color: "#828282"
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  }
 });
