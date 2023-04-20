@@ -188,18 +188,22 @@ function EspaceCommentaireScreen(props: any) {
       <Stack direction="row" style={styles.inputStack}>
         <Input
           mx="3"
-          placeholder="Input"
+          placeholder="Publier un commentaire..."
           w="85%"
           onChangeText={setCommentaire}
           value={commentaire}
           ref={inputRef}
+          borderRadius={15}
+          borderWidth={1}
+          borderColor={"gray"}
+          fontSize={15}
         />
         <TouchableOpacity
           onPress={() => {
             reponseA.id ? sendReponseCommentaire() : sendCommentaire();
           }}
         >
-          <Ionicons name="send-outline" size={25} color="#4183F4" />
+          <Ionicons name="send-outline" size={25} color="#000000" />
         </TouchableOpacity>
       </Stack>
     </View>
@@ -211,10 +215,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#BBBBBB",
   },
   title: {
-    fontSize: 20,
+    backgroundColor: "#FFFFFF",
+    fontSize: 15,
     fontWeight: "bold",
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 10,
   },
   textReponse: {
     marginLeft: 30,
@@ -225,7 +234,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    height: 50,
+    height: 75,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
   },
 });
 
