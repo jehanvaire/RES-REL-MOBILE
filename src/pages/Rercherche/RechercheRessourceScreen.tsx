@@ -34,8 +34,6 @@ const RechercheRessourceScreen = (props: any) => {
   }, []);
 
   function AfficherPublication(publication: PublicationEntity) {
-    console.log(publication.utilisateur.nom);
-
     props.navigation.navigate("DetailsPublication", {
       id: publication.id,
       titre: publication.titre,

@@ -1,3 +1,4 @@
+import { PieceJointeEntity } from "../ressources/models/PieceJointeEntity";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RestClient from "./RestClient";
 import RNFetchBlob from "rn-fetch-blob";
@@ -84,50 +85,41 @@ export class PublicationService {
     return response;
   }
 
-  public async AjouterPieceJointe(fileInfo: {
-    uri: string | null;
-    type: string | null;
-    name: string | null;
-    size: number | null;
-  }): Promise<any | null> {
-    try {
-      console.log("Début de l'envoi de la pièce jointe");
+  public async AjouterPieceJointe(
+    pieceJointe: PieceJointeEntity
+  ): Promise<any> {
+    console.log("Début de l'envoi de la pièce jointe");
+    const response = this.restClient.upload(this.pieceJointeUrl, pieceJointe);
 
-      // if (!fileInfo.uri || !fileInfo.type || !fileInfo.name) {
-      //   throw new Error("Invalid fileInfo provided");
-      // }
+    // if (!fileInfo.uri || !fileInfo.type || !fileInfo.name) {
+    //   throw new Error("Invalid fileInfo provided");
+    // }
 
-      // const response = await RNFetchBlob.fetch(
-      //   "POST",
-      //   `${this.restClient.getBaseUrl()}/${this.pieceJointeUrl}`,
-      //   {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      //   [
-      //     {
-      //       name: "file",
-      //       filename: fileInfo.name,
-      //       type: fileInfo.type,
-      //       data: RNFetchBlob.wrap(fileInfo.uri),
-      //     },
-      //   ]
-      // );
+    // const response = await RNFetchBlob.fetch(
+    //   "POST",
+    //   `${this.restClient.getBaseUrl()}/${this.pieceJointeUrl}`,
+    //   {
+    //     "Content-Type": "multipart/form-data",
+    //   },
+    //   [
+    //     {
+    //       name: "file",
+    //       filename: fileInfo.name,
+    //       type: fileInfo.type,
+    //       data: RNFetchBlob.wrap(fileInfo.uri),
+    //     },
+    //   ]
+    // );
 
-      // console.log("Raw response:", response.text());
+    // console.log("Raw response:", response.text());
 
-      // const jsonResponse = response.json();
+    // const jsonResponse = response.json();
 
-      // console.log(
-      //   "Réponse de l'API pour l'ajout de pièce jointe:",
-      //   jsonResponse
-      // );
-      return "";
-    } catch (error: any) {
-      console.log("Erreur lors de l'ajout de la pièce jointe:");
-      console.log("Message d'erreur:", error.message);
-      console.log("Erreur complète:", error);
-      return null;
-    }
+    // console.log(
+    //   "Réponse de l'API pour l'ajout de pièce jointe:",
+    //   jsonResponse
+    // );
+    return response;
   }
 }
 

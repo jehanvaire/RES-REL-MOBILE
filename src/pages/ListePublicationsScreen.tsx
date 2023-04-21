@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Publication from "../components/Ressource/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
-import CreationPublicationScreen from "../components/Ressource/CreationPublicationScreen";
+import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
@@ -24,7 +24,7 @@ const HeaderComponent = () => {
 
 function ListePublicationsScreen({ navigation }: any) {
   const navigateToCreation = () => {
-    navigation.navigate("CreationPublicationScreen");
+    navigation.navigate("CreationRessourceScreen");
   };
   return (
     <Box style={styles.container}>
@@ -92,8 +92,8 @@ const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
   };
 };
 
-const WrappedCreationPublicationScreen = withPaperProvider(
-  CreationPublicationScreen
+const WrappedCreationRessourceScreen = withPaperProvider(
+  CreationRessourceScreen
 );
 
 const ListePublicationStack = () => {
@@ -105,8 +105,8 @@ const ListePublicationStack = () => {
         options={{ headerShown: false }}
       />
       <StackNav.Screen
-        name="CreationPublicationScreen"
-        component={WrappedCreationPublicationScreen}
+        name="CreationRessourceScreen"
+        component={WrappedCreationRessourceScreen}
       />
       <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} />
     </StackNav.Navigator>
