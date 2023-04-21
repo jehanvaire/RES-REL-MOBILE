@@ -116,7 +116,6 @@ const Publication = (props: any) => {
           <Ionicons name={"ellipsis-vertical"} size={25} />
         </TouchableOpacity>
       </Stack>
-      
     </Box>
   );
 };

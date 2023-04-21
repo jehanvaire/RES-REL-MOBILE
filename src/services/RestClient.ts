@@ -1,7 +1,5 @@
-import axios , { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { getTokenFromStorage } from "./AuthentificationService";
-
-
 
 // interface Params {
 //   [key: string]: string;
@@ -9,7 +7,8 @@ import { getTokenFromStorage } from "./AuthentificationService";
 
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
-  private token = getTokenFromStorage();
+  // private token = getTokenFromStorage();
+  private token = "1|x6Y5BDn2kEBOHe1UATIejquEZFnP6zhbOhJRNpLT";
 
   public getBaseUrl(): string {
     return this.baseUrl;
@@ -26,34 +25,19 @@ export default class RestClient {
     }
   }
 
-  async post(path: string, body: any, headers: any = {}): Promise<any> {
+  async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    try {
-      const response = await axios.post(url, body, {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-          ...headers,
-        },
-      });
-      console.log("reponse du serveur", response);
-      if (response.status >= 200 && response.status < 300) {
-        return response.data;
-      } else {
-        throw new Error(response.data.error || "Something went wrong");
-      }
-    } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        console.log("Erreur lors de la requête POST:", error.response.data);
-      } else {
-        console.log("Erreur lors de la requête POST:", error);
-      }
-      throw error;
+    const response = await axios.post(url, body, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
     }
-  }    
-  
-  
-  
-
+  }
 
   async put(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;

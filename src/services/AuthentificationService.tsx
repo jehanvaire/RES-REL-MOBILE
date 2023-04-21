@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { MMKV } from "react-native-mmkv";
 
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
-import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 
 const AuthContext = React.createContext({} as any);
 
@@ -74,9 +74,7 @@ export const AuthContainer = ({ children }: any) => {
           // storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
           storage.set(ACCESS_TOKEN_KEY, String(token));
 
-          let user = (await getUtilisateur(
-            token
-          )) as UtilisateurEntity;
+          let user = (await getUtilisateur(token)) as UtilisateurEntity;
 
           // Add all other user Attributes here
           // TODO: à supprimer après
@@ -135,5 +133,5 @@ export const AuthContainer = ({ children }: any) => {
 };
 export function getTokenFromStorage() {
   return storage.getString(ACCESS_TOKEN_KEY);
-};
+}
 export const useAuth = () => useContext(AuthContext);

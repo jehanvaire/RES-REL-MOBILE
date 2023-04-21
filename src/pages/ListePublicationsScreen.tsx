@@ -1,4 +1,4 @@
-import { Box, ScrollView, View, } from "native-base";
+import { Box, ScrollView, View } from "native-base";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -63,10 +63,7 @@ function ListePublicationsScreen({ navigation }: any) {
 }
 function CustomButton({ onPress }: { onPress: () => void }) {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={styles.customButton}
-    >
+    <TouchableOpacity onPress={onPress} style={styles.customButton}>
       <Ionicons name="add-outline" size={36} color="#FFFFFF" />
     </TouchableOpacity>
   );
@@ -87,16 +84,22 @@ const WrappedCreationPublicationScreen = withPaperProvider(
   CreationPublicationScreen
 );
 
-
 const ListePublicationStack = () => {
   return (
     <StackNav.Navigator initialRouteName="ListePublicationsScreen">
-      <StackNav.Screen name="ListePublicationsScreen" component={ListePublicationsScreen} options={{ headerShown: false }} />
-      <StackNav.Screen name="CreationPublicationScreen" component={WrappedCreationPublicationScreen} />
+      <StackNav.Screen
+        name="ListePublicationsScreen"
+        component={ListePublicationsScreen}
+        options={{ headerShown: false }}
+      />
+      <StackNav.Screen
+        name="CreationPublicationScreen"
+        component={WrappedCreationPublicationScreen}
+      />
       <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} />
     </StackNav.Navigator>
-  )
-}
+  );
+};
 export default ListePublicationStack;
 const styles = StyleSheet.create({
   container: {

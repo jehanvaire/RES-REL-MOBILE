@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { View } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import SearchService from "../../services/SearchService";

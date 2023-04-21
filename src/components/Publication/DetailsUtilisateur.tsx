@@ -12,8 +12,8 @@ import ParametresScreen from "../../pages/MenuProfilUtilisateur/ParametresScreen
 import PublicationsEnregistreesScreen from "../../pages/MenuProfilUtilisateur/PublicationsEnregistrees";
 import StatistiquesScreen from "../../pages/MenuProfilUtilisateur/StatistiquesScreen";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
-import { PublicationEntity } from "../../ressources/types/PublicationEntity";
-import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
+import { PublicationEntity } from "../../ressources/models/PublicationEntity";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import PublicationService from "../../services/PublicationService";
 import Description from "../Description";

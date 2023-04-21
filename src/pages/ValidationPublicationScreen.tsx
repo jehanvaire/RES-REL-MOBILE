@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { View } from "native-base";
-import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import PublicationService from "../services/PublicationService";
-import { PublicationEntity } from "../ressources/types/PublicationEntity";
+import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import ValidationPublicationComponent from "../components/Publication/ValidationPublicationComponent";
 
 const PER_PAGE = 15;

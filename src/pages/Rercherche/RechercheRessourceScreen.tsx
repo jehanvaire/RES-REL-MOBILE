@@ -2,12 +2,12 @@ import { Spacer, Stack, FlatList } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
-import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
 import PublicationService from "../../services/PublicationService";
 import SearchService from "../../services/SearchService";
-import { PublicationEntity } from "../../ressources/types/PublicationEntity";
+import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 15;
