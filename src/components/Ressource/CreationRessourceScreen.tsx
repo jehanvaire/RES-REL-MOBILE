@@ -85,25 +85,20 @@ function CreationRessourceScreen() {
     publication.idUtilisateur = utilisateur;
 
     await PublicationService.CreerPublication(publication).then((res) => {
-      console.log("publi", res);
+      // à déplacer dans le service si on le garde
+      const formData = new FormData();
+      formData.append("file", pieceJointe.file, pieceJointe.titre);
+      formData.append("titre", pieceJointe.titre);
+      formData.append("type", pieceJointe.type);
+      formData.append("idUtilisateur", String(pieceJointe.idUtilisateur));
+      formData.append("idRessource", String(pieceJointe.idRessource));
 
-      if (pieceJointe) {
-        // Envoi de la pièce jointe
-        const params = {
-          idUtilisateur: pieceJointe.idUtilisateur,
-          idRessource: res.id,
-          type: pieceJointe.type,
-          titre: pieceJointe.titre,
-          file: pieceJointe.file,
-        } as PieceJointeEntity;
+      // form data pas bon (à cause de la pièce jointe)
 
-        PublicationService.AjouterPieceJointe(params).then((res) => {
-          console.log("pj", res);
-          gererNavigation();
-        });
-      } else {
+      PublicationService.AjouterPieceJointe(formData).then((res) => {
+        console.log("pj", res);
         gererNavigation();
-      }
+      });
     });
   };
 

@@ -66,18 +66,10 @@ export default class RestClient {
     }
   }
 
-  async upload(path: string, body: PieceJointeEntity): Promise<any> {
+  async upload(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
 
-    // à déplacer dans le service si on le garde
-    const formData = new FormData();
-    formData.append("file", body.file);
-    formData.append("titre", body.titre);
-    formData.append("type", body.type);
-    formData.append("idUtilisateur", String(body.idUtilisateur));
-    formData.append("idRessource", String(body.idRessource));
-
-    const response = await axios.post(url, formData, {
+    const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
         "Content-Type": "multipart/form-data",

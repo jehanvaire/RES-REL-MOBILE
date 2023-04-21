@@ -85,40 +85,8 @@ export class PublicationService {
     return response;
   }
 
-  public async AjouterPieceJointe(
-    pieceJointe: PieceJointeEntity
-  ): Promise<any> {
-    console.log("Début de l'envoi de la pièce jointe");
-    const response = this.restClient.upload(this.pieceJointeUrl, pieceJointe);
-
-    // if (!fileInfo.uri || !fileInfo.type || !fileInfo.name) {
-    //   throw new Error("Invalid fileInfo provided");
-    // }
-
-    // const response = await RNFetchBlob.fetch(
-    //   "POST",
-    //   `${this.restClient.getBaseUrl()}/${this.pieceJointeUrl}`,
-    //   {
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    //   [
-    //     {
-    //       name: "file",
-    //       filename: fileInfo.name,
-    //       type: fileInfo.type,
-    //       data: RNFetchBlob.wrap(fileInfo.uri),
-    //     },
-    //   ]
-    // );
-
-    // console.log("Raw response:", response.text());
-
-    // const jsonResponse = response.json();
-
-    // console.log(
-    //   "Réponse de l'API pour l'ajout de pièce jointe:",
-    //   jsonResponse
-    // );
+  public async AjouterPieceJointe(params: FormData): Promise<any> {
+    const response = this.restClient.upload(this.pieceJointeUrl, params);
     return response;
   }
 }
