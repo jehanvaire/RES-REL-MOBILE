@@ -18,13 +18,12 @@ import DocumentPicker, {
 import RNFS from "react-native-fs";
 import { WebView } from "react-native-webview";
 import { Menu, Portal, Provider } from "react-native-paper";
+import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 
 // import { FileSystem } from 'react-native-unimodules';
 
 function CreationPublicationScreen() {
   const navigation = useNavigation();
-  const [titre, setTitre] = useState("");
-  const [contenu, setContenu] = useState("");
   const [lienPieceJointe, setLienPieceJointe] = useState("");
   const [fileInfo, setFileInfo] = useState<{
     uri: string | null;
@@ -38,13 +37,14 @@ function CreationPublicationScreen() {
     size: null,
   });
 
-  const [categorie, setCategorie] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const [publication, setPublication] = useState({} as PublicationEntity);
 
   const ouvrirMenu = () => setMenuVisible(true);
   const fermerMenu = () => setMenuVisible(false);
   const selectionnerCategorie = (value: number) => {
-    setCategorie(value);
+    setPublication({ ...publication, idCategorie: value });
     fermerMenu();
   };
 
@@ -54,9 +54,9 @@ function CreationPublicationScreen() {
 
   const validateTitle = (text: string) => {
     if (text.length < LONGUEUR_MIN_TITRE) {
-      console.warn(
-        `Le titre doit contenir au moins ${LONGUEUR_MIN_TITRE} caractères.`
-      );
+      // console.warn(
+      //   `Le titre doit contenir au moins ${LONGUEUR_MIN_TITRE} caractères.`
+      // );
     }
     return true;
   };
@@ -71,13 +71,13 @@ function CreationPublicationScreen() {
 
   const gererChangementTitre = (texte: string) => {
     if (validateTitle(texte)) {
-      setTitre(texte);
+      setPublication({ ...publication, titre: texte });
     }
   };
 
   const validerContenu = (texte: string) => {
     if (validateContent(texte)) {
-      setContenu(texte);
+      setPublication({ ...publication, contenu: texte });
     }
   };
   const gererNavigation = useCallback(() => {
@@ -89,15 +89,7 @@ function CreationPublicationScreen() {
     );
   }, [navigation]);
 
-  const soumettre = async (
-    publication: any
-    // fileInfo: {
-    //   uri: string | null;
-    //   type: string | null;
-    //   name: string | null;
-    //   size: number | null;
-    // } | null
-  ) => {
+  const soumettre = async () => {
     try {
       // let pieceJointeId: number | null = null;
       // if (fileInfo && fileInfo.uri && fileInfo.type && fileInfo.name) {
@@ -119,27 +111,14 @@ function CreationPublicationScreen() {
       //     console.error("Erreur lors de l'ajout de la pièce jointe");
       //   }
       // }
-      const publicationData = {
-        titre: publication.titre,
-        contenu: publication.contenu,
-        idUtilisateur: publication.utilisateur,
-        idCategorie: publication.categorie,
-        // lienPieceJointe: publication.lienPieceJointe,
-        // idPieceJointe: pieceJointeId,
-      };
 
-      const response = await PublicationService.CreerPublication(
-        publicationData
-      );
+      // ajout utilisateur
+      publication.idUtilisateur = utilisateur;
 
-      console.log("Response:", response);
-      if (response) {
+      await PublicationService.CreerPublication(publication).then((res) => {
+        console.log(res);
         gererNavigation();
-      } else {
-        console.error(
-          "Erreur lors de la création de la publication. Veuillez vérifier la réponse du serveur."
-        );
-      }
+      });
     } catch (error: any) {
       console.error(
         "Erreur lors de la soumission de la publication:",
@@ -230,13 +209,13 @@ function CreationPublicationScreen() {
       </View>
       <TextInput
         label="Titre"
-        value={titre}
+        value={publication.titre}
         onChangeText={gererChangementTitre}
         style={styles.input}
       />
       <TextInput
         label="Contenu"
-        value={contenu}
+        value={publication.contenu}
         onChangeText={validerContenu}
         style={styles.input}
         multiline
@@ -248,7 +227,7 @@ function CreationPublicationScreen() {
           onDismiss={fermerMenu}
           anchor={
             <Button onPress={ouvrirMenu} style={styles.boutonCategorie}>
-              Catégorie: {categorie || "Sélectionner"}
+              Catégorie: {publication.idCategorie || "Sélectionner"}
             </Button>
           }
           style={styles.menuStyle}
@@ -287,27 +266,13 @@ function CreationPublicationScreen() {
 
       <Button
         mode="contained"
-        onPress={() =>
-          soumettre(
-            {
-              titre,
-              contenu,
-              categorie,
-              utilisateur,
-              lienPieceJointe,
-            }
-            // fileInfo.type
-            //   ? {
-            //       uri: fileInfo.uri ?? "",
-            //       type: fileInfo.type ?? "",
-            //       name: fileInfo.name ?? "",
-            //       size: fileInfo.size ?? 0,
-            //     }
-            //   : null
-          )
-        }
+        onPress={() => soumettre()}
         style={styles.boutonSoumettre}
-        disabled={titre.length < LONGUEUR_MIN_TITRE || contenu.length === 0}
+        disabled={
+          publication?.titre?.length < LONGUEUR_MIN_TITRE ||
+          publication?.contenu?.length === 0 ||
+          !publication?.idCategorie
+        }
       >
         Soumettre une publication
       </Button>
