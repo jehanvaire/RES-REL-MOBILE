@@ -44,7 +44,7 @@ const AuthentificationMenu = ({ navigation }: any) => {
         </TouchableOpacity>
         <Text style={styles.footertext}> · </Text>
         <TouchableOpacity>
-          <Text style={styles.footertext}>Centre d'aide</Text>
+          <Text style={styles.footertext}>Nous contacter</Text>
         </TouchableOpacity>
       </View>
       
