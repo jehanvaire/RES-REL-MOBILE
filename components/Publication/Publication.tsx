@@ -61,9 +61,13 @@ const Publication = (props: any) => {
           }}
         ></Avatar>
 
-        <Center marginLeft={2}>
+        <Stack direction="column" marginLeft={2}>
           <Text>Partagé par {props.auteur}</Text>
-        </Center>
+          <View style={styles.categorieWrapper}>
+            <Text style={styles.categorie}>{props.categorie}</Text>
+          </View>
+        </Stack>
+
 
         <Spacer />
 
@@ -95,7 +99,7 @@ const Publication = (props: any) => {
         </View>
       </DoubleTap>
 
-      
+
       <Description contenu={props.contenu}></Description>
 
       <Stack direction="row" style={styles.footer}>
@@ -135,10 +139,20 @@ export default Publication;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "whitesmoke",
+    backgroundColor: "white",
     marginVertical: 7,
     borderRadius: 10,
   },
+  categorie: {
+    backgroundColor: "#F2F2F2",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  categorieWrapper: {
+    borderRadius: 10,
+    paddingHorizontal: 1,
+    alignSelf: 'flex-start',
+  },  
   header: {
     margin: 10,
     marginTop: 10,
@@ -164,7 +178,6 @@ const styles = StyleSheet.create({
   footer: {
     margin: 20,
     marginVertical: 10,
-    //TODO background FFFFFF on the footer (voir maquette)
   },
   date: {
     color: "#828282"
