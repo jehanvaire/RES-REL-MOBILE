@@ -1,12 +1,18 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import RechercheRessourceScreen from "../../../pages/Rercherche/RechercheRessourceScreen";
 import DetailsPublication from "../../Publication/DetailsPublication";
+import EspaceCommentaireScreen from "../../../pages/Publication/EspaceCommentaireScreen";
 
 const StackNav = createStackNavigator();
 
 const RessourceStackNavigator = () => {
   return (
-    <StackNav.Navigator initialRouteName="RechercheScreen">
+    <StackNav.Navigator
+      initialRouteName="RechercheScreen"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <StackNav.Screen
         name="RechercheScreen"
         component={RechercheRessourceScreen}
@@ -15,6 +21,11 @@ const RessourceStackNavigator = () => {
       <StackNav.Screen
         name="DetailsPublication"
         component={DetailsPublication}
+        options={{ headerShown: false, title: "" }}
+      />
+      <StackNav.Screen
+        name="EspaceCommentaireScreen"
+        component={EspaceCommentaireScreen}
         options={{ headerShown: false, title: "" }}
       />
     </StackNav.Navigator>

@@ -19,6 +19,18 @@ import FastImage from "react-native-fast-image";
 const DetailsPublication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
+  const {
+    id,
+    auteur,
+    titre,
+    contenu,
+    dateCreation,
+    datePublication,
+    status,
+    raisonRefus,
+    lienImage,
+  } = props.route.params;
+
   function LikePublication() {
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
@@ -27,7 +39,10 @@ const DetailsPublication = (props: any) => {
   }
 
   function ShowCommentsSection() {
-    console.log("TODO: show comments section");
+    props.navigation.navigate("EspaceCommentaireScreen", {
+      id: id,
+      titre: titre,
+    });
   }
 
   function SauvegarderPublication() {
@@ -39,17 +54,6 @@ const DetailsPublication = (props: any) => {
   function AfficherPlusOptions() {
     console.log("TODO: afficher plus d'options");
   }
-
-  const {
-    auteur,
-    titre,
-    contenu,
-    dateCreation,
-    datePublication,
-    status,
-    raisonRefus,
-    lienImage,
-  } = props.route.params;
 
   const date = new Date(
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
@@ -149,10 +153,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
-  },
-  button: {
-    padding: 5,
-    fontSize: 25,
   },
   footer: {
     margin: 20,

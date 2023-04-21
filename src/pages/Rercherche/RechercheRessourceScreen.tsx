@@ -5,18 +5,16 @@ import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import PublicationService from "../../services/PublicationService";
-import SearchService from "../../services/SearchService";
 import { PublicationEntity } from "../../ressources/models/PublicationEntity";
+import RechercheService from "../../services/RechercheService";
 import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 15;
 
-function RessourceSearchScreen(props: any) {
+const RechercheRessourceScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
-  const [searchValue, setSeachValue] = React.useState("");
   const [listeResultats, setListeResultats] = useState<any[]>([]);
 
   useEffect(() => {
@@ -25,7 +23,7 @@ function RessourceSearchScreen(props: any) {
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
 
-    SearchService.GetListeResultats().subscribe((result) => {
+    RechercheService.GetListeResRessources().subscribe((result) => {
       if (result) {
         result = result.filter((item) => item.titre);
         setListeResultats(result);
@@ -35,43 +33,20 @@ function RessourceSearchScreen(props: any) {
     });
   }, []);
 
-  const startSearch = () => {
-    if (searchValue !== "") {
-      const params = {
-        ressourceQuery: searchValue,
-        utilisateurQuery: searchValue,
-      };
-      SearchService.Search(params).then((result) => {
-        result.forEach((element) => {
-          console.log(element.titre);
-        });
-        setListeResultats(result);
-      });
-    } else {
-      PublicationService.GetAllPublications().then((listePublications) => {
-        setListeResultats(listePublications);
-      });
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startSearch();
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [searchValue]);
-
   function AfficherPublication(publication: PublicationEntity) {
+    console.log(publication.utilisateur.nom);
+
     props.navigation.navigate("DetailsPublication", {
-      auteur: publication.auteur,
+      id: publication.id,
       titre: publication.titre,
       contenu: publication.contenu,
       status: publication.status,
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
-      lienImage: publication.lienImage,
+      lienImage: publication.image,
+      auteur:
+        publication.utilisateur.nom + " " + publication.utilisateur.prenom,
     });
   }
 
@@ -90,7 +65,9 @@ function RessourceSearchScreen(props: any) {
               {item.titre.length > 20 ? "..." : ""}
             </Text>
             <Spacer />
-            <Text style={styles.auteurPrewiew}>Adrien</Text>
+            <Text style={styles.auteurPrewiew}>
+              {item.utilisateur?.nom} {item.utilisateur?.prenom}
+            </Text>
             <FastImage
               style={styles.imagePrewiew}
               source={{
@@ -107,6 +84,7 @@ function RessourceSearchScreen(props: any) {
 
   return (
     <View style={styles.container}>
+      {/* TODO: ajouter un texte "Applications suggérées" si searchValue est vide */}
       <FlatList
         style={{ width: "100%" }}
         removeClippedSubviews={true}
@@ -119,9 +97,9 @@ function RessourceSearchScreen(props: any) {
       <Spacer />
     </View>
   );
-}
+};
 
-export default RessourceSearchScreen;
+export default RechercheRessourceScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -129,26 +107,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
-  },
-  searchStack: {
-    backgroundColor: "white",
-    height: 50,
-    width: "100%",
-  },
-  textInput: {
-    height: 40,
-    fontSize: 15,
-    paddingLeft: 10,
-    marginRight: 10,
-    borderRadius: 15,
-    width: "75%",
-    borderColor: "gray",
-    borderWidth: 1,
-  },
-  searchIcon: {
-    color: "black",
-    marginTop: 5,
-    marginRight: 10,
   },
   listePublications: {
     padding: 10,
@@ -162,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   titrePreview: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 10,

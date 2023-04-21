@@ -8,10 +8,13 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
   function LikePublication() {
+    console.log(props);
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log(res);
@@ -19,7 +22,7 @@ const Publication = (props: any) => {
   }
 
   function ShowCommentsSection() {
-    console.log("TODO: show comments section");
+    props.navigation.navigate("EspaceCommentaireScreen");
   }
 
   function SauvegarderPublication() {
@@ -34,6 +37,7 @@ const Publication = (props: any) => {
 
   function AfficherPublication() {
     props.navigation.navigate("DetailsPublication", {
+      id: props.id,
       auteur: props.auteur,
       titre: props.titre,
       contenu: props.contenu,
@@ -46,11 +50,14 @@ const Publication = (props: any) => {
   }
 
   return (
-    <Box style={styles.container}>
+    <Box style={[
+      styles.container,
+      styles.shadow
+    ]}>
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
-            uri: "https://i.imgflip.com/2xc9z0.png",
+            uri: apiURL + "/" + props.utilisateurId + "/download",
           }}
         ></Avatar>
 
@@ -61,7 +68,7 @@ const Publication = (props: any) => {
         <Spacer />
 
         <Center>
-          <Text>
+          <Text style={styles.date}>
             {moment(props.dateCreation).fromNow() === "Invalid date"
               ? "quelques secondes"
               : moment(props.dateCreation).fromNow()}
@@ -71,7 +78,6 @@ const Publication = (props: any) => {
 
       <Text style={styles.titre}>{props.titre}</Text>
 
-      <Description contenu={props.contenu}></Description>
 
       <DoubleTap
         AfficherPublication={AfficherPublication}
@@ -84,10 +90,13 @@ const Publication = (props: any) => {
               uri: props.lienImage,
               priority: FastImage.priority.normal,
             }}
-            resizeMode={FastImage.resizeMode.contain}
+            resizeMode={FastImage.resizeMode.cover}
           />
         </View>
       </DoubleTap>
+
+      
+      <Description contenu={props.contenu}></Description>
 
       <Stack direction="row" style={styles.footer}>
         <TouchableOpacity onPress={LikePublication}>
@@ -117,6 +126,8 @@ const Publication = (props: any) => {
         </TouchableOpacity>
       </Stack>
     </Box>
+
+
   );
 };
 
@@ -126,10 +137,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "whitesmoke",
     marginVertical: 7,
+    borderRadius: 10,
   },
   header: {
     margin: 10,
-    marginTop: 5,
+    marginTop: 10,
   },
   titre: {
     fontSize: 26,
@@ -137,6 +149,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     textBreakStrategy: "simple",
     marginHorizontal: 10,
+    textAlign: "center",
   },
   contenu: {
     fontSize: 16,
@@ -148,12 +161,22 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 1,
   },
-  button: {
-    padding: 5,
-    fontSize: 25,
-  },
   footer: {
     margin: 20,
     marginVertical: 10,
+    //TODO background FFFFFF on the footer (voir maquette)
   },
+  date: {
+    color: "#828282"
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  }
 });

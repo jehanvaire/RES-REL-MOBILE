@@ -1,14 +1,21 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { Image } from "native-base";
-import { useAuth } from "../../services/AuthentificationService";
 import images from "../../ressources/ListeImagesLocales";
-import { FooterAuthentification } from "./FooterAuthentification";
+import FooterAuthentification from "./FooterAuthentification";
+//import { Header, Icon } from 'react-native-elements';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-// The registration view
-const Authentification = ({ navigation }: any) => {
+const AuthentificationMenu = ({ navigation }: any) => {
   return (
-    <View style={styles.view}>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.exitIcon}>
+        <Ionicons
+          name="close-outline"
+          size={40}
+          style={[styles.exitIcon]}
+        />
+      </TouchableOpacity>
       <Image
         source={images.resre_logo_slogan}
         alt="logo_slogan"
@@ -30,13 +37,28 @@ const Authentification = ({ navigation }: any) => {
       >
         <Text style={styles.textButton}>Créer un compte</Text>
       </TouchableOpacity>
+
+      <View style={styles.row}>
+        <TouchableOpacity>
+          <Text style={styles.footertext}>Mot de passe oublié?</Text> 
+        </TouchableOpacity>
+        <Text style={styles.footertext}> · </Text>
+        <TouchableOpacity>
+          <Text style={styles.footertext}>Centre d'aide</Text>
+        </TouchableOpacity>
+      </View>
+      
       <FooterAuthentification />
+      
     </View>
+    
   );
 };
 
+export default AuthentificationMenu;
+
 const styles = StyleSheet.create({
-  view: {
+  container: {
     alignItems: "center",
     flex: 1,
     flexDirection: "column",
@@ -70,6 +92,15 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
   },
+  footertext: {
+    color: "#6a6a6a",
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  exitIcon: {
+    color: "black",
+    marginTop: 20,
+    marginRight: -330,
+  },
 });
-
-export default Authentification;

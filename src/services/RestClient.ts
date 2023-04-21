@@ -1,20 +1,12 @@
 import axios, { AxiosError } from "axios";
 import { getTokenFromStorage } from "./AuthentificationService";
 
-// interface Params {
-//   [key: string]: string;
-// }
-
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
   // private token = getTokenFromStorage();
   private token = "1|x6Y5BDn2kEBOHe1UATIejquEZFnP6zhbOhJRNpLT";
 
-  public getBaseUrl(): string {
-    return this.baseUrl;
-  }
-
-  async get(path: string, params: any = {}): Promise<any> {
+  async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
 
     const response = await axios.get(url, { params });
@@ -51,7 +43,11 @@ export default class RestClient {
 
   async delete(path: string): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await axios.delete(url);
+    const response = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {

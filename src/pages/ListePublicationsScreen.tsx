@@ -1,4 +1,4 @@
-import { Box, ScrollView, View } from "native-base";
+import { Box, ScrollView, View, Image } from "native-base";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -10,6 +10,17 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
 import { Provider as PaperProvider } from "react-native-paper";
+import images from "../ressources/ListeImagesLocales";
+
+const HeaderComponent = () => {
+  return (
+    <View style={[styles.vendorHeader, styles.shadow]}>
+      <Image source={images.logo} alt="icon" style={styles.logo} />
+      {/* TODO Font Santisa Swached sur le texte */}
+      <Text style={styles.headerText}>Ressources Relationnelles</Text>
+    </View>
+  );
+};
 
 function ListePublicationsScreen({ navigation }: any) {
   const navigateToCreation = () => {
@@ -18,8 +29,9 @@ function ListePublicationsScreen({ navigation }: any) {
   return (
     <Box style={styles.container}>
       <CustomButton onPress={navigateToCreation} />
+      <HeaderComponent />
       <GestureHandlerRootView>
-        <ScrollView>
+        <ScrollView style={styles.scrollView}>
           <Publication
             auteur="Adrien"
             titre="Mémoires de Louis de Funès"
@@ -103,7 +115,50 @@ const ListePublicationStack = () => {
 export default ListePublicationStack;
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    backgroundColor: "#BBBBBB",
+    marginTop: 35,
+  },
+  scrollView: {
+    paddingTop: 60,
+  },
+  vendorHeader: {
+    backgroundColor: "#FFFFFF",
+    height: 60,
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  headerText: {
+    fontSize: 24,
+    fontFamily: "SansitaSwashed-Bold",
+    color: "#000000",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  logo: {
+    width: 35,
+    height: 35,
+    resizeMode: "contain",
+    position: "absolute",
+    left: 10,
+    marginTop: 10,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   customButton: {
     position: "absolute",

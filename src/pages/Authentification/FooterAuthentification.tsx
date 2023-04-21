@@ -1,14 +1,16 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export const FooterAuthentification = () => {
+const FooterAuthentification = () => {
   return (
     <View style={styles.footer}>
       <Text style={{ color: "whitesmoke" }}>
-        (Re)ssources Relationnelles © 2022
+        (Re)ssources Relationnelles © 2023
       </Text>
     </View>
   );
 };
+
+export default FooterAuthentification;
 
 const styles = StyleSheet.create({
   footer: {

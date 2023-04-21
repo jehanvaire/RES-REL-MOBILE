@@ -5,12 +5,12 @@ import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import SearchService from "../../services/SearchService";
-import { PublicationEntity } from "../../ressources/models/PublicationEntity";
+import RechercheService from "../../services/RechercheService";
 
 const PER_PAGE = 15;
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
-function RechercheUtilisateurScreen(props: any) {
+const RechercheUtilisateurScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -22,7 +22,7 @@ function RechercheUtilisateurScreen(props: any) {
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
 
-    SearchService.GetListeResultats().subscribe((result) => {
+    RechercheService.GetListeResUtilisateurs().subscribe((result) => {
       if (result !== undefined) {
         result = result.filter((item) => item.mail);
         setListeResultats(result);
@@ -32,15 +32,10 @@ function RechercheUtilisateurScreen(props: any) {
     });
   }, []);
 
-  function AfficherUtilisateur(publication: PublicationEntity) {
+  function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
+    RechercheService.SetAfficheHeader(false);
     props.navigation.navigate("DetailsUtilisateur", {
-      auteur: publication.auteur,
-      titre: publication.titre,
-      contenu: publication.contenu,
-      status: publication.status,
-      raisonRefus: publication.raisonRefus,
-      dateCreation: publication.dateCreation,
-      lienImage: publication.lienImage,
+      utilisateur: utilisateurSelectionne,
     });
   }
 
@@ -57,7 +52,7 @@ function RechercheUtilisateurScreen(props: any) {
             <Avatar
               style={styles.avatar}
               source={{
-                uri: item.cheminPhoto,
+                uri: apiURL + "/" + item.id + "/download",
               }}
             ></Avatar>
             <Text style={styles.nomPrenom}>
@@ -93,7 +88,7 @@ function RechercheUtilisateurScreen(props: any) {
       )}
     </View>
   );
-}
+};
 
 export default RechercheUtilisateurScreen;
 
