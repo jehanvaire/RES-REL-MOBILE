@@ -7,7 +7,7 @@ import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import Description from "../components/Description";
 import MenuHamburgerProfil from "../components/MenuHamburgerProfil";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Publication from "../components/Publication/Publication";
+import Publication from "../components/Ressource/Publication";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
 

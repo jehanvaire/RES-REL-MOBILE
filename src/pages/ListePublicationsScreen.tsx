@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import Publication from "../components/Publication/Publication";
+import Publication from "../components/Ressource/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
-import CreationPublicationScreen from "../components/Publication/CreationPublicationScreen";
+import CreationPublicationScreen from "../components/Ressource/CreationPublicationScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";

@@ -6,7 +6,7 @@ import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
-import ValidationPublicationComponent from "../components/Publication/ValidationPublicationComponent";
+import ValidationPublicationComponent from "../components/Ressource/ValidationPublicationComponent";
 
 const PER_PAGE = 15;
 
