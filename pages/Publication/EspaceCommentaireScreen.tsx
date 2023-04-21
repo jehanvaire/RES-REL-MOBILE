@@ -153,7 +153,10 @@ function EspaceCommentaireScreen(props: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{titre}</Text>
+      <Text style={[
+        styles.title,
+        styles.shadow
+      ]}>{titre}</Text>
 
       <FlatList
         style={{ width: "100%" }}
@@ -166,7 +169,7 @@ function EspaceCommentaireScreen(props: any) {
       <ModalOptionsComponent />
 
       {reponseA.id && (
-        <Stack direction="row" style={styles.inputStack}>
+        <Stack direction="row" style={[styles.inputStack, styles.rounded]}>
           <Text style={styles.textReponse}>
             Réponse à {reponseA.utilisateur?.prenom} :{" "}
             {reponseA.contenu.substring(0, 20)}
@@ -185,7 +188,7 @@ function EspaceCommentaireScreen(props: any) {
         </Stack>
       )}
 
-      <Stack direction="row" style={styles.inputStack}>
+      <Stack direction="row" style={[styles.inputStack, !reponseA.id && styles.rounded]}>
         <Input
           mx="3"
           placeholder="Publier un commentaire..."
@@ -224,18 +227,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginTop: 10,
+    width: "100%",
   },
   textReponse: {
     marginLeft: 30,
   },
   inputStack: {
-    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
     height: 75,
     backgroundColor: "#fff",
+  },
+  rounded : {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },

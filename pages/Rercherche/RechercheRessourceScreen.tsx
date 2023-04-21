@@ -84,7 +84,7 @@ const RechercheRessourceScreen = (props: any) => {
 
   return (
     <View style={styles.container}>
-      {/* TODO: ajouter un texte "Applications suggérées" si searchValue est vide */}
+      {/* TODO: ajouter un texte "Publications suggérées" si searchValue est vide */}
       <FlatList
         style={{ width: "100%" }}
         removeClippedSubviews={true}
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
+    backgroundColor: "#BBBBBB",
   },
   listePublications: {
     padding: 10,

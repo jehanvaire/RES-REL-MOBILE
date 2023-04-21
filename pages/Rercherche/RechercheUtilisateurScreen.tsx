@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
+    backgroundColor: "#BBBBBB",
   },
   utilisateurPreview: {
     backgroundColor: "white",
