@@ -6,7 +6,7 @@ import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
-import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { storage } from "../services/AuthentificationService";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 
@@ -32,7 +32,7 @@ const Menu = ({ props }: any) => {
 
   return loading ? null : (
     <BottomTab.Navigator
-      initialRouteName="Recherche"
+      initialRouteName="Menu"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;

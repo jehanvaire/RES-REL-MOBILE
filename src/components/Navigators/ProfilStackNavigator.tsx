@@ -7,8 +7,8 @@ import ParametresScreen from "../../pages/MenuProfilUtilisateur/ParametresScreen
 import PublicationsEnregistreesScreen from "../../pages/MenuProfilUtilisateur/PublicationsEnregistrees";
 import StatistiquesScreen from "../../pages/MenuProfilUtilisateur/StatistiquesScreen";
 import ProfilScreen from "../../pages/ProfilScreen";
-import DetailsPublication from "../Publication/DetailsPublication";
-import Publication from "../Publication/Publication";
+import DetailsPublication from "../Ressource/DetailsPublication";
+import Publication from "../Ressource/Publication";
 import React from "react";
 
 export const StackNav = createStackNavigator();

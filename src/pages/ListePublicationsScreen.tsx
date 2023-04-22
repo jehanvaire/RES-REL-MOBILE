@@ -1,39 +1,41 @@
-import { Box, ScrollView } from "native-base";
+import { Box, ScrollView, View, Image } from "native-base";
 import React, { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import Publication from "../components/Publication/Publication";
+import Publication from "../components/Ressource/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
-import { View } from "native-base"; 
-import { Image } from "native-base";
+import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
+import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
 
 const HeaderComponent = () => {
   return (
-    <View style={[
-      styles.vendorHeader,
-      styles.shadow,
-    ]}>
-       <Image
-        source={images.logo}
-        alt="icon"
-        style={styles.logo}
-      />
+    <View style={[styles.vendorHeader, styles.shadow]}>
+      <Image source={images.logo} alt="icon" style={styles.logo} />
       {/* TODO Font Santisa Swached sur le texte */}
       <Text style={styles.headerText}>Ressources Relationnelles</Text>
     </View>
   );
 };
 
-
-export default function ListePublicationsScreen(props: any) {
+function ListePublicationsScreen({ navigation }: any) {
+  const navigateToCreation = () => {
+    navigation.navigate("CreationRessourceScreen");
+  };
   return (
     <Box style={styles.container}>
+      <CustomButton onPress={navigateToCreation} />
       <HeaderComponent />
       <GestureHandlerRootView>
         <ScrollView style={styles.scrollView}>
-          <Publication
+          <View>
+            <Text style={{ margin: 50 }}>Bonjoru</Text>
+          </View>
+          {/*    <Publication
             auteur="Adrien"
             titre="Mémoires de Louis de Funès"
             categorie="Culture"
@@ -44,10 +46,9 @@ export default function ListePublicationsScreen(props: any) {
             raisonRefus={undefined}
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
-            navigation={props.navigation}
+            navigation={navigation}
           />
-
-          <Publication
+           <Publication
             auteur="Adrien"
             titre="Sortie au cinéma"
             categorie="Loisirs"
@@ -56,7 +57,7 @@ export default function ListePublicationsScreen(props: any) {
             status={StatusPublicationEnum.ENATTENTE}
             raisonRefus={undefined}
             lienImage="https://fr.web.img3.acsta.net/r_654_368/newsv7/21/04/29/14/22/0010719.jpg"
-            navigation={props.navigation}
+            navigation={navigation}
           />
 
           <Publication
@@ -70,14 +71,53 @@ export default function ListePublicationsScreen(props: any) {
             raisonRefus={undefined}
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
-            navigation={props.navigation}
-          />
+            navigation={navigation}
+          /> */}
         </ScrollView>
       </GestureHandlerRootView>
     </Box>
   );
 }
+function CustomButton({ onPress }: { onPress: () => void }) {
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.customButton}>
+      <Ionicons name="add-outline" size={36} color="#FFFFFF" />
+    </TouchableOpacity>
+  );
+}
+const StackNav = createStackNavigator();
 
+const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
+  return (props: any) => {
+    return (
+      <PaperProvider>
+        <WrappedComponent {...props} />
+      </PaperProvider>
+    );
+  };
+};
+
+const WrappedCreationRessourceScreen = withPaperProvider(
+  CreationRessourceScreen
+);
+
+const ListePublicationStack = () => {
+  return (
+    <StackNav.Navigator initialRouteName="ListePublicationsScreen">
+      <StackNav.Screen
+        name="ListePublicationsScreen"
+        component={ListePublicationsScreen}
+        options={{ headerShown: false }}
+      />
+      <StackNav.Screen
+        name="CreationRessourceScreen"
+        component={WrappedCreationRessourceScreen}
+      />
+      <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} />
+    </StackNav.Navigator>
+  );
+};
+export default ListePublicationStack;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#BBBBBB",
@@ -87,31 +127,31 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   vendorHeader: {
-    backgroundColor: '#FFFFFF', 
-    height: 60, 
-    alignItems: 'center',
-    position: 'absolute',
+    backgroundColor: "#FFFFFF",
+    height: 60,
+    alignItems: "center",
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     zIndex: 1000,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'center', 
+    flexDirection: "row",
+    justifyContent: "center",
   },
   headerText: {
     fontSize: 24,
-    fontFamily: 'SansitaSwashed-Bold',
-    color: '#000000',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontFamily: "SansitaSwashed-Bold",
+    color: "#000000",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   logo: {
     width: 35,
     height: 35,
-    resizeMode: 'contain',
-    position: 'absolute', 
+    resizeMode: "contain",
+    position: "absolute",
     left: 10,
     marginTop: 10,
   },
@@ -124,5 +164,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  customButton: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    backgroundColor: "#6200EE",
+    borderRadius: 50,
+    width: 56,
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 100,
+  },
+  buttonText: {
+    fontSize: 36,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

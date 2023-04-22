@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from "rxjs";
-import CommentaireEntity from "../ressources/types/CommentaireEntity";
+import CommentaireEntity from "../ressources/models/CommentaireEntity";
 import RestClient from "./RestClient";
 
 class CommentaireService {
