@@ -40,6 +40,7 @@ const Publication = (props: any) => {
       id: props.id,
       auteur: props.auteur,
       titre: props.titre,
+      categorie: props.categorie,
       contenu: props.contenu,
       status: props.status,
       raisonRefus: props.raisonRefus,

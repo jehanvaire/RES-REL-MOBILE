@@ -93,6 +93,7 @@ const ProfilScreen = (props: any) => {
         id={item.idUtilisateur}
         auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
         titre={item.titre}
+        categorie={item.categorie}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
@@ -110,7 +111,7 @@ const ProfilScreen = (props: any) => {
           autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
         }
       >
-        <Stack direction="row" style={styles.header}>
+        <Stack style={[styles.header, styles.shadow]}>
           <Avatar
             size={100}
             source={{
@@ -129,23 +130,17 @@ const ProfilScreen = (props: any) => {
           <Center>
             <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
           </Center>
+
+          <Description contenu={utilisateur.bio ?? ""}></Description>
+
+          <Text style={styles.title}>Publications {utilisateur.id}</Text>
         </Stack>
 
-        <Description contenu={utilisateur.bio ?? ""}></Description>
-
-        <Text style={styles.title}>Publications {utilisateur.id}</Text>
-        <Box
-          style={{
-            width: "100%",
-            height: 1,
-            backgroundColor: "black",
-            marginTop: 10,
-            marginBottom: 10,
-          }}
-        ></Box>
+      
+       
 
         <FlatList
-          style={{ marginBottom: 200 }}
+          style={{ marginBottom: 17, marginTop: 17 }}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
@@ -166,27 +161,50 @@ export default ProfilScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    marginTop: 38,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#BBBBBB",
   },
   containerAutreUtilisateur: {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 50,
+    backgroundColor: "#BBBBBB",
   },
   header: {
-    margin: 10,
-    marginTop: 5,
+    height: 120,
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginHorizontal: 10,
+  }, 
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
   },
+  //unused?
   contenu: {
     margin: 10,
-    marginTop: 5,
+    marginTop: 50,
     fontSize: 15,
+    backgroundColor: "#FFFFFF",
   },
 });
