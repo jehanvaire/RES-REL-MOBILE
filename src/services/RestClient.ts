@@ -66,7 +66,7 @@ export default class RestClient {
     }
   }
 
-  async upload(path: string, body: any): Promise<any> {
+  async upload(path: string, body: FormData): Promise<any> {
     const url = this.baseUrl + path;
 
     const response = await axios.post(url, body, {
@@ -76,7 +76,6 @@ export default class RestClient {
       },
     });
 
-    console.log("Fin de l'envoi de la pièce jointe", response);
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {

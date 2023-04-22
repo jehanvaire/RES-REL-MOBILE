@@ -11,15 +11,13 @@ import { TextInput, Button } from "react-native-paper";
 import Pdf from "react-native-pdf";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import PublicationService from "../../services/PublicationService";
-import DocumentPicker, {
-  DocumentPickerResponse,
-} from "react-native-document-picker";
+import DocumentPicker from "react-native-document-picker";
 import RNFetchBlob from "rn-fetch-blob";
-import RNFS from "react-native-fs";
 import { WebView } from "react-native-webview";
-import { Menu, Portal, Provider } from "react-native-paper";
+import { Menu, Portal } from "react-native-paper";
 import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import { PieceJointeEntity } from "../../ressources/models/PieceJointeEntity";
+import RNFS from "react-native-fs";
 
 // import { FileSystem } from 'react-native-unimodules';
 
@@ -80,51 +78,29 @@ function CreationRessourceScreen() {
     );
   }, [navigation]);
 
-  const soumettre = async () => {
-    // ajout utilisateur
-    publication.idUtilisateur = utilisateur;
-
-    await PublicationService.CreerPublication(publication).then((res) => {
-      console.log("res", res);
-
-      // // à déplacer dans le service si on le garde
-      const formData = new FormData();
-      formData.append("file", pieceJointe.file, pieceJointe.titre);
-      formData.append("titre", pieceJointe.titre);
-      formData.append("type", pieceJointe.type);
-      formData.append("idUtilisateur", String(pieceJointe.idUtilisateur));
-      formData.append("idRessource", String(res.id));
-
-      PublicationService.AjouterPieceJointe(formData).then((res) => {
-        console.log("pj", res);
-        gererNavigation();
-      });
-    });
-  };
-
   const selectionnerPieceJointe = async () => {
-    const result = (
-      await DocumentPicker.pickMultiple({
-        type: [
-          DocumentPicker.types.images,
-          DocumentPicker.types.video,
-          DocumentPicker.types.pdf,
-        ],
-      })
-    )[0];
+    const result = await DocumentPicker.pickSingle({
+      type: [
+        DocumentPicker.types.images,
+        DocumentPicker.types.video,
+        DocumentPicker.types.pdf,
+      ],
+    });
+
     const androidContentUri = result.uri.startsWith("content://");
     let filePath = result.uri;
 
+    if (androidContentUri) {
+      if (androidContentUri) {
+        const tempPath = `${RNFS.CachesDirectoryPath}/${result.name}`;
+        await RNFS.copyFile(result.uri, tempPath);
+        await RNFS.copyFile(result.uri, tempPath);
+        filePath = tempPath;
+        filePath = tempPath;
+      }
+    }
+
     const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
-    // const blob = new Blob([fileBlob], { type: "multipart/form-data" });
-
-    // console.log("blob", blob.size, filePath);
-
-    // if (androidContentUri) {
-    //   const tempPath = `${RNFS.CachesDirectoryPath}/${result.name}`; // chemin temporaire
-    //   await RNFS.copyFile(result.uri, tempPath); // copie du fichier
-    //   filePath = tempPath;
-    // }
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur,
@@ -136,6 +112,22 @@ function CreationRessourceScreen() {
     } as PieceJointeEntity;
 
     setPieceJointe(nouvellePieceJointe);
+  };
+
+  const soumettre = async () => {
+    await PublicationService.CreerPublication(publication).then((res) => {
+      const formData = new FormData();
+      formData.append("file", pieceJointe.file, pieceJointe.titre);
+      formData.append("titre", pieceJointe.titre);
+      formData.append("type", pieceJointe.type);
+      formData.append("idUtilisateur", String(utilisateur));
+      formData.append("idRessource", String(res.id));
+
+      PublicationService.AjouterPieceJointe(formData).then((res) => {
+        console.log("pj", res);
+        gererNavigation();
+      });
+    });
   };
 
   const renderPieceJointe = () => {
@@ -150,10 +142,8 @@ function CreationRessourceScreen() {
 
     const uri =
       Platform.OS === "android"
-        ? "file://" + pieceJointe.uri
-        : pieceJointe.uri.replace("file://", "");
-
-    console.log("uri", uri);
+        ? "file:///" + pieceJointe.uri.replace("content://", "")
+        : pieceJointe.uri.replace("content://", "");
 
     if (pieceJointe.type.startsWith("image/")) {
       return <Image source={{ uri }} style={styles.imagePieceJointe} />;
