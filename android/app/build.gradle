@@ -167,6 +167,7 @@ android {
             }
         }
     }
+    
 
     if (isNewArchitectureEnabled()) {
         // We configure the CMake build only if you decide to opt-in for the New Architecture.
@@ -217,6 +218,12 @@ android {
             include (*reactNativeArchitectures())
         }
     }
+
+        packagingOptions {
+        pickFirst '**/libc++_shared.so'
+    }
+
+    
     signingConfigs {
         debug {
             storeFile file('debug.keystore')

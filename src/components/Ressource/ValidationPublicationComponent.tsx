@@ -10,7 +10,7 @@ import {
 } from "native-base";
 import React from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
-import { PublicationEntity } from "../../ressources/types/PublicationEntity";
+import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import PublicationService from "../../services/PublicationService";
 import moment from "moment";
 

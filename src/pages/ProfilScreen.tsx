@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, BackHandler } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import Description from "../components/Description";
 import MenuHamburgerProfil from "../components/MenuHamburgerProfil";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Publication from "../components/Publication/Publication";
-import { PublicationEntity } from "../ressources/types/PublicationEntity";
-import { UtilisateurEntity } from "../ressources/types/UtilisateurEntity";
+import Publication from "../components/Ressource/Publication";
+import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
 
 const PER_PAGE = 10;

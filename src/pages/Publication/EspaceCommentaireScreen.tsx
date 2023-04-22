@@ -8,7 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import CommentaireService from "../../services/CommentaireService";
-import CommentaireEntity from "../../ressources/types/CommentaireEntity";
+import CommentaireEntity from "../../ressources/models/CommentaireEntity";
 import { Input, Stack, Spacer } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CommentaireComponent from "../../components/Commentaire/Commentaire";

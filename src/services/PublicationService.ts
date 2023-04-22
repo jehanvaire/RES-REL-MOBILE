@@ -1,7 +1,11 @@
-import { PublicationEntity } from "../ressources/types/PublicationEntity";
+import { PieceJointeEntity } from "../ressources/models/PieceJointeEntity";
+import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RestClient from "./RestClient";
+import RNFetchBlob from "rn-fetch-blob";
+
 export class PublicationService {
   private baseUrl = "ressources";
+  private pieceJointeUrl = "piecesJointes";
 
   private restClient: RestClient;
 
@@ -72,6 +76,18 @@ export class PublicationService {
     // const data = await response.json();
     const data = "Publication refusée";
     return data;
+  }
+
+  public async CreerPublication(
+    publicationData: PublicationEntity
+  ): Promise<any> {
+    const response = await this.restClient.post(this.baseUrl, publicationData);
+    return response;
+  }
+
+  public async AjouterPieceJointe(params: FormData): Promise<any> {
+    const response = this.restClient.upload(this.pieceJointeUrl, params);
+    return response;
   }
 }
 

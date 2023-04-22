@@ -2,7 +2,7 @@ import { Spacer, Stack, FlatList, Avatar } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
-import { UtilisateurEntity } from "../../ressources/types/UtilisateurEntity";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
 import RechercheService from "../../services/RechercheService";

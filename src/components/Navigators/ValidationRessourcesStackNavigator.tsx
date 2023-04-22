@@ -1,5 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import DetailsPublication from "../Publication/DetailsPublication";
+import DetailsPublication from "../Ressource/DetailsPublication";
 import ValidationRessourcesScreen from "../../pages/ValidationPublicationScreen";
 
 const StackNav = createStackNavigator();
