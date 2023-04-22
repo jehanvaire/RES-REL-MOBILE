@@ -1,12 +1,12 @@
 import React from "react";
 import { NativeBaseProvider, StatusBar } from "native-base";
-import { AuthContainer } from "./services/AuthentificationService";
-import Authentification from "./pages/Authentification/AuthentificationMenuScreen";
-import Menu from "./pages/Menu";
+import { AuthContainer } from "./src/services/AuthentificationService";
+import Authentification from "./src/pages/Authentification/AuthentificationMenuScreen";
+import Menu from "./src/pages/Menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Connexion from "./pages/Authentification/ConnexionScreen";
-import CreationCompte from "./pages/Authentification/CreationCompteScreen";
+import Connexion from "./src/pages/Authentification/ConnexionScreen";
+import CreationCompte from "./src/pages/Authentification/CreationCompteScreen";
 
 const Stack = createStackNavigator();
 require("moment/locale/fr.js");
