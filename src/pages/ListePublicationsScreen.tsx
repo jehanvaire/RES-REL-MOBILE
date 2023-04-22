@@ -32,7 +32,10 @@ function ListePublicationsScreen({ navigation }: any) {
       <HeaderComponent />
       <GestureHandlerRootView>
         <ScrollView style={styles.scrollView}>
-          <Publication
+          <View>
+            <Text style={{ margin: 50 }}>Bonjoru</Text>
+          </View>
+          {/*    <Publication
             auteur="Adrien"
             titre="Mémoires de Louis de Funès"
             contenu="Louis de Funès, de son nom complet Louis de Funès de Galarza, est un acteur français né le 31 juillet 1914 à Courbevoie et mort le 27 janvier 1983 à Nantes.
@@ -44,8 +47,7 @@ function ListePublicationsScreen({ navigation }: any) {
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
             navigation={navigation}
           />
-
-          <Publication
+           <Publication
             auteur="Adrien"
             titre="Sortie au cinéma"
             contenu="Le film sortira au cinéma le 28 janvier 2023."
@@ -67,7 +69,7 @@ function ListePublicationsScreen({ navigation }: any) {
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
             navigation={navigation}
-          />
+          /> */}
         </ScrollView>
       </GestureHandlerRootView>
     </Box>

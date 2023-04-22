@@ -5,7 +5,7 @@ export class PieceJointeEntity {
   type!: string;
   titre!: string;
   taille!: number;
-  file!: Blob;
+  file!: any;
 
   constructor(init?: Partial<PieceJointeEntity>) {
     Object.assign(this, init);

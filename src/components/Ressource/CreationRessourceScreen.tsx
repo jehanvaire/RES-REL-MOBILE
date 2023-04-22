@@ -85,15 +85,15 @@ function CreationRessourceScreen() {
     publication.idUtilisateur = utilisateur;
 
     await PublicationService.CreerPublication(publication).then((res) => {
-      // à déplacer dans le service si on le garde
+      console.log("res", res);
+
+      // // à déplacer dans le service si on le garde
       const formData = new FormData();
       formData.append("file", pieceJointe.file, pieceJointe.titre);
       formData.append("titre", pieceJointe.titre);
       formData.append("type", pieceJointe.type);
       formData.append("idUtilisateur", String(pieceJointe.idUtilisateur));
-      formData.append("idRessource", String(pieceJointe.idRessource));
-
-      // form data pas bon (à cause de la pièce jointe)
+      formData.append("idRessource", String(res.id));
 
       PublicationService.AjouterPieceJointe(formData).then((res) => {
         console.log("pj", res);
@@ -115,16 +115,16 @@ function CreationRessourceScreen() {
     const androidContentUri = result.uri.startsWith("content://");
     let filePath = result.uri;
 
-    if (androidContentUri) {
-      const tempPath = `${RNFS.CachesDirectoryPath}/${result.name}`;
-      await RNFS.copyFile(result.uri, tempPath);
-      filePath = tempPath;
-    }
-
-    // const nouvellePieceJointe = new FormData();
     const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
-    const blob = new Blob([fileBlob], { type: "multipart/form-data" });
-    // nouvellePieceJointe.append("file", blob, "fichier");
+    // const blob = new Blob([fileBlob], { type: "multipart/form-data" });
+
+    // console.log("blob", blob.size, filePath);
+
+    // if (androidContentUri) {
+    //   const tempPath = `${RNFS.CachesDirectoryPath}/${result.name}`; // chemin temporaire
+    //   await RNFS.copyFile(result.uri, tempPath); // copie du fichier
+    //   filePath = tempPath;
+    // }
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur,
@@ -132,7 +132,7 @@ function CreationRessourceScreen() {
       titre: result.name,
       taille: result.size,
       uri: filePath,
-      file: blob,
+      file: fileBlob,
     } as PieceJointeEntity;
 
     setPieceJointe(nouvellePieceJointe);
@@ -152,6 +152,8 @@ function CreationRessourceScreen() {
       Platform.OS === "android"
         ? "file://" + pieceJointe.uri
         : pieceJointe.uri.replace("file://", "");
+
+    console.log("uri", uri);
 
     if (pieceJointe.type.startsWith("image/")) {
       return <Image source={{ uri }} style={styles.imagePieceJointe} />;
