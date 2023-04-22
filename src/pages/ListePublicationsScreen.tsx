@@ -32,10 +32,7 @@ function ListePublicationsScreen({ navigation }: any) {
       <HeaderComponent />
       <GestureHandlerRootView>
         <ScrollView style={styles.scrollView}>
-          <View>
-            <Text style={{ margin: 50 }}>Bonjoru</Text>
-          </View>
-          {/*    <Publication
+          <Publication
             auteur="Adrien"
             titre="Mémoires de Louis de Funès"
             categorie="Culture"
@@ -72,7 +69,7 @@ function ListePublicationsScreen({ navigation }: any) {
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
             navigation={navigation}
-          /> */}
+          />
         </ScrollView>
       </GestureHandlerRootView>
     </Box>
@@ -122,6 +119,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#BBBBBB",
     marginTop: 35,
+    height: "96%",
   },
   scrollView: {
     paddingTop: 60,
@@ -167,9 +165,9 @@ const styles = StyleSheet.create({
   },
   customButton: {
     position: "absolute",
-    right: 16,
+    right: 5,
     bottom: 16,
-    backgroundColor: "#6200EE",
+    backgroundColor: "#4183F4",
     borderRadius: 50,
     width: 56,
     height: 56,
