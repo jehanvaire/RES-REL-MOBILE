@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import RechercheRessourceScreen from "../../../pages/Rercherche/RechercheRessourceScreen";
-import DetailsPublication from "../../Publication/DetailsPublication";
+import DetailsPublication from "../../Ressource/DetailsPublication";
 import EspaceCommentaireScreen from "../../../pages/Publication/EspaceCommentaireScreen";
 
 const StackNav = createStackNavigator();

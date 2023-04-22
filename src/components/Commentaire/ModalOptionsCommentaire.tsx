@@ -1,5 +1,5 @@
 import { Menu, Modal } from "native-base";
-import CommentaireEntity from "../../ressources/types/CommentaireEntity";
+import CommentaireEntity from "../../ressources/models/CommentaireEntity";
 import { useEffect, useState } from "react";
 import CommentaireService from "../../services/CommentaireService";
 

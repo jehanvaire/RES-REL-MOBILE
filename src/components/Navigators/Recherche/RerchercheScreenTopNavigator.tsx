@@ -18,7 +18,7 @@ function RechercheScreenTopNavigator() {
 
   return (
     <TopNav.Navigator
-      initialRouteName="RechercheUtilisateurScreen"
+      initialRouteName="RechercheRessourceScreen"
       screenOptions={{
         tabBarIndicatorStyle: {
           backgroundColor: "red", // changer la couleur de l'indicateur
