@@ -1,11 +1,9 @@
 import axios from "axios";
-import { getTokenFromStorage } from "./AuthentificationService";
-import { PieceJointeEntity } from "../ressources/models/PieceJointeEntity";
 
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
   // private token = getTokenFromStorage();
-  private token = "1|x6Y5BDn2kEBOHe1UATIejquEZFnP6zhbOhJRNpLT";
+  private token = "1|BBHVOs1hJybnb6kIk61cPLyZyRDJteARodPiSu9o";
 
   async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
@@ -56,9 +54,15 @@ export default class RestClient {
     }
   }
 
-  async patch(path: string, body: any): Promise<any> {
+  async patch(path: string, body = {}): Promise<any> {
     const url = this.baseUrl + path;
-    const response = await axios.patch(url, body);
+
+    const response = await axios.patch(url, body, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
