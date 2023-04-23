@@ -23,7 +23,10 @@ const Publication = (props: any) => {
   }
 
   function ShowCommentsSection() {
-    props.navigation.navigate("EspaceCommentaireScreen");
+    props.navigation.navigate("EspaceCommentaireScreen", {
+      id: props.id,
+      titre: props.titre,
+    });
   }
 
   function SauvegarderPublication() {
@@ -90,10 +93,7 @@ const Publication = (props: any) => {
   };
 
   return (
-    <Box style={[
-      styles.container,
-      styles.shadow
-    ]}>
+    <Box style={[styles.container, styles.shadow]}>
       <Stack direction="row" style={styles.header}>
         <Avatar
           source={{
@@ -108,7 +108,6 @@ const Publication = (props: any) => {
           </View>
         </Stack>
 
-
         <Spacer />
 
         <Center>
@@ -122,7 +121,6 @@ const Publication = (props: any) => {
 
       <Text style={styles.titre}>{props.titre}</Text>
 
-
       <DoubleTap
         AfficherPublication={AfficherPublication}
         LikePublication={LikePublication}
@@ -134,7 +132,6 @@ const Publication = (props: any) => {
           ]}
         </View>
       </DoubleTap>
-
 
       <Description contenu={props.contenu}></Description>
 
@@ -166,8 +163,6 @@ const Publication = (props: any) => {
         </TouchableOpacity>
       </Stack>
     </Box>
-
-
   );
 };
 
@@ -187,8 +182,8 @@ const styles = StyleSheet.create({
   categorieWrapper: {
     borderRadius: 10,
     paddingHorizontal: 1,
-    alignSelf: 'flex-start',
-  },  
+    alignSelf: "flex-start",
+  },
   header: {
     margin: 10,
     marginTop: 10,
@@ -216,7 +211,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   date: {
-    color: "#828282"
+    color: "#828282",
   },
   shadow: {
     shadowColor: "#000",
@@ -227,5 +222,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 3,
     elevation: 2,
-  }
+  },
 });
