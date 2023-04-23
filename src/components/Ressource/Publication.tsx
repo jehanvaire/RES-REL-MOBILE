@@ -75,6 +75,7 @@ const Publication = (props: any) => {
     );
   };
   
+  //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
   const video = () => {
     return (
       <Video
@@ -85,8 +86,9 @@ const Publication = (props: any) => {
         volume={1.0}
         isMuted={false}
         resizeMode="cover"
-        shouldPlay
-        isLooping
+        shouldPlay={true}
+        isLooping={true}
+        controls={true}
         style={styles.image}
       />
     );
