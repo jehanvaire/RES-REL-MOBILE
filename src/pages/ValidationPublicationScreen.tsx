@@ -27,10 +27,23 @@ const ValidationRessourcesScreen = (props: any) => {
 
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
+
+    PublicationService.getRechargerPublications().subscribe((recharger) => {
+      if (recharger) {
+        handleRefresh();
+        PublicationService.setRechargerPublications(false);
+      }
+    });
   }, []);
 
   const fetchPublicationsEnAttente = async () => {
-    const params = { page: 1, perPage: PER_PAGE };
+    const params = {
+      page: 1,
+      perPage: PER_PAGE,
+      "status[equals]=": "PENDING",
+      "partage[equals]=": "PUBLIC",
+      include: "utilisateur,pieceJointe",
+    };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublicationsEnAttente(listePublications);
   };
@@ -39,7 +52,13 @@ const ValidationRessourcesScreen = (props: any) => {
     if (!loading) {
       const nextPage = page + 1;
       setPage(nextPage);
-      const params = { page: nextPage, perPage: PER_PAGE };
+      const params = {
+        page: nextPage,
+        perPage: PER_PAGE,
+        "status[equals]=": "PENDING",
+        "partage[equals]=": "PUBLIC",
+        include: "utilisateur,pieceJointe",
+      };
       PublicationService.GetPublications(params).then((publications) => {
         setListePublicationsEnAttente([
           ...listePublicationsEnAttente,
@@ -54,7 +73,13 @@ const ValidationRessourcesScreen = (props: any) => {
       setRefreshing(true);
       const firstPage = 1;
       setPage(firstPage);
-      const params = { page: firstPage, perPage: PER_PAGE };
+      const params = {
+        page: firstPage,
+        perPage: PER_PAGE,
+        "status[equals]=": "PENDING",
+        "partage[equals]=": "PUBLIC",
+        include: "utilisateur,pieceJointe",
+      };
       PublicationService.GetPublications(params).then((publications) => {
         setListePublicationsEnAttente(publications);
       });
