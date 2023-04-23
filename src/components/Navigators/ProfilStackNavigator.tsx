@@ -10,6 +10,7 @@ import ProfilScreen from "../../pages/ProfilScreen";
 import DetailsPublication from "../Ressource/DetailsPublication";
 import Publication from "../Ressource/Publication";
 import React from "react";
+import EspaceCommentaireScreen from "../../pages/Publication/EspaceCommentaireScreen";
 
 export const StackNav = createStackNavigator();
 
@@ -55,6 +56,10 @@ const ProfilStackNavigator = (props: any) => {
       <StackNav.Screen
         name="PublicationsEnregistrees"
         component={PublicationsEnregistreesScreen}
+      />
+      <StackNav.Screen
+        name="EspaceCommentaireScreen"
+        component={EspaceCommentaireScreen}
       />
     </StackNav.Navigator>
   );
