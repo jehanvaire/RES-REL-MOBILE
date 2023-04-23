@@ -7,14 +7,15 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
+import Video from "react-native-video";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
   function LikePublication() {
-    console.log(props);
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log(res);
@@ -40,7 +41,9 @@ const Publication = (props: any) => {
       id: props.id,
       auteur: props.auteur,
       titre: props.titre,
-      categorie: props.categorie,
+      categorie: props.idCategorie,
+      idPieceJointe: props.idPieceJointe,
+      typePj: props.typePieceJointe,
       contenu: props.contenu,
       status: props.status,
       raisonRefus: props.raisonRefus,
@@ -49,6 +52,42 @@ const Publication = (props: any) => {
       lienImage: props.lienImage,
     });
   }
+
+  function AfficherPj() {
+    if (props.typePieceJointe === "IMAGE") {
+      return image();
+    }
+  }
+
+  const image = () => {
+    return (
+      <FastImage
+        style={styles.image}
+        source={{
+          uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+          priority: FastImage.priority.normal,
+        }}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+    );
+  };
+  
+  const video = () => {
+    return (
+      <Video
+        source={{
+          uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+        }}
+        rate={1.0}
+        volume={1.0}
+        isMuted={false}
+        resizeMode="cover"
+        shouldPlay
+        isLooping
+        style={styles.image}
+      />
+    );
+  };
 
   return (
     <Box style={[
@@ -89,14 +128,10 @@ const Publication = (props: any) => {
         LikePublication={LikePublication}
       >
         <View>
-          <FastImage
-            style={styles.image}
-            source={{
-              uri: props.lienImage,
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
+          {[
+          props.typePieceJointe === "IMAGE" ? image() : null,
+          props.typePieceJointe === "VIDEO" ? video() : null
+          ]}
         </View>
       </DoubleTap>
 

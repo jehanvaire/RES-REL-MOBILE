@@ -27,9 +27,6 @@ const ProfilScreen = (props: any) => {
 
   useEffect(() => {
     fetchListePublicationsUtilisateur();
-    const params = {
-      id: utilisateur.id,
-    };
   }, []);
 
   useEffect(() => {
@@ -50,9 +47,10 @@ const ProfilScreen = (props: any) => {
       page: 1,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
-      include: "utilisateur",
+      include: "utilisateur,categorie,pieceJointe",
     };
     const listePublications = await PublicationService.GetPublications(params);
+    console.log(listePublications);
     setListePublications(listePublications);
   };
 
@@ -64,7 +62,7 @@ const ProfilScreen = (props: any) => {
       page: nextPage,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
-      include: "utilisateur",
+      include: "utilisateur,categorie,pieceJointe",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications([...listePublications, ...publications]);
@@ -79,7 +77,7 @@ const ProfilScreen = (props: any) => {
       page: firstPage,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
-      include: "utilisateur",
+      include: "utilisateur,categorie,pieceJointe",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications(publications);
@@ -93,7 +91,9 @@ const ProfilScreen = (props: any) => {
         id={item.idUtilisateur}
         auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
         titre={item.titre}
-        categorie={item.categorie}
+        categorie={item.categorie.nom}
+        idPieceJointe={item.pieceJointe.id}
+        typePieceJointe={item.pieceJointe.type}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
@@ -136,11 +136,8 @@ const ProfilScreen = (props: any) => {
           <Text style={styles.title}>Publications {utilisateur.id}</Text>
         </Stack>
 
-      
-       
-
         <FlatList
-          style={{ marginBottom: 17, marginTop: 17 }}
+          style={{ marginBottom: 0, marginTop: 125 }}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
