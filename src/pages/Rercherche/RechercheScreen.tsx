@@ -89,7 +89,7 @@ const RechercheScreen = () => {
 
   return (
     <>
-      <View style={{ marginTop: 50, width: "100%" }}>
+      <View style={{ marginTop: 38, width: "100%" }}>
         <Center
           style={[styles.searchStack, afficheHeader ? null : styles.cache]}
         >
