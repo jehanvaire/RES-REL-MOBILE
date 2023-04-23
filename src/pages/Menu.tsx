@@ -9,6 +9,7 @@ import ValidationRessourcesStackNavigator from "../components/Navigators/Validat
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { storage } from "../services/AuthentificationService";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+import { StyleSheet } from "react-native";
 
 const BottomTab = createMaterialBottomTabNavigator();
 
@@ -33,6 +34,7 @@ const Menu = ({ props }: any) => {
   return loading ? null : (
     <BottomTab.Navigator
       initialRouteName="Menu"
+      barStyle={styles.bottomTabBar}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
           let iconName;
@@ -90,3 +92,9 @@ const Menu = ({ props }: any) => {
 };
 
 export default Menu;
+
+const styles = StyleSheet.create({
+  bottomTabBar: {
+    backgroundColor: "#fff",
+  }
+});
