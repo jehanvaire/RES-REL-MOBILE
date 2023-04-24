@@ -16,6 +16,9 @@ import moment from "moment";
 
 function ValidationPublicationComponent({ publication, navigation }: any) {
   const [showModal, setShowModal] = React.useState(false);
+  const [raisonRefus, setRaisonRefus] = React.useState("");
+  const [validation, setValidation] = React.useState(false);
+
   function AfficherPublication(publication: PublicationEntity) {
     navigation.navigate("DetailsPublication", {
       auteur: publication.utilisateur.nom,
@@ -29,13 +32,23 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
   }
 
   function RefuserPublication(publication: PublicationEntity) {
-    console.log("Refuser", publication);
-    PublicationService.RefuserPublication(publication.id);
+    const params = {
+      id: publication.id,
+      raison: raisonRefus,
+    };
+    setValidation(true);
+    PublicationService.RefuserPublication(params).then(() => {
+      PublicationService.setRechargerPublications(true);
+      setValidation(false);
+    });
   }
 
   function ValiderPublication(publication: PublicationEntity) {
-    console.log("Accepter", publication);
-    PublicationService.ValiderPublication(publication.id);
+    setValidation(true);
+    PublicationService.ValiderPublication(publication.id).then(() => {
+      PublicationService.setRechargerPublications(true);
+      setValidation(false);
+    });
   }
 
   return (
@@ -67,7 +80,11 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
             onPress={() => {
               setShowModal(true);
             }}
-            style={[styles.bouton, { backgroundColor: "#FC754A" }]}
+            disabled={validation}
+            style={[
+              styles.bouton,
+              validation ? styles.validation : { backgroundColor: "#FC754A" },
+            ]}
           >
             <Text style={styles.textButton}>Refuser</Text>
           </TouchableOpacity>
@@ -76,7 +93,11 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
             onPress={() => {
               ValiderPublication(publication);
             }}
-            style={[styles.bouton, { backgroundColor: "#68BE4A" }]}
+            disabled={validation}
+            style={[
+              styles.bouton,
+              validation ? styles.validation : { backgroundColor: "#68BE4A" },
+            ]}
           >
             <Text style={styles.textButton}>Accepter</Text>
           </TouchableOpacity>
@@ -88,7 +109,11 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
             <Modal.Header>Indiquer la raison du refus</Modal.Header>
             <Modal.Body>
               <FormControl>
-                <TextArea autoCompleteType={undefined} />
+                <TextArea
+                  autoCompleteType={undefined}
+                  onChangeText={(text) => setRaisonRefus(text)}
+                  value={raisonRefus}
+                />
               </FormControl>
             </Modal.Body>
             <Modal.Footer>
@@ -133,6 +158,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginBottom: 10,
     borderRadius: 10,
+  },
+  validation: {
+    backgroundColor: "#E5E5E5",
   },
   publicationPreview: {
     height: 50,

@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import CommentaireService from "../../services/CommentaireService";
+import { View } from "react-native";
 
 const CommentaireComponent = ({ item, estReponse }: any) => {
   return (
@@ -9,14 +10,17 @@ const CommentaireComponent = ({ item, estReponse }: any) => {
         CommentaireService.setAfficherModalMenu(true);
       }}
     >
-      <Text
-        style={[
-          estReponse ? styles.contenuReponse : styles.contenuCommentaire,
-          styles.commentaire,
-        ]}
-      >
-        {item.contenu}
-      </Text>
+      <View style={[styles.container]}>
+        <Text
+          style={[
+            estReponse ? styles.contenuReponse : styles.contenuCommentaire,
+            styles.commentaire,
+            styles.shadow,
+          ]}
+        >
+          {item.contenu}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -24,24 +28,34 @@ const CommentaireComponent = ({ item, estReponse }: any) => {
 export default CommentaireComponent;
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: "visible",
+  },
   contenuCommentaire: {
-    borderColor: "#4183F4",
-    backgroundColor: "#4183F4",
+    backgroundColor: "#FFFFFF",
     marginLeft: 5,
     marginRight: 5,
   },
   contenuReponse: {
-    borderColor: "#FF9393",
-    backgroundColor: "#FF9393",
+    backgroundColor: "#FFFFFF",
     marginLeft: 30,
     marginRight: 5,
   },
   commentaire: {
     fontSize: 15,
     fontWeight: "bold",
-    marginTop: 10,
-    borderWidth: 1,
     borderRadius: 10,
     padding: 10,
+    margin: 5,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
   },
 });
