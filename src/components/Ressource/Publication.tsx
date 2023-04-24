@@ -1,6 +1,6 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent } from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -36,6 +36,7 @@ const Publication = (props: any) => {
   }
 
   function AfficherPlusOptions() {
+    console.log(props.categorie);
     console.log("TODO: afficher plus d'options");
   }
 
@@ -44,9 +45,10 @@ const Publication = (props: any) => {
       id: props.id,
       auteur: props.auteur,
       titre: props.titre,
-      categorie: props.idCategorie,
+      categorie: props.categorie,
       idPieceJointe: props.idPieceJointe,
       typePj: props.typePieceJointe,
+      dateActivite: props.dateActivite,
       contenu: props.contenu,
       status: props.status,
       raisonRefus: props.raisonRefus,
@@ -54,12 +56,6 @@ const Publication = (props: any) => {
       datePublication: JSON.stringify(props.datePublication),
       lienImage: props.lienImage,
     });
-  }
-
-  function AfficherPj() {
-    if (props.typePieceJointe === "IMAGE") {
-      return image();
-    }
   }
 
   const image = () => {
@@ -70,11 +66,13 @@ const Publication = (props: any) => {
           uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
           priority: FastImage.priority.normal,
         }}
-        resizeMode={FastImage.resizeMode.cover}
+        resizeMode={FastImage.resizeMode.contain}
       />
     );
   };
   
+  const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
+
   //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
   const video = () => {
     return (
@@ -85,14 +83,49 @@ const Publication = (props: any) => {
         rate={1.0}
         volume={1.0}
         isMuted={false}
-        resizeMode="cover"
+        resizeMode="center"
         shouldPlay={true}
         isLooping={true}
-        controls={true}
-        style={styles.image}
+        //TODO seulement dans détails publication
+        //controls={true}
+        style={[styles.video, { aspectRatio: videoAspectRatio }]}
+        onLayout={(e: LayoutChangeEvent) => {
+          const { width, height } = e.nativeEvent.layout;
+          setVideoAspectRatio(width / height);
+        }}
       />
     );
   };
+
+  // const pdf = () => {
+  //   return (
+      
+  //     <object data="http://africau.edu/images/default/sample.pdf" type="application/pdf" width="100%" height="100%">
+  //       <p>Alternative text - include a link <a href="http://africau.edu/images/default/sample.pdf">to the PDF!</a></p>
+  //     </object>
+  //   );
+  // };
+
+  // const activite = () => {
+  //   return (
+  //     <View style={styles.activite}>
+  //       <FastImage 
+  //         source={{
+  //           uri: "api.victor-gombert.fr/api/v1/piecesJointes/9/download",
+  //           priority: FastImage.priority.normal,
+  //         }}
+  //         />
+
+        
+  //       <Text style={styles.activiteText}>{[
+  //         props.contenu,
+  //         moment(props.dateActivite).fromNow() === "Invalid date" ? "quelques secondes" : moment(props.dateActivite).fromNow()
+  //       ]
+  //         }</Text>
+        
+  //     </View>
+  //   );
+  // };
 
   return (
     <Box style={[styles.container, styles.shadow]}>
@@ -130,7 +163,9 @@ const Publication = (props: any) => {
         <View>
           {[
           props.typePieceJointe === "IMAGE" ? image() : null,
-          props.typePieceJointe === "VIDEO" ? video() : null
+          props.typePieceJointe === "VIDEO" ? video() : null,
+          //props.typePieceJointe === "ACTIVITE" ? activite() : null,
+          //props.typePieceJointe === "PDF" ? pdf() : null,
           ]}
         </View>
       </DoubleTap>
@@ -207,6 +242,24 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
+  },
+  video: {
+    marginTop: 0,
+    width: "100%",
+    height: undefined,
+    marginBottom: 0,
+    aspectRatio: 1,
+  },
+  activite: {
+    marginTop: 10,
+    width: "100%",
+    height: undefined,
+    aspectRatio: 1,
+  },  
+  activiteText: {
+    fontSize: 16,
+    marginHorizontal: 10,
+    textAlign: "center",
   },
   footer: {
     margin: 20,

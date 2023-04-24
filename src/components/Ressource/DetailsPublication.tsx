@@ -6,8 +6,9 @@ import {
   Stack,
   Text,
   ScrollView,
+  View,
 } from "native-base";
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity, StyleSheet, LayoutChangeEvent } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
 import dayjs from "dayjs";
@@ -15,6 +16,10 @@ import React from "react";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
+import Video from "react-native-video";
+
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const DetailsPublication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
@@ -23,6 +28,10 @@ const DetailsPublication = (props: any) => {
     id,
     auteur,
     titre,
+    categorie,
+    idPieceJointe,
+    typePj,
+    dateActivite,
     contenu,
     dateCreation,
     datePublication,
@@ -52,6 +61,7 @@ const DetailsPublication = (props: any) => {
   }
 
   function AfficherPlusOptions() {
+    console.log(datePublication);
     console.log("TODO: afficher plus d'options");
   }
 
@@ -59,41 +69,89 @@ const DetailsPublication = (props: any) => {
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
   );
 
+
+  const image = () => {
+    return (
+      <FastImage
+        style={styles.image}
+        source={{
+          uri: piecesJointesURL + '/' + idPieceJointe + "/download",
+          priority: FastImage.priority.normal,
+        }}
+        resizeMode={FastImage.resizeMode.contain}
+      />
+    );
+  };
+  
+  const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
+
+  //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
+  const video = () => {
+    return (
+      <Video
+        source={{
+          uri: piecesJointesURL + '/' + idPieceJointe + "/download",
+        }}
+        id={idPieceJointe}
+        rate={1.0}
+        volume={1.0}
+        isMuted={false}
+        resizeMode="center"
+        shouldPlay={true}
+        isLooping={true}
+        controls={true}
+        style={[styles.video, { aspectRatio: videoAspectRatio }]}
+        onLayout={(e: LayoutChangeEvent) => {
+          const { width, height } = e.nativeEvent.layout;
+          setVideoAspectRatio(width / height);
+        }}
+      />
+    );
+  };
+
+
   return (
     <Box style={styles.container}>
       <ScrollView>
         <Stack direction="row" style={styles.header}>
           <Avatar
             source={{
-              uri: "https://i.imgflip.com/2xc9z0.png",
+              uri: apiURL + "/" + id + "/download",
             }}
           ></Avatar>
 
-          <Center marginLeft={2}>
+          <Stack direction="column" marginLeft={2}>
             <Text>Partagé par {auteur}</Text>
-          </Center>
+            <View style={styles.categorieWrapper}>
+              <Text style={styles.categorie}>{categorie}</Text>
+            </View>
+          </Stack>
 
           <Spacer />
 
           <Center>
-            <Text>{moment(date).fromNow()}</Text>
+            <Text style={styles.date}>
+              {moment(props.dateCreation).fromNow() === "Invalid date"
+                ? "quelques secondes"
+                : moment(props.dateCreation).fromNow()}
+            </Text>
           </Center>
         </Stack>
 
         <Text style={styles.titre}>{titre}</Text>
 
-        <Text style={styles.contenu}>{contenu}</Text>
-
         <DoubleTap AfficherPublication={null} LikePublication={LikePublication}>
-          <FastImage
-            style={styles.image}
-            source={{
-              uri: lienImage,
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.contain}
-          />
+          <View>
+            {[
+              typePj === "IMAGE" ? image() : null,
+              typePj === "VIDEO" ? video() : null,
+              //props.typePieceJointe === "ACTIVITE" ? activite() : null,
+              //props.typePieceJointe === "PDF" ? pdf() : null,
+            ]}
+          </View>
         </DoubleTap>
+
+        <Text style={styles.contenu}>{contenu}</Text>
 
         <Stack direction="row" style={styles.footer}>
           <TouchableOpacity onPress={LikePublication}>
@@ -130,7 +188,17 @@ const DetailsPublication = (props: any) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "whitesmoke",
-    marginVertical: 7,
+    marginVertical: 0,
+  },
+  categorie: {
+    backgroundColor: "#FF9393",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  categorieWrapper: {
+    borderRadius: 10,
+    paddingHorizontal: 1,
+    alignSelf: "flex-start",
   },
   header: {
     margin: 10,
@@ -142,6 +210,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     textBreakStrategy: "simple",
     marginHorizontal: 10,
+    textAlign: "center",
   },
   contenu: {
     fontSize: 16,
@@ -154,9 +223,19 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 1,
   },
+  video: {
+    marginTop: 0,
+    width: "100%",
+    height: undefined,
+    marginBottom: 0,
+    aspectRatio: 1,
+  },
   footer: {
     margin: 20,
     marginVertical: 10,
+  },
+  date: {
+    color: "#828282",
   },
 });
 
