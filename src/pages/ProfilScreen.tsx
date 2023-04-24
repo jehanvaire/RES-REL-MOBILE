@@ -1,4 +1,4 @@
-import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
+import { Box, Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, BackHandler } from "react-native";
 import { View } from "native-base";
@@ -50,7 +50,6 @@ const ProfilScreen = (props: any) => {
       include: "utilisateur,categorie,pieceJointe",
     };
     const listePublications = await PublicationService.GetPublications(params);
-    console.log(listePublications);
     setListePublications(listePublications);
   };
 
@@ -63,6 +62,7 @@ const ProfilScreen = (props: any) => {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
+      zIndex: 10,
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications([...listePublications, ...publications]);
@@ -113,32 +113,34 @@ const ProfilScreen = (props: any) => {
         }
       >
         <Stack style={[styles.header, styles.shadow]}>
-          <Avatar
-            size={100}
-            source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
-            }}
-          ></Avatar>
+          <Stack style={styles.flex}>
+            <Avatar
+              size={100}
+              style={styles.avatar}
+              source={{
+                uri: apiURL + "/" + utilisateur.id + "/download",
+              }}
+            ></Avatar>
 
-          <Center marginLeft={2}>
-            <Text style={styles.title}>
-              {utilisateur.nom} {utilisateur.prenom}
-            </Text>
-          </Center>
+            <VStack marginLeft={3} style={{marginTop: 30}}>
+                <Text style={styles.title}>
+                  {utilisateur.nom} {utilisateur.prenom}
+                </Text>
+              <Description
+                contenu={utilisateur.bio ?? ""}
+              ></Description>
+            </VStack>
 
-          <Spacer />
+            <Spacer />
 
-          <Center>
-            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
-          </Center>
-
-          <Description contenu={utilisateur.bio ?? ""}></Description>
-
-          <Text style={styles.title}>Publications {utilisateur.id}</Text>
+            <Center>
+              <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
+            </Center>
+          </Stack>
         </Stack>
 
         <FlatList
-          style={{ marginBottom: 0, marginTop: 125 }}
+          style={styles.contenu}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
@@ -163,6 +165,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#BBBBBB",
+    zIndex: 1,
   },
   containerAutreUtilisateur: {
     alignItems: "center",
@@ -177,17 +180,19 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 100,
+    zIndex: 2,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
-    flexDirection: "row",
     justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+  },
+  flex: {
+    flexDirection: "row",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginHorizontal: 10,
-  }, 
+  },
   shadow: {
     shadowColor: "#000",
     shadowOffset: {
@@ -196,13 +201,17 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 1,
     shadowRadius: 3,
-    elevation: 2,
+    elevation: 1,
   },
-  //unused?
+  avatar: {
+    marginLeft: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  bio: {
+    marginBottom: 10,
+  },
   contenu: {
-    margin: 10,
-    marginTop: 50,
-    fontSize: 15,
-    backgroundColor: "#FFFFFF",
+    paddingTop: 120,
   },
 });

@@ -43,7 +43,7 @@ const DetailsPublication = (props: any) => {
   function LikePublication() {
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
-      console.log(res);
+      console.log("TODO: like publication");
     });
   }
 
@@ -52,16 +52,19 @@ const DetailsPublication = (props: any) => {
       id: id,
       titre: titre,
     });
+
+    props.navigation.setOptions({
+      title: "Commentaires",
+    })
   }
 
   function SauvegarderPublication() {
     PublicationService.SauvegarderPublication(1).then((res) => {
-      console.log(res);
+      console.log("TODO: sauvegarder publication");
     });
   }
 
   function AfficherPlusOptions() {
-    console.log(datePublication);
     console.log("TODO: afficher plus d'options");
   }
 
@@ -213,6 +216,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   contenu: {
+    paddingTop: 10,
+    paddingBottom: 10,
     fontSize: 16,
     marginHorizontal: 10,
     textAlign: "justify",

@@ -18,7 +18,7 @@ const Publication = (props: any) => {
   function LikePublication() {
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
-      console.log(res);
+      console.log("TODO: like publication");
     });
   }
 
@@ -31,12 +31,11 @@ const Publication = (props: any) => {
 
   function SauvegarderPublication() {
     PublicationService.SauvegarderPublication(1).then((res) => {
-      console.log(res);
+      console.log("TODO: sauvegarder publication");
     });
   }
 
   function AfficherPlusOptions() {
-    console.log(props.categorie);
     console.log("TODO: afficher plus d'options");
   }
 
@@ -60,46 +59,52 @@ const Publication = (props: any) => {
 
   const image = () => {
     return (
-      <FastImage
-        style={styles.image}
-        source={{
-          uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
-          priority: FastImage.priority.normal,
-        }}
-        resizeMode={FastImage.resizeMode.contain}
-      />
+      <View key={props.idPieceJointe}>
+        <FastImage
+          style={styles.image}
+          source={{
+            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+            priority: FastImage.priority.normal,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+      </View>
     );
   };
-  
+
   const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
   //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
   const video = () => {
     return (
-      <Video
-        source={{
-          uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
-        }}
-        rate={1.0}
-        volume={1.0}
-        isMuted={false}
-        resizeMode="center"
-        shouldPlay={true}
-        isLooping={true}
-        //TODO seulement dans détails publication
-        //controls={true}
-        style={[styles.video, { aspectRatio: videoAspectRatio }]}
-        onLayout={(e: LayoutChangeEvent) => {
-          const { width, height } = e.nativeEvent.layout;
-          setVideoAspectRatio(width / height);
-        }}
-      />
+      <View key={props.idPieceJointe}>
+        <Video
+
+          source={{
+            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+          }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="center"
+          shouldPlay={true}
+          isLooping={true}
+          //TODO seulement dans détails publication
+          //controls={true}
+          style={[styles.video, { aspectRatio: videoAspectRatio }]}
+          onLayout={(e: LayoutChangeEvent) => {
+            const { width, height } = e.nativeEvent.layout;
+            setVideoAspectRatio(width / height);
+          }}
+        />
+      </View>
+
     );
   };
 
   // const pdf = () => {
   //   return (
-      
+
   //     <object data="http://africau.edu/images/default/sample.pdf" type="application/pdf" width="100%" height="100%">
   //       <p>Alternative text - include a link <a href="http://africau.edu/images/default/sample.pdf">to the PDF!</a></p>
   //     </object>
@@ -116,13 +121,13 @@ const Publication = (props: any) => {
   //         }}
   //         />
 
-        
+
   //       <Text style={styles.activiteText}>{[
   //         props.contenu,
   //         moment(props.dateActivite).fromNow() === "Invalid date" ? "quelques secondes" : moment(props.dateActivite).fromNow()
   //       ]
   //         }</Text>
-        
+
   //     </View>
   //   );
   // };
@@ -161,12 +166,20 @@ const Publication = (props: any) => {
         LikePublication={LikePublication}
       >
         <View>
-          {[
-          props.typePieceJointe === "IMAGE" ? image() : null,
-          props.typePieceJointe === "VIDEO" ? video() : null,
-          //props.typePieceJointe === "ACTIVITE" ? activite() : null,
-          //props.typePieceJointe === "PDF" ? pdf() : null,
-          ]}
+          {props.typePieceJointe === "IMAGE" && (
+            <View key={`${props.idPieceJointe}-image`}>{image()}</View>
+          )}
+          {props.typePieceJointe === "VIDEO" && (
+            <View key={`${props.idPieceJointe}-video`}>{video()}</View>
+          )}
+          {/*
+  props.typePieceJointe === "ACTIVITE" && (
+    <View key={`${props.idPieceJointe}-activite`}>{activite()}</View>
+  )
+  props.typePieceJointe === "PDF" && (
+    <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
+  )
+  */}
         </View>
       </DoubleTap>
 
@@ -210,6 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginVertical: 7,
     borderRadius: 10,
+    zIndex: 100,
   },
   categorie: {
     backgroundColor: "#F2F2F2",
@@ -255,7 +269,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
-  },  
+  },
   activiteText: {
     fontSize: 16,
     marginHorizontal: 10,

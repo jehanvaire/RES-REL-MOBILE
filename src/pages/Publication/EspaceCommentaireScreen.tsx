@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,12 @@ function EspaceCommentaireScreen(props: any) {
   const [listeCommentaires, setListeCommentaires] = useState<
     CommentaireEntity[]
   >([]);
+
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: 'Commentaires',
+    });
+  }, [props.navigation]);
 
   const [reponseA, setReponseA] = useState<CommentaireEntity>(
     {} as CommentaireEntity
