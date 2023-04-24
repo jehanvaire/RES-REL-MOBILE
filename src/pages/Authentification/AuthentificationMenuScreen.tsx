@@ -32,7 +32,7 @@ const AuthentificationMenu = ({ navigation }: any) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('Authentification', { screen: 'Menu' })}
+        onPress={() => navigation.navigate("Menu")}
         style={[
           styles.button,
           styles.shadow,
