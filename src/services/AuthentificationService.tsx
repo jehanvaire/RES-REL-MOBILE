@@ -3,6 +3,7 @@ import { MMKV } from "react-native-mmkv";
 
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
+import axios from "axios";
 
 const AuthContext = React.createContext({} as any);
 
@@ -17,16 +18,20 @@ const getUtilisateurToken = () => {
 };
 
 const getUtilisateur = async (token: string) => {
-  const response = await fetch("https://api.victor-gombert.fr/api/v1", {
-    method: "GET",
+  const BearerToken = token || getUtilisateurToken();
+  console.log("Before axios call");
+  const response = await axios.get("https://api.victor-gombert.fr/api/v1/utilisateur", {
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${BearerToken}`,
     },
   });
+  console.log("After axios call");
 
-  return response.json();
+  if (!response.data == null) {
+    throw new Error("Erreur lors de la connexion");
+  }
+
+  return response.data;
 };
 
 export const AuthContainer = ({ children }: any) => {
@@ -50,31 +55,36 @@ export const AuthContainer = ({ children }: any) => {
     }
   );
 
-  const login = async (email: string, password: string) => {
-    const response = await fetch("https://api.victor-gombert.fr/api/v1/connexion", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+  const login = async (mail: string, motDePasse: string) => {
+    console.log("Before axios call", mail, motDePasse);
+    try {
+      const response = await axios.post(
+        "https://api.victor-gombert.fr/api/v1/connexion",
+        {
+          mail,
+          motDePasse,
+        },
+      );
+      console.log("After axios call", response);
 
-    if (!response.ok) {
-      throw new Error("Erreur lors de la connexion");
+      if (!response.data == null) {
+        console.log("Log de la réponse:", response.data);
+        throw new Error("Erreur lors de la connexion");
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
     }
-
-    return response.json();
   };
 
   const facade = useMemo(
     () => ({
-      login: async (email: string, password: string) => {
+      login: async (mail: string, password: string) => {
+        console.log("email:", mail, "password:", password);
         try {
-          const result = await login(email, password);
+          const result = await login(mail, password);
+          console.log("result:", result)
 
           storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
 
@@ -98,7 +108,11 @@ export const AuthContainer = ({ children }: any) => {
   );
 };
 
-export function getTokenFromStorage() {
+// export function getTokenFromStorage() {
+//   return storage.getString(ACCESS_TOKEN_KEY);
+// }
+
+export const getTokenFromStorage = () => {
   return storage.getString(ACCESS_TOKEN_KEY);
-}
+};
 export const useAuth = () => useContext(AuthContext);
