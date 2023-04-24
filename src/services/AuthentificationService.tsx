@@ -4,6 +4,7 @@ import { MMKV } from "react-native-mmkv";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import axios from "axios";
+import RestClient from "./RestClient";
 
 const AuthContext = React.createContext({} as any);
 
@@ -19,17 +20,26 @@ const getUtilisateurToken = () => {
 
 const getUtilisateur = async (token: string) => {
   const BearerToken = token || getUtilisateurToken();
-  console.log("Before axios call");
-  const response = await axios.get("https://api.victor-gombert.fr/api/v1/utilisateur", {
+  // console.log("Before axios call");
+  // const response = await axios.get("https://api.victor-gombert.fr/api/v1/utilisateurs", {
+  //   headers: {
+  //     Authorization: `Bearer ${BearerToken}`,
+  //   },
+  // });
+  // console.log("After axios call");
+
+  // if (!response.data == null) {
+  //   throw new Error("Erreur lors de la connexion");
+  // }
+
+  // return response.data;
+
+  const client = new RestClient();
+  const response = await client.get("utilisateurs", {
     headers: {
       Authorization: `Bearer ${BearerToken}`,
     },
   });
-  console.log("After axios call");
-
-  if (!response.data == null) {
-    throw new Error("Erreur lors de la connexion");
-  }
 
   return response.data;
 };
@@ -65,7 +75,7 @@ export const AuthContainer = ({ children }: any) => {
           motDePasse,
         },
       );
-      console.log("After axios call", response);
+      // console.log("After axios call", response);
 
       if (!response.data == null) {
         console.log("Log de la réponse:", response.data);

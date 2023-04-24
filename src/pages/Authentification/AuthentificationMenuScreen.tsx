@@ -9,13 +9,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const AuthentificationMenu = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.exitIcon}>
-        <Ionicons
-          name="close-outline"
-          size={40}
-          style={[styles.exitIcon]}
-        />
-      </TouchableOpacity>
       <Image
         source={images.resre_logo_slogan}
         alt="logo_slogan"
@@ -38,20 +31,32 @@ const AuthentificationMenu = ({ navigation }: any) => {
         <Text style={styles.textButton}>Créer un compte</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Authentification', { screen: 'Menu' })}
+        style={[
+          styles.button,
+          styles.shadow,
+          { backgroundColor: "rgb(255,146,146)" },
+        ]}
+      >
+        <Text style={styles.textButton}>Mode Invité</Text>
+      </TouchableOpacity>
+
+
       <View style={styles.row}>
         <TouchableOpacity>
-          <Text style={styles.footertext}>Mot de passe oublié?</Text> 
+          <Text style={styles.footertext}>Mot de passe oublié?</Text>
         </TouchableOpacity>
         <Text style={styles.footertext}> · </Text>
         <TouchableOpacity>
           <Text style={styles.footertext}>Nous contacter</Text>
         </TouchableOpacity>
       </View>
-      
+
       <FooterAuthentification />
-      
-    </View>
-    
+
+    </View >
+
   );
 };
 

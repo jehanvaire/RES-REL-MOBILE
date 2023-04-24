@@ -1,4 +1,4 @@
-import { Image } from "react-native";
+
 import RestClient from "./RestClient";
 
 class UtilisateurService {

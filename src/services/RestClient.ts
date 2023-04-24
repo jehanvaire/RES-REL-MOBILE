@@ -4,8 +4,8 @@ import { PieceJointeEntity } from "../ressources/models/PieceJointeEntity";
 
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
-  // private token = getTokenFromStorage();
-  private token = "1|x6Y5BDn2kEBOHe1UATIejquEZFnP6zhbOhJRNpLT";
+  private token = getTokenFromStorage();
+  //private token = "1|x6Y5BDn2kEBOHe1UATIejquEZFnP6zhbOhJRNpLT";
 
   async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
