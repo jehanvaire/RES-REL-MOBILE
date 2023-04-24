@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
+import { ScrollView } from "native-base"
 
 export const getNumberOfNotifications = (notifications: any) => {
   let count = 0;
@@ -32,47 +33,63 @@ const NotificationScreen = (props: any) => {
   }
 
   const items: NotificationItem[] = [
-    // Ajouter le type et l'image pour chaque notification
+
     {
       id: 1,
       type: "post",
-      title: "Notification 1",
-      description: "Description de la notification 1",
+      title: "Nouveau commentaire",
+      description: "utilisateur 1 a commenté votre publication",
       date: new Date("2023-04-18T12:00:00"),
-      image: "https://link.to/post/image1.jpg",
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/12/download/",
     },
     {
       id: 2,
-      type: "post",
-      title: "Notification 2",
-      description: "Description de la notification 2",
+      type: "friend_request",
+      title: "Nouvelle demande de relation",
+      description: "utilisateur 2 veut vous ajouter comme ami",
       date: new Date("2023-04-22T12:00:00"),
-      image: "https://link.to/post/image2.jpg",
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/13/download/",
     },
     {
       id: 3,
       type: "post",
-      title: "Notification 3",
-      description: "Description de la notification 3",
-      date: new Date("2023-04-23T12:00:00"),
-      image: "https://link.to/post/image3.jpg",
+      title: "Nouveau commentaire",
+      description: "utilisateur 3 a commenté votre publication",
+      date: new Date("2023-04-24T09:00:00"),
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/14/download/",
     },
     {
       id: 4,
-      type: "post",
-      title: "Notification 4",
-      description: "Description de la notification 4",
-      date: new Date("2023-04-24T12:00:00"),
-      image: "https://link.to/post/image4.jpg",
+      type: "friend_request",
+      title: "Nouvelle demande de relation",
+      description: "utilisateur 4 veut vous ajouter comme ami",
+      date: new Date("2023-04-23T12:00:00"),
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/15/download/",
     },
     {
       id: 5,
       type: "post",
-      title: "Notification 5",
-      description: "Description de la notification 5",
-      date: new Date("2023-04-25T12:00:00"),
-      image: "https://link.to/post/image5.jpg",
-    }
+      title: "Nouveau commentaire",
+      description: "utilisateur 5 a commenté votre publication",
+      date: new Date("2023-04-26T12:00:00"),
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/16/download/",
+    },
+    {
+      id: 6,
+      type: "post",
+      title: "Nouveau commentaire",
+      description: "utilisateur 6 a commenté votre publication",
+      date: new Date("2023-04-27T09:00:00"),
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/17/download/",
+    },
+    {
+      id: 7,
+      type: "friend_request",
+      title: "Notification 7",
+      description: "Description de la notification 7",
+      date: new Date("2023-04-27T09:00:00"),
+      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/18/download/",
+    },
   ];
 
   const groupBy = (array: NotificationItem[], key: (item: NotificationItem) => string) => {
@@ -130,7 +147,7 @@ const NotificationScreen = (props: any) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text>{user_storage}</Text>
       <View style={styles.header}>
         <Text style={styles.headerText}>Notifications</Text>
@@ -157,7 +174,7 @@ const NotificationScreen = (props: any) => {
           ))}
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
