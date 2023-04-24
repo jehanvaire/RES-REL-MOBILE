@@ -20,19 +20,6 @@ const getUtilisateurToken = () => {
 
 const getUtilisateur = async (token: string) => {
   const BearerToken = token || getUtilisateurToken();
-  // console.log("Before axios call");
-  // const response = await axios.get("https://api.victor-gombert.fr/api/v1/utilisateurs", {
-  //   headers: {
-  //     Authorization: `Bearer ${BearerToken}`,
-  //   },
-  // });
-  // console.log("After axios call");
-
-  // if (!response.data == null) {
-  //   throw new Error("Erreur lors de la connexion");
-  // }
-
-  // return response.data;
 
   const client = new RestClient();
   const response = await client.get("utilisateurs", {
@@ -71,11 +58,10 @@ export const AuthContainer = ({ children }: any) => {
       const response = await axios.post(
         "https://api.victor-gombert.fr/api/v1/connexion",
         {
-          mail,
-          motDePasse,
+          mail: mail,
+          motDePasse: motDePasse,
         },
       );
-      // console.log("After axios call", response);
 
       if (!response.data == null) {
         console.log("Log de la réponse:", response.data);
@@ -86,6 +72,36 @@ export const AuthContainer = ({ children }: any) => {
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
     }
+  };
+
+  const inscription = async (utilisateur: UtilisateurEntity) => {
+    // try {
+    const formattedDate = utilisateur.dateNaissance
+      ? `${utilisateur.dateNaissance.toISOString().split("T")[0]} 00:00:00`
+      : null;
+    console.log("Before axios call", utilisateur);
+    const response = await axios.post(
+      "https://api.victor-gombert.fr/api/v1/inscription",
+      {
+        motDePasse: utilisateur.motDePasse,
+        mail: utilisateur.mail,
+        dateNaissance: formattedDate,
+        codePostal: utilisateur.codePostal,
+        nom: utilisateur.nom,
+        prenom: utilisateur.prenom,
+        bio: utilisateur.bio,
+      }
+    );
+
+    if (!response.data == null) {
+      console.log("Log de la réponse:", response.data);
+      throw new Error("Erreur lors de l'inscription");
+    }
+
+    return response.data;
+    // } catch (error) {
+    //   console.error("Erreur lors de l'inscription:", error);
+    // }
   };
 
   const facade = useMemo(
@@ -107,6 +123,22 @@ export const AuthContainer = ({ children }: any) => {
           console.error(error);
         }
       },
+      inscription: async (utilisateur: UtilisateurEntity) => {
+        try {
+          //console.log("nom", nom, "prenom", prenom, "dateNaissance", dateNaissance, "codePostal", codePostal, "mail", mail, "motDePasse", motDePasse, "bio", bio)
+          const result = await inscription(utilisateur);
+          console.log("result:", result);
+          storage.set(ACCESS_TOKEN_KEY, String(result.token));
+
+          let user = (await getUtilisateur(result.token)) as UtilisateurEntity;
+
+          storage.set(CURRENT_USER, JSON.stringify(user));
+
+          dispatch({ type: AUTHENTICATED });
+        } catch (error) {
+          console.error(error);
+        }
+      },
     }),
     []
   );
@@ -118,9 +150,6 @@ export const AuthContainer = ({ children }: any) => {
   );
 };
 
-// export function getTokenFromStorage() {
-//   return storage.getString(ACCESS_TOKEN_KEY);
-// }
 
 export const getTokenFromStorage = () => {
   return storage.getString(ACCESS_TOKEN_KEY);
