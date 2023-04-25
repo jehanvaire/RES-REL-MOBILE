@@ -75,40 +75,44 @@ const DetailsPublication = (props: any) => {
 
   const image = () => {
     return (
-      <FastImage
-        style={styles.image}
-        source={{
-          uri: piecesJointesURL + '/' + idPieceJointe + "/download",
-          priority: FastImage.priority.normal,
-        }}
-        resizeMode={FastImage.resizeMode.contain}
-      />
+      <View key={idPieceJointe}>
+        <FastImage
+          style={styles.image}
+          source={{
+            uri: piecesJointesURL + '/' + idPieceJointe + "/download",
+            priority: FastImage.priority.normal,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+      </View>
     );
   };
-  
+
   const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
   //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
   const video = () => {
     return (
-      <Video
-        source={{
-          uri: piecesJointesURL + '/' + idPieceJointe + "/download",
-        }}
-        id={idPieceJointe}
-        rate={1.0}
-        volume={1.0}
-        isMuted={false}
-        resizeMode="center"
-        shouldPlay={true}
-        isLooping={true}
-        controls={true}
-        style={[styles.video, { aspectRatio: videoAspectRatio }]}
-        onLayout={(e: LayoutChangeEvent) => {
-          const { width, height } = e.nativeEvent.layout;
-          setVideoAspectRatio(width / height);
-        }}
-      />
+      <View key={idPieceJointe}>
+        <Video
+          source={{
+            uri: piecesJointesURL + '/' + idPieceJointe + "/download",
+          }}
+          id={idPieceJointe}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="center"
+          shouldPlay={true}
+          isLooping={true}
+          controls={true}
+          style={[styles.video, { aspectRatio: videoAspectRatio }]}
+          onLayout={(e: LayoutChangeEvent) => {
+            const { width, height } = e.nativeEvent.layout;
+            setVideoAspectRatio(width / height);
+          }}
+        />
+      </View>
     );
   };
 
