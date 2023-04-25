@@ -8,25 +8,22 @@ import axios from "axios";
 const AuthContext = React.createContext({} as any);
 
 const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
+const UNAUTHENTICATED = AuthentificationEnum.UNAUTHENTICATED;
 const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
 const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
 
 export const storage = new MMKV();
+// storage.clearAll();
 
 export const getUtilisateurToken = () => {
   return storage.getString(ACCESS_TOKEN_KEY);
 };
 
-const getUtilisateur = async (token: string) => {
-  const BearerToken = token || getUtilisateurToken();
-
-  const response = await axios.get("utilisateurs", {
-    headers: {
-      Authorization: `Bearer ${BearerToken}`,
-    },
-  });
-
-  return response.data;
+const getUtilisateur = async (idUtilisateur: string) => {
+  const utilisateur = await axios.get(
+    "https://api.victor-gombert.fr/api/v1/utilisateurs/" + idUtilisateur
+  );
+  return utilisateur.data;
 };
 
 export const AuthContainer = ({ children }: any) => {
@@ -51,33 +48,26 @@ export const AuthContainer = ({ children }: any) => {
   );
 
   const login = async (mail: string, motDePasse: string) => {
-    console.log("Before axios call", mail, motDePasse);
-    try {
-      const response = await axios.post(
-        "https://api.victor-gombert.fr/api/v1/connexion",
-        {
-          mail: mail,
-          motDePasse: motDePasse,
-        }
-      );
-
-      if (!response.data == null) {
-        console.log("Log de la réponse:", response.data);
-        throw new Error("Erreur lors de la connexion");
+    const response = await axios.post(
+      "https://api.victor-gombert.fr/api/v1/connexion",
+      {
+        mail: mail,
+        motDePasse: motDePasse,
       }
+    );
 
-      return response.data;
-    } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
+    if (!response.data == null) {
+      console.log("Log de la réponse:", response.data);
+      throw new Error("Erreur lors de la connexion");
     }
+
+    return response.data;
   };
 
   const inscription = async (utilisateur: UtilisateurEntity) => {
-    // try {
     const formattedDate = utilisateur.dateNaissance
       ? `${utilisateur.dateNaissance.toISOString().split("T")[0]} 00:00:00`
       : null;
-    console.log("Before axios call", utilisateur);
     const response = await axios.post(
       "https://api.victor-gombert.fr/api/v1/inscription",
       {
@@ -97,47 +87,33 @@ export const AuthContainer = ({ children }: any) => {
     }
 
     return response.data;
-    // } catch (error) {
-    //   console.error("Erreur lors de l'inscription:", error);
-    // }
   };
 
   const facade = useMemo(
     () => ({
       login: async (mail: string, password: string) => {
-        console.log("email:", mail, "password:", password);
-        try {
-          const result = await login(mail, password);
-          console.log("result:", result);
+        const result = await login(mail, password);
 
-          storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
+        storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
 
-          let user = (await getUtilisateur(
-            result.access_token
-          )) as UtilisateurEntity;
+        let user = (await getUtilisateur(result.idUti)) as UtilisateurEntity;
 
-          storage.set(CURRENT_USER, JSON.stringify(user));
+        storage.set(CURRENT_USER, JSON.stringify(user));
 
-          dispatch({ type: AUTHENTICATED });
-        } catch (error) {
-          console.error(error);
-        }
+        dispatch({ type: AUTHENTICATED });
       },
       inscription: async (utilisateur: UtilisateurEntity) => {
-        try {
-          //console.log("nom", nom, "prenom", prenom, "dateNaissance", dateNaissance, "codePostal", codePostal, "mail", mail, "motDePasse", motDePasse, "bio", bio)
-          const result = await inscription(utilisateur);
-          console.log("result:", result);
-          storage.set(ACCESS_TOKEN_KEY, String(result.token));
+        const result = await inscription(utilisateur);
+        console.log("result:", result);
+        storage.set(ACCESS_TOKEN_KEY, String(result.token));
+        storage.set(CURRENT_USER, JSON.stringify(result.response));
 
-          let user = (await getUtilisateur(result.token)) as UtilisateurEntity;
-
-          storage.set(CURRENT_USER, JSON.stringify(user));
-
-          dispatch({ type: AUTHENTICATED });
-        } catch (error) {
-          console.error(error);
+        if (result.response == null) {
+          dispatch({ type: UNAUTHENTICATED });
+          return;
         }
+
+        dispatch({ type: AUTHENTICATED });
       },
     }),
     []
