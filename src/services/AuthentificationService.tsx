@@ -1,53 +1,40 @@
-import React, { useContext, useEffect, useMemo, useReducer } from "react";
+import React, { useContext, useMemo, useReducer } from "react";
 import { MMKV } from "react-native-mmkv";
 
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
+import axios from "axios";
+import RestClient from "./RestClient";
 
 const AuthContext = React.createContext({} as any);
 
 const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
 const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
 const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
-const token = "11|R8yFnLwc8PQsCdQlU3Djwvr57z1TWLaZTZGar3yH"; // A ENLEVER QUAND LOGIN FONCTIONNEL
-export const storage = new MMKV();
-//storage.clearAll();
 
-// clear storage
-// TODO: a supprimer
-// storage.clearAll();
+export const storage = new MMKV();
 
 const getUtilisateurToken = () => {
-  // Récupère le token de l'utilisateur
-  return fetch("https://api.victor-gombert.fr/api/v1", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userName: "bony-a",
-    }),
-  }).then((result) => result.json());
+  return storage.getString(ACCESS_TOKEN_KEY);
 };
 
-const getUtilisateur = (token: string) => {
-  return fetch("https://api.victor-gombert.fr/api/v1", {
-    method: "GET",
+const getUtilisateur = async (token: string) => {
+  const BearerToken = token || getUtilisateurToken();
+
+  const client = new RestClient();
+  const response = await client.get("utilisateurs", {
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${BearerToken}`,
     },
-  }).then((result) => result.json());
+  });
+
+  return response.data;
 };
 
-// Récupère le
 export const AuthContainer = ({ children }: any) => {
   const [authState, dispatch] = useReducer(
     (prevState: any, action: any) => {
       switch (action.type) {
-        // Handle the AUTHENTICATED action and set the state to be authenticated
         case AUTHENTICATED:
           return {
             ...prevState,
@@ -65,26 +52,69 @@ export const AuthContainer = ({ children }: any) => {
     }
   );
 
+  const login = async (mail: string, motDePasse: string) => {
+    console.log("Before axios call", mail, motDePasse);
+    try {
+      const response = await axios.post(
+        "https://api.victor-gombert.fr/api/v1/connexion",
+        {
+          mail: mail,
+          motDePasse: motDePasse,
+        },
+      );
+
+      if (!response.data == null) {
+        console.log("Log de la réponse:", response.data);
+        throw new Error("Erreur lors de la connexion");
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
+    }
+  };
+
+  const inscription = async (utilisateur: UtilisateurEntity) => {
+    // try {
+    const formattedDate = utilisateur.dateNaissance
+      ? `${utilisateur.dateNaissance.toISOString().split("T")[0]} 00:00:00`
+      : null;
+    console.log("Before axios call", utilisateur);
+    const response = await axios.post(
+      "https://api.victor-gombert.fr/api/v1/inscription",
+      {
+        motDePasse: utilisateur.motDePasse,
+        mail: utilisateur.mail,
+        dateNaissance: formattedDate,
+        codePostal: utilisateur.codePostal,
+        nom: utilisateur.nom,
+        prenom: utilisateur.prenom,
+        bio: utilisateur.bio,
+      }
+    );
+
+    if (!response.data == null) {
+      console.log("Log de la réponse:", response.data);
+      throw new Error("Erreur lors de l'inscription");
+    }
+
+    return response.data;
+    // } catch (error) {
+    //   console.error("Erreur lors de l'inscription:", error);
+    // }
+  };
+
   const facade = useMemo(
     () => ({
-      register: async () => {
+      login: async (mail: string, password: string) => {
+        console.log("email:", mail, "password:", password);
         try {
-          const result = await getUtilisateurToken();
+          const result = await login(mail, password);
+          console.log("result:", result)
 
-          // storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
-          storage.set(ACCESS_TOKEN_KEY, String(token));
+          storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
 
-          let user = (await getUtilisateur(token)) as UtilisateurEntity;
-
-          // Add all other user Attributes here
-          // TODO: à supprimer après
-          user.id = 1;
-          user.prenom = "Adrien";
-          user.nom = "Bony";
-          user.bio = "Bonjour je suis du contenu";
-          user.dateNaissance = new Date("1995-01-01");
-          user.dateInscription = new Date("2020-01-01");
-          user.role = 1;
+          let user = (await getUtilisateur(result.access_token)) as UtilisateurEntity;
 
           storage.set(CURRENT_USER, JSON.stringify(user));
 
@@ -93,39 +123,25 @@ export const AuthContainer = ({ children }: any) => {
           console.error(error);
         }
       },
+      inscription: async (utilisateur: UtilisateurEntity) => {
+        try {
+          //console.log("nom", nom, "prenom", prenom, "dateNaissance", dateNaissance, "codePostal", codePostal, "mail", mail, "motDePasse", motDePasse, "bio", bio)
+          const result = await inscription(utilisateur);
+          console.log("result:", result);
+          storage.set(ACCESS_TOKEN_KEY, String(result.token));
 
-      resume: async () => {
-        const token = storage.getString(ACCESS_TOKEN_KEY);
+          let user = (await getUtilisateur(result.token)) as UtilisateurEntity;
 
-        // When no token is found, don't try to fetch the user
-        if (!token) {
-          return;
+          storage.set(CURRENT_USER, JSON.stringify(user));
+
+          dispatch({ type: AUTHENTICATED });
+        } catch (error) {
+          console.error(error);
         }
-
-        let user = await getUtilisateur(token);
-
-        // Add all other user Attributes here
-        // TODO: à supprimer après
-        user.id = 1;
-        user.prenom = "Adrien";
-        user.nom = "Bony";
-        user.contenu = "Bonjour je suis du contenu";
-        user.dateNaissance = new Date("1995-01-01");
-        user.dateInscription = new Date("2020-01-01");
-        user.role = 1;
-
-        storage.set(CURRENT_USER, JSON.stringify(user));
-
-        dispatch({ type: AUTHENTICATED });
       },
     }),
     []
   );
-
-  // Déclenche la fonction resume au chargement de l'application
-  useEffect(() => {
-    facade.resume();
-  }, []);
 
   return (
     <AuthContext.Provider value={facade}>
@@ -133,7 +149,9 @@ export const AuthContainer = ({ children }: any) => {
     </AuthContext.Provider>
   );
 };
-export function getTokenFromStorage() {
+
+
+export const getTokenFromStorage = () => {
   return storage.getString(ACCESS_TOKEN_KEY);
-}
+};
 export const useAuth = () => useContext(AuthContext);

@@ -9,6 +9,8 @@ export class UtilisateurEntity {
   dateInscription!: Date;
   image!: ArrayBuffer;
   role!: number;
+  codePostal!: string;
+  motDePasse!: string;
 
   constructor(init?: Partial<UtilisateurEntity>) {
     Object.assign(this, init);

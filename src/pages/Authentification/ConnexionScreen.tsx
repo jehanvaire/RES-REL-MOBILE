@@ -6,22 +6,40 @@ import {
   TextInput,
 } from "react-native";
 import { Image } from "native-base";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../services/AuthentificationService";
 import images from "../../ressources/ListeImagesLocales";
 import FooterAuthentification from "./FooterAuthentification";
 
 const ConnexionSreen = () => {
   const auth = useAuth();
-  const onConnexion = () => {
-    auth.register();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const onConnexion = async () => {
+    try {
+      await auth.login(email, password);
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
+    }
   };
   return (
     <View style={styles.container}>
       <Image source={images.logo2} alt="logo_slogan" style={styles.image} />
 
-      <TextInput style={styles.input} placeholder="Email" />
-      <TextInput style={styles.input} placeholder="Mot de passe" />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        onChangeText={(text) => setEmail(text)}
+        value={email}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Mot de passe"
+        onChangeText={(text) => setPassword(text)}
+        value={password}
+        secureTextEntry
+      />
 
       <TouchableOpacity
         onPress={() => onConnexion()}

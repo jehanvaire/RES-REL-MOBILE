@@ -2,8 +2,9 @@ import axios from "axios";
 
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
-  // private token = getTokenFromStorage();
-  private token = "1|BBHVOs1hJybnb6kIk61cPLyZyRDJteARodPiSu9o";
+
+  private token = getTokenFromStorage();
+
 
   async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
