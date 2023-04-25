@@ -1,7 +1,6 @@
-import { PieceJointeEntity } from "../ressources/models/PieceJointeEntity";
+import { BehaviorSubject } from "rxjs";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RestClient from "./RestClient";
-import RNFetchBlob from "rn-fetch-blob";
 
 export class PublicationService {
   private baseUrl = "ressources";
@@ -9,15 +8,11 @@ export class PublicationService {
 
   private restClient: RestClient;
 
+  private rechargerPublications = new BehaviorSubject<boolean>(false);
+
   constructor() {
     this.restClient = new RestClient();
   }
-
-  //   public static async getPublications(): Promise<any> {
-  //     const response = await fetch(this.baseUrl);
-  //     const data = await response.json();
-  //     return data;
-  //   }
 
   public async AddLikeToPublication(id: number): Promise<any> {
     // const response = await fetch(`${this.baseUrl}/${id}/like`, {
@@ -25,19 +20,6 @@ export class PublicationService {
     // });
     // const data = await response.json();
     const data = "Publication likée";
-    return data;
-  }
-
-  public async AddCommentaireToPublication(
-    id: number,
-    comment: string
-  ): Promise<any> {
-    // const response = await fetch(`${this.baseUrl}/${id}/comment`, {
-    //   method: "POST",
-    //   body: JSON.stringify({ comment }),
-    // });
-    // const data = await response.json();
-    const data = "Commentaire ajouté";
     return data;
   }
 
@@ -61,21 +43,18 @@ export class PublicationService {
   }
 
   public async ValiderPublication(id: number): Promise<any> {
-    // const response = await fetch(`${this.baseUrl}/${id}/validate`, {
-    //   method: "POST",
-    // });
-    // const data = await response.json();
-    const data = "Publication validée";
-    return data;
+    const response = await this.restClient.patch(
+      `${this.baseUrl}/${id}/enable`
+    );
+    return response;
   }
 
-  public async RefuserPublication(id: number): Promise<any> {
-    // const response = await fetch(`${this.baseUrl}/${id}/refuse`, {
-    //   method: "POST",
-    // });
-    // const data = await response.json();
-    const data = "Publication refusée";
-    return data;
+  public async RefuserPublication(params = {}): Promise<any> {
+    const response = await this.restClient.patch(
+      `${this.baseUrl}/disable`,
+      params
+    );
+    return response;
   }
 
   public async CreerPublication(
@@ -88,6 +67,14 @@ export class PublicationService {
   public async AjouterPieceJointe(params: FormData): Promise<any> {
     const response = this.restClient.upload(this.pieceJointeUrl, params);
     return response;
+  }
+
+  public setRechargerPublications(value: boolean) {
+    this.rechargerPublications.next(value);
+  }
+
+  public getRechargerPublications() {
+    return this.rechargerPublications.asObservable();
   }
 }
 
