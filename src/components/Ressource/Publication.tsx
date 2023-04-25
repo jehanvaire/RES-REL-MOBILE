@@ -1,23 +1,24 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent } from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
+import Video from "react-native-video";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
   function LikePublication() {
-    console.log(props);
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
-      console.log(res);
+      console.log("TODO: like publication");
     });
   }
 
@@ -30,7 +31,7 @@ const Publication = (props: any) => {
 
   function SauvegarderPublication() {
     PublicationService.SauvegarderPublication(1).then((res) => {
-      console.log(res);
+      console.log("TODO: sauvegarder publication");
     });
   }
 
@@ -43,6 +44,10 @@ const Publication = (props: any) => {
       id: props.id,
       auteur: props.auteur,
       titre: props.titre,
+      categorie: props.categorie,
+      idPieceJointe: props.idPieceJointe,
+      typePj: props.typePieceJointe,
+      dateActivite: props.dateActivite,
       contenu: props.contenu,
       status: props.status,
       raisonRefus: props.raisonRefus,
@@ -51,6 +56,81 @@ const Publication = (props: any) => {
       lienImage: props.lienImage,
     });
   }
+
+  const image = () => {
+    return (
+      <View key={props.idPieceJointe}>
+        <FastImage
+          style={styles.image}
+          source={{
+            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+            priority: FastImage.priority.normal,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+      </View>
+    );
+  };
+
+  const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
+
+  //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
+  const video = () => {
+    return (
+      <View key={props.idPieceJointe}>
+        <Video
+
+          source={{
+            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+          }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="center"
+          shouldPlay={true}
+          isLooping={true}
+          //TODO seulement dans détails publication
+          //controls={true}
+          style={[styles.video, { aspectRatio: videoAspectRatio }]}
+          onLayout={(e: LayoutChangeEvent) => {
+            const { width, height } = e.nativeEvent.layout;
+            setVideoAspectRatio(width / height);
+          }}
+        />
+      </View>
+
+    );
+  };
+
+  // const pdf = () => {
+  //   return (
+
+  //     <object data="http://africau.edu/images/default/sample.pdf" type="application/pdf" width="100%" height="100%">
+  //       <p>Alternative text - include a link <a href="http://africau.edu/images/default/sample.pdf">to the PDF!</a></p>
+  //     </object>
+  //   );
+  // };
+
+  // const activite = () => {
+  //   return (
+  //     <View style={styles.activite}>
+  //       <FastImage 
+  //         source={{
+  //           uri: "api.victor-gombert.fr/api/v1/piecesJointes/9/download",
+  //           priority: FastImage.priority.normal,
+  //         }}
+  //         />
+
+
+  //       <Text style={styles.activiteText}>{[
+  //         props.contenu,
+  //         moment(props.dateActivite).fromNow() === "Invalid date" ? "quelques secondes" : moment(props.dateActivite).fromNow()
+  //       ]
+  //         }</Text>
+
+  //     </View>
+  //   );
+  // };
 
   return (
     <Box style={[styles.container, styles.shadow]}>
@@ -86,14 +166,20 @@ const Publication = (props: any) => {
         LikePublication={LikePublication}
       >
         <View>
-          <FastImage
-            style={styles.image}
-            source={{
-              uri: props.lienImage,
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-          />
+          {props.typePieceJointe === "IMAGE" && (
+            <View key={`${props.idPieceJointe}-image`}>{image()}</View>
+          )}
+          {props.typePieceJointe === "VIDEO" && (
+            <View key={`${props.idPieceJointe}-video`}>{video()}</View>
+          )}
+          {/*
+  props.typePieceJointe === "ACTIVITE" && (
+    <View key={`${props.idPieceJointe}-activite`}>{activite()}</View>
+  )
+  props.typePieceJointe === "PDF" && (
+    <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
+  )
+  */}
         </View>
       </DoubleTap>
 
@@ -137,6 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginVertical: 7,
     borderRadius: 10,
+    zIndex: 100,
   },
   categorie: {
     backgroundColor: "#F2F2F2",
@@ -169,6 +256,24 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
+  },
+  video: {
+    marginTop: 0,
+    width: "100%",
+    height: undefined,
+    marginBottom: 0,
+    aspectRatio: 1,
+  },
+  activite: {
+    marginTop: 10,
+    width: "100%",
+    height: undefined,
+    aspectRatio: 1,
+  },
+  activiteText: {
+    fontSize: 16,
+    marginHorizontal: 10,
+    textAlign: "center",
   },
   footer: {
     margin: 20,

@@ -1,4 +1,4 @@
-import { Box, Center, Spacer, Avatar, Stack, Text } from "native-base";
+import { Box, Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, BackHandler } from "react-native";
 import { View } from "native-base";
@@ -27,9 +27,6 @@ const ProfilScreen = (props: any) => {
 
   useEffect(() => {
     fetchListePublicationsUtilisateur();
-    const params = {
-      id: utilisateur.id,
-    };
   }, []);
 
   useEffect(() => {
@@ -50,7 +47,7 @@ const ProfilScreen = (props: any) => {
       page: 1,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
-      include: "utilisateur",
+      include: "utilisateur,categorie,pieceJointe",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
@@ -64,7 +61,8 @@ const ProfilScreen = (props: any) => {
       page: nextPage,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
-      include: "utilisateur",
+      include: "utilisateur,categorie,pieceJointe",
+      zIndex: 10,
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications([...listePublications, ...publications]);
@@ -79,7 +77,7 @@ const ProfilScreen = (props: any) => {
       page: firstPage,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
-      include: "utilisateur",
+      include: "utilisateur,categorie,pieceJointe",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications(publications);
@@ -93,6 +91,10 @@ const ProfilScreen = (props: any) => {
         id={item.idUtilisateur}
         auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
         titre={item.titre}
+        categorie={item.categorie.nom}
+        idPieceJointe={item.pieceJointe.id}
+        typePieceJointe={item.pieceJointe.type}
+        dateActivite={item.pieceJointe.dateActivite}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
@@ -110,42 +112,35 @@ const ProfilScreen = (props: any) => {
           autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
         }
       >
-        <Stack direction="row" style={styles.header}>
-          <Avatar
-            size={100}
-            source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
-            }}
-          ></Avatar>
+        <Stack style={[styles.header, styles.shadow]}>
+          <Stack style={styles.flex}>
+            <Avatar
+              size={100}
+              style={styles.avatar}
+              source={{
+                uri: apiURL + "/" + utilisateur.id + "/download",
+              }}
+            ></Avatar>
 
-          <Center marginLeft={2}>
-            <Text style={styles.title}>
-              {utilisateur.nom} {utilisateur.prenom}
-            </Text>
-          </Center>
+            <VStack marginLeft={3} style={{marginTop: 30}}>
+                <Text style={styles.title}>
+                  {utilisateur.nom} {utilisateur.prenom}
+                </Text>
+              <Description
+                contenu={utilisateur.bio ?? ""}
+              ></Description>
+            </VStack>
 
-          <Spacer />
+            <Spacer />
 
-          <Center>
-            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
-          </Center>
+            <Center>
+              <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
+            </Center>
+          </Stack>
         </Stack>
 
-        <Description contenu={utilisateur.bio ?? ""}></Description>
-
-        <Text style={styles.title}>Publications {utilisateur.id}</Text>
-        <Box
-          style={{
-            width: "100%",
-            height: 1,
-            backgroundColor: "black",
-            marginTop: 10,
-            marginBottom: 10,
-          }}
-        ></Box>
-
         <FlatList
-          style={{ marginBottom: 200 }}
+          style={styles.contenu}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
@@ -166,27 +161,57 @@ export default ProfilScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    marginTop: 38,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#BBBBBB",
+    zIndex: 1,
   },
   containerAutreUtilisateur: {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 50,
+    backgroundColor: "#BBBBBB",
   },
   header: {
-    margin: 10,
-    marginTop: 5,
+    height: 120,
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+  },
+  flex: {
+    flexDirection: "row",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginHorizontal: 10,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  avatar: {
+    marginLeft: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  bio: {
+    marginBottom: 10,
   },
   contenu: {
-    margin: 10,
-    marginTop: 5,
-    fontSize: 15,
+    paddingTop: 120,
   },
 });
