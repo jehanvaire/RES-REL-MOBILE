@@ -4,7 +4,6 @@ import { MMKV } from "react-native-mmkv";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import axios from "axios";
-import RestClient from "./RestClient";
 
 const AuthContext = React.createContext({} as any);
 
@@ -14,15 +13,14 @@ const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
 
 export const storage = new MMKV();
 
-const getUtilisateurToken = () => {
+export const getUtilisateurToken = () => {
   return storage.getString(ACCESS_TOKEN_KEY);
 };
 
 const getUtilisateur = async (token: string) => {
   const BearerToken = token || getUtilisateurToken();
 
-  const client = new RestClient();
-  const response = await client.get("utilisateurs", {
+  const response = await axios.get("utilisateurs", {
     headers: {
       Authorization: `Bearer ${BearerToken}`,
     },
@@ -60,7 +58,7 @@ export const AuthContainer = ({ children }: any) => {
         {
           mail: mail,
           motDePasse: motDePasse,
-        },
+        }
       );
 
       if (!response.data == null) {
@@ -110,11 +108,13 @@ export const AuthContainer = ({ children }: any) => {
         console.log("email:", mail, "password:", password);
         try {
           const result = await login(mail, password);
-          console.log("result:", result)
+          console.log("result:", result);
 
           storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
 
-          let user = (await getUtilisateur(result.access_token)) as UtilisateurEntity;
+          let user = (await getUtilisateur(
+            result.access_token
+          )) as UtilisateurEntity;
 
           storage.set(CURRENT_USER, JSON.stringify(user));
 
@@ -148,10 +148,5 @@ export const AuthContainer = ({ children }: any) => {
       {children(authState)}
     </AuthContext.Provider>
   );
-};
-
-
-export const getTokenFromStorage = () => {
-  return storage.getString(ACCESS_TOKEN_KEY);
 };
 export const useAuth = () => useContext(AuthContext);

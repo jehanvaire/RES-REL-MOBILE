@@ -1,10 +1,10 @@
 import axios from "axios";
+import { getUtilisateurToken } from "./AuthentificationService";
 
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
 
-  private token = getTokenFromStorage();
-
+  private token = getUtilisateurToken();
 
   async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
