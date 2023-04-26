@@ -17,16 +17,33 @@ const BottomTab = createMaterialBottomTabNavigator();
 
 // The authenticated view
 const Menu = ({ props }: any) => {
-  const [isAutorized, setIsAutorized] = useState(true);
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
+  const [isAutorized, setIsAutorized] = useState(!!utilisateur.id);
   const [loading, setIsLoading] = useState(true);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
-    var user = JSON.parse(user_json) as UtilisateurEntity;
-    setUtilisateur(user);
+    if (user_json !== "") {
+      var user = JSON.parse(user_json) as UtilisateurEntity;
+      setUtilisateur(user);
+    } else {
+      setUtilisateur({} as UtilisateurEntity);
+    }
+  }, []);
+
+  //TODO: A continuer pour les roles par défaut
+  // useEffect(() => {
+  //   if (utilisateur.role) {
+  //     setIsAutorized(utilisateur.role >= utilisateur.role);
+  //   } else {
+  //     setIsAutorized(false);
+  //   }
+  // }, [utilisateur]);
+
+  useEffect(() => {
+    setIsAutorized(true);
   }, []);
 
   useEffect(() => {

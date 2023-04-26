@@ -1,5 +1,5 @@
 import { Box, ScrollView, View, Image } from "native-base";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -11,6 +11,9 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
 import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
+//importe mode invité de AuthentificationMenuScreen
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+import { storage } from "../services/AuthentificationService";
 
 const HeaderComponent = () => {
   return (
@@ -23,12 +26,22 @@ const HeaderComponent = () => {
 };
 
 function ListePublicationsScreen({ navigation }: any) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    const user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+    if (user_json !== "") {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
   const navigateToCreation = () => {
     navigation.navigate("CreationRessourceScreen");
   };
   return (
     <Box style={styles.container}>
-      <CustomButton onPress={navigateToCreation} />
+      <CustomButton isAuthenticated={isAuthenticated} onPress={navigateToCreation} />
       <HeaderComponent />
       <GestureHandlerRootView>
         <ScrollView style={styles.scrollView}>
@@ -46,9 +59,9 @@ function ListePublicationsScreen({ navigation }: any) {
             dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
             lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
             navigation={navigation}
-            
+
           />
-           <Publication
+          <Publication
             auteur="Adrien"
             utilisateurId="2"
             titre="Sortie au cinéma"
@@ -81,13 +94,18 @@ function ListePublicationsScreen({ navigation }: any) {
     </Box>
   );
 }
-function CustomButton({ onPress }: { onPress: () => void }) {
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.customButton}>
-      <Ionicons name="add-outline" size={36} color="#FFFFFF" />
-    </TouchableOpacity>
-  );
+function CustomButton({ isAuthenticated, onPress }: { isAuthenticated: boolean; onPress: () => void }) {
+  // Show button only if user is logged in
+  if (isAuthenticated) {
+    return (
+      <TouchableOpacity onPress={onPress} style={styles.customButton}>
+        <Ionicons name="add-outline" size={36} color="#FFFFFF" />
+      </TouchableOpacity>
+    );
+  }
+  return null;
 }
+
 const StackNav = createStackNavigator();
 
 const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {

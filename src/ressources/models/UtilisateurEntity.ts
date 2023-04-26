@@ -1,4 +1,3 @@
-import { Image } from "react-native";
 export class UtilisateurEntity {
   id!: number;
   nom!: string;

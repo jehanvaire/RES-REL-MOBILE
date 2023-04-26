@@ -19,8 +19,12 @@ const RechercheUtilisateurScreen = (props: any) => {
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
 
-    var user = JSON.parse(user_json) as UtilisateurEntity;
-    setUtilisateur(user);
+    if (user_json !== "") {
+      var user = JSON.parse(user_json) as UtilisateurEntity;
+      setUtilisateur(user);
+    } else {
+      setUtilisateur({} as UtilisateurEntity);
+    }
 
     RechercheService.GetListeResUtilisateurs().subscribe((result) => {
       if (result !== undefined) {

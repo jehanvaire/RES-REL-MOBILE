@@ -13,8 +13,11 @@ import { Input, Stack, Spacer } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CommentaireComponent from "../../components/Commentaire/Commentaire";
 import ModalOptionsComponent from "../../components/Commentaire/ModalOptionsCommentaire";
+import { storage } from "../../services/AuthentificationService";
+import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 
 function EspaceCommentaireScreen(props: any) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [listeCommentaires, setListeCommentaires] = useState<
     CommentaireEntity[]
   >([]);
@@ -34,6 +37,19 @@ function EspaceCommentaireScreen(props: any) {
   // Contenu commentaire à envoyer
   const [commentaire, setCommentaire] = useState("");
   const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    const fetchStorage = async () => {
+      const user_json = await storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+      if (user_json !== "") {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    };
+
+    fetchStorage();
+  }, []);
 
   useEffect(() => {
     loadCommentaires();
@@ -206,6 +222,7 @@ function EspaceCommentaireScreen(props: any) {
           borderWidth={1}
           borderColor={"gray"}
           fontSize={15}
+          editable={isAuthenticated}
         />
         <TouchableOpacity
           onPress={() => {

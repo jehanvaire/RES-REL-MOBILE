@@ -3,8 +3,6 @@ import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { Image } from "native-base";
 import images from "../../ressources/ListeImagesLocales";
 import FooterAuthentification from "./FooterAuthentification";
-//import { Header, Icon } from 'react-native-elements';
-import Ionicons from "react-native-vector-icons/Ionicons";
 
 const AuthentificationMenu = ({ navigation }: any) => {
   return (
@@ -32,7 +30,7 @@ const AuthentificationMenu = ({ navigation }: any) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate("Menu")}
+        onPress={() => navigation.navigate("ModeInvite")}
         style={[
           styles.button,
           styles.shadow,

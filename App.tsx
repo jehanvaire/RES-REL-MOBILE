@@ -41,7 +41,7 @@ function App() {
                     options={{ headerShown: false }}
                   />
                   <Stack.Screen
-                    name="Menu"
+                    name="ModeInvite"
                     component={Menu}
                     options={{ headerShown: false }}
                   />
