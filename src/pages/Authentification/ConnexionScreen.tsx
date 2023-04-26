@@ -13,14 +13,15 @@ import FooterAuthentification from "./FooterAuthentification";
 
 const ConnexionSreen = () => {
   const auth = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mauvaisIdentifiants, setMauvaisIdentifiants] = useState(false);
 
   const onConnexion = async () => {
     try {
       await auth.login(email, password);
     } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
+      setMauvaisIdentifiants(true);
     }
   };
   return (
@@ -30,16 +31,28 @@ const ConnexionSreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={(text) => {
+          setEmail(text);
+          setMauvaisIdentifiants(false);
+        }}
         value={email}
       />
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={(text) => {
+          setPassword(text);
+          setMauvaisIdentifiants(false);
+        }}
         value={password}
         secureTextEntry
       />
+
+      {mauvaisIdentifiants && (
+        <Text style={{ color: "red" }}>
+          Mauvais identifiants, veuillez réessayer
+        </Text>
+      )}
 
       <TouchableOpacity
         onPress={() => onConnexion()}
