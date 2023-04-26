@@ -31,6 +31,11 @@ export const AuthContainer = ({ children }: any) => {
             ...prevState,
             authenticated: true,
           };
+        case UNAUTHENTICATED:
+          return {
+            ...prevState,
+            authenticated: false,
+          };
         default:
           throw new Error(
             `${action.type} est un type d'action non pris en charge`
@@ -116,6 +121,11 @@ export const AuthContainer = ({ children }: any) => {
         if (token && user) {
           dispatch({ type: AUTHENTICATED });
         }
+      },
+      logout: async () => {
+        storage.delete(ACCESS_TOKEN_KEY);
+        storage.delete(CURRENT_USER);
+        dispatch({ type: UNAUTHENTICATED });
       },
     }),
     []
