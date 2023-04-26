@@ -92,9 +92,9 @@ const ProfilScreen = (props: any) => {
         auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
         titre={item.titre}
         categorie={item.categorie.nom}
-        idPieceJointe={item.pieceJointe.id}
-        typePieceJointe={item.pieceJointe.type}
-        dateActivite={item.pieceJointe.dateActivite}
+        idPieceJointe={item.pieceJointe?.id}
+        typePieceJointe={item.pieceJointe?.type}
+        dateActivite={item.pieceJointe?.dateActivite}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
@@ -122,19 +122,19 @@ const ProfilScreen = (props: any) => {
               }}
             ></Avatar>
 
-            <VStack marginLeft={3} style={{marginTop: 30}}>
-                <Text style={styles.title}>
-                  {utilisateur.nom} {utilisateur.prenom}
-                </Text>
-              <Description
-                contenu={utilisateur.bio ?? ""}
-              ></Description>
+            <VStack marginLeft={3} style={{ marginTop: 30 }}>
+              <Text style={styles.title}>
+                {utilisateur.nom} {utilisateur.prenom}
+              </Text>
+              <Description contenu={utilisateur.bio ?? ""}></Description>
             </VStack>
 
             <Spacer />
 
             <Center>
-              <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
+              <MenuHamburgerProfil
+                navigation={navigation}
+              ></MenuHamburgerProfil>
             </Center>
           </Stack>
         </Stack>
