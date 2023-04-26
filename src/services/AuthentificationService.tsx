@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useReducer } from "react";
+import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import { MMKV } from "react-native-mmkv";
 
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
@@ -15,15 +15,11 @@ const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
 export const storage = new MMKV();
 // storage.clearAll();
 
-export const getUtilisateurToken = () => {
-  return storage.getString(ACCESS_TOKEN_KEY);
-};
-
 const getUtilisateur = async (idUtilisateur: string) => {
   const utilisateur = await axios.get(
     "https://api.victor-gombert.fr/api/v1/utilisateurs/" + idUtilisateur
   );
-  return utilisateur.data;
+  return utilisateur.data.data;
 };
 
 export const AuthContainer = ({ children }: any) => {
@@ -57,7 +53,6 @@ export const AuthContainer = ({ children }: any) => {
     );
 
     if (!response.data == null) {
-      console.log("Log de la réponse:", response.data);
       throw new Error("Erreur lors de la connexion");
     }
 
@@ -94,7 +89,7 @@ export const AuthContainer = ({ children }: any) => {
       login: async (mail: string, password: string) => {
         const result = await login(mail, password);
 
-        storage.set(ACCESS_TOKEN_KEY, String(result.access_token));
+        storage.set(ACCESS_TOKEN_KEY, String(result.token));
 
         let user = (await getUtilisateur(result.idUti)) as UtilisateurEntity;
 
@@ -104,20 +99,31 @@ export const AuthContainer = ({ children }: any) => {
       },
       inscription: async (utilisateur: UtilisateurEntity) => {
         const result = await inscription(utilisateur);
-        console.log("result:", result);
         storage.set(ACCESS_TOKEN_KEY, String(result.token));
         storage.set(CURRENT_USER, JSON.stringify(result.response));
 
-        if (result.response == null) {
-          dispatch({ type: UNAUTHENTICATED });
+        dispatch({ type: AUTHENTICATED });
+      },
+      resume: async () => {
+        const token = storage.getString(ACCESS_TOKEN_KEY);
+
+        if (!token) {
           return;
         }
 
-        dispatch({ type: AUTHENTICATED });
+        const user = storage.getString(CURRENT_USER);
+
+        if (token && user) {
+          dispatch({ type: AUTHENTICATED });
+        }
       },
     }),
     []
   );
+
+  useEffect(() => {
+    facade.resume();
+  }, []);
 
   return (
     <AuthContext.Provider value={facade}>

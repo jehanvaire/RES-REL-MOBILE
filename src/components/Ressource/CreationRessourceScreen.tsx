@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -18,6 +18,9 @@ import { Menu, Portal } from "react-native-paper";
 import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import { PieceJointeEntity } from "../../ressources/models/PieceJointeEntity";
 import RNFS from "react-native-fs";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
+import { storage } from "../../services/AuthentificationService";
+import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 
 // import { FileSystem } from 'react-native-unimodules';
 
@@ -29,6 +32,7 @@ function CreationRessourceScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const [publication, setPublication] = useState({} as PublicationEntity);
+  const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
 
   const ouvrirMenu = () => setMenuVisible(true);
   const fermerMenu = () => setMenuVisible(false);
@@ -37,7 +41,11 @@ function CreationRessourceScreen() {
     fermerMenu();
   };
 
-  const [utilisateur] = useState(1);
+  useEffect(() => {
+    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+    var user = JSON.parse(user_json) as UtilisateurEntity;
+    setUtilisateur(user);
+  }, []);
 
   const LONGUEUR_MIN_TITRE = 5;
 
@@ -103,7 +111,7 @@ function CreationRessourceScreen() {
     const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
 
     const nouvellePieceJointe = {
-      idUtilisateur: utilisateur,
+      idUtilisateur: utilisateur.id,
       type: result.type,
       titre: result.name,
       taille: result.size,
@@ -115,7 +123,14 @@ function CreationRessourceScreen() {
   };
 
   const soumettre = async () => {
+    publication.idUtilisateur = utilisateur.id;
     await PublicationService.CreerPublication(publication).then((res) => {
+      console.log("res", res);
+      if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
+        gererNavigation();
+        return;
+      }
+
       const formData = new FormData();
       formData.append("file", pieceJointe.file, pieceJointe.titre);
       formData.append("titre", pieceJointe.titre);

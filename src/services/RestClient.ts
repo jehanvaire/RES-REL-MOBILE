@@ -1,10 +1,11 @@
 import axios from "axios";
-import { getUtilisateurToken } from "./AuthentificationService";
+import { storage } from "./AuthentificationService";
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 
 export default class RestClient {
   private baseUrl = "https://api.victor-gombert.fr/api/v1/";
 
-  private token = getUtilisateurToken();
+  private token = storage.getString(AuthentificationEnum.ACCESS_TOKEN_KEY);
 
   async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
@@ -19,6 +20,7 @@ export default class RestClient {
 
   async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
+    console.log("token", this.token);
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
