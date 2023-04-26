@@ -33,6 +33,18 @@ const Menu = ({ props }: any) => {
     }
   }, []);
 
+  //TODO: A continuer pour les roles par défaut
+  // useEffect(() => {
+  //   if (utilisateur.role) {
+  //     setIsAutorized(utilisateur.role >= utilisateur.role);
+  //   } else {
+  //     setIsAutorized(false);
+  //   }
+  // }, [utilisateur]);
+
+  useEffect(() => {
+    setIsAutorized(true);
+  }, []);
 
   useEffect(() => {
     setIsLoading(false);

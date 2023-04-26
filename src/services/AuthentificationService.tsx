@@ -11,6 +11,7 @@ const AUTHENTICATED = AuthentificationEnum.AUTHENTICATED;
 const UNAUTHENTICATED = AuthentificationEnum.UNAUTHENTICATED;
 const ACCESS_TOKEN_KEY = AuthentificationEnum.ACCESS_TOKEN_KEY;
 const CURRENT_USER = AuthentificationEnum.CURRENT_USER;
+const ROLE_UTILISATEUR_PAR_DEFAUT = 1;
 
 export const storage = new MMKV();
 // storage.clearAll();
@@ -68,6 +69,10 @@ export const AuthContainer = ({ children }: any) => {
     const formattedDate = utilisateur.dateNaissance
       ? `${utilisateur.dateNaissance.toISOString().split("T")[0]} 00:00:00`
       : null;
+
+    // Ajoutez cette ligne pour définir le rôle par défaut
+    utilisateur.role = ROLE_UTILISATEUR_PAR_DEFAUT;
+
     const response = await axios.post(
       "https://api.victor-gombert.fr/api/v1/inscription",
       {
@@ -78,6 +83,7 @@ export const AuthContainer = ({ children }: any) => {
         nom: utilisateur.nom,
         prenom: utilisateur.prenom,
         bio: utilisateur.bio,
+        role: utilisateur.role, // Ajoutez cette ligne pour envoyer le rôle à l'API
       }
     );
 
@@ -88,6 +94,7 @@ export const AuthContainer = ({ children }: any) => {
 
     return response.data;
   };
+
 
   const facade = useMemo(
     () => ({
