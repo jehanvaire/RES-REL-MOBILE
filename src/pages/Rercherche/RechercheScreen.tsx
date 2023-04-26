@@ -25,9 +25,13 @@ const RechercheScreen = () => {
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+    if (user_json !== "") {
+      var user = JSON.parse(user_json) as UtilisateurEntity;
+      setUtilisateur(user);
+    } else {
+      setUtilisateur({} as UtilisateurEntity);
+    }
 
-    var user = JSON.parse(user_json) as UtilisateurEntity;
-    setUtilisateur(user);
     FiltreService.getFiltres().subscribe((nouveauxFiltres) => {
       filtres.next(nouveauxFiltres);
       setSeachValue("");
@@ -38,6 +42,7 @@ const RechercheScreen = () => {
       setAfficheHeader(affiche);
     });
   }, []);
+
 
   const startSearch = () => {
     if (searchValue !== "") {
