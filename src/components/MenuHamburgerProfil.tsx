@@ -2,10 +2,12 @@ import { useDisclose, Center, Actionsheet, Box, Text, Icon } from "native-base";
 import { useState } from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useAuth } from "../services/AuthentificationService";
 
 const MenuHamburgerProfil = ({ navigation }: any) => {
   const { isOpen, onOpen, onClose } = useDisclose();
   const [isAutorized, setIsAutorized] = useState(true);
+  const { logout } = useAuth();
   return (
     <Box>
       <Center>
@@ -153,6 +155,25 @@ const MenuHamburgerProfil = ({ navigation }: any) => {
               }}
             >
               <Text style={styles.elementTextUtilisateur}>Mis de côté</Text>
+            </Actionsheet.Item>
+            <Actionsheet.Item
+              startIcon={
+                <Icon
+                  as={
+                    <Ionicons
+                      name="log-out-outline"
+                      size={20}
+                      style={styles.elementUtilisateur}
+                    />
+                  }
+                />
+              }
+              onPress={() => {
+                onClose();
+                logout();
+              }}
+            >
+              <Text style={styles.elementTextUtilisateur}>Déconnexion</Text>
             </Actionsheet.Item>
           </Actionsheet.Content>
         </Actionsheet>
