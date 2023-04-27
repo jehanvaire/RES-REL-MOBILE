@@ -1,12 +1,15 @@
 import { BehaviorSubject } from "rxjs";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RestClient from "./RestClient";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 
 export class PublicationService {
   private baseUrl = "ressources";
   private pieceJointeUrl = "piecesJointes";
 
   private restClient: RestClient;
+  private utilisateur = new UtilisateurEntity();
+  // private publication = new PublicationEntity();
 
   private rechargerPublications = new BehaviorSubject<boolean>(false);
 
@@ -14,13 +17,18 @@ export class PublicationService {
     this.restClient = new RestClient();
   }
 
-  public async AddLikeToPublication(id: number): Promise<any> {
-    // const response = await fetch(`${this.baseUrl}/${id}/like`, {
-    //   method: "POST",
-    // });
-    // const data = await response.json();
-    const data = "Publication likée";
-    return data;
+  public async AddFavoriToPublication(id: number): Promise<any> {
+    console.log("id publication", id)
+    console.log("id user", this.utilisateur.id);
+    const response = await this.restClient.post(
+      `favoris`,
+      {
+        idUtilisateur: this.utilisateur.id,
+        idRessource: id
+      }
+    );
+    console.log(response);
+    return response;
   }
 
   public async SauvegarderPublication(id: number): Promise<any> {

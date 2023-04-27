@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RechercheScreen from "./Rercherche/RechercheScreen";
-import NotificationScreen, {
-  getNumberOfNotifications,
-} from "./NotificationsScreen";
+import NotificationScreen from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
@@ -28,23 +26,21 @@ const Menu = ({ props }: any) => {
     if (user_json !== "") {
       var user = JSON.parse(user_json) as UtilisateurEntity;
       setUtilisateur(user);
+      console.log(user)
     } else {
       setUtilisateur({} as UtilisateurEntity);
     }
   }, []);
 
-  //TODO: A continuer pour les roles par défaut
-  // useEffect(() => {
-  //   if (utilisateur.role) {
-  //     setIsAutorized(utilisateur.role >= utilisateur.role);
-  //   } else {
-  //     setIsAutorized(false);
-  //   }
-  // }, [utilisateur]);
-
+  // TODO: A tester avec un user Modérateur / admin
   useEffect(() => {
-    setIsAutorized(true);
-  }, []);
+    console.log(utilisateur.idRole)
+    if (utilisateur.idRole != 4 && utilisateur.idRole != undefined) {
+      setIsAutorized(true);
+    } else {
+      setIsAutorized(false);
+    }
+  }, [utilisateur]);
 
   useEffect(() => {
     setIsLoading(false);

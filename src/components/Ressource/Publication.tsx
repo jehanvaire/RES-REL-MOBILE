@@ -15,10 +15,13 @@ const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
 
-  function LikePublication() {
-    setLiked(!liked);
-    PublicationService.AddLikeToPublication(1).then((res) => {
-      console.log("TODO: like publication");
+  function FavoriPublication() {
+    // setLiked(!liked);
+    // PublicationService.AddLikeToPublication(1).then((res) => {
+    //   console.log("TODO: like publication");
+    // });
+    PublicationService.AddFavoriToPublication(props.id).then(() => {
+      setLiked(!liked);
     });
   }
 
@@ -163,7 +166,7 @@ const Publication = (props: any) => {
 
       <DoubleTap
         AfficherPublication={AfficherPublication}
-        LikePublication={LikePublication}
+        LikePublication={FavoriPublication}
       >
         <View>
           {props.typePieceJointe === "IMAGE" && (
@@ -186,7 +189,7 @@ const Publication = (props: any) => {
       <Description contenu={props.contenu}></Description>
 
       <Stack direction="row" style={styles.footer}>
-        <TouchableOpacity onPress={LikePublication}>
+        <TouchableOpacity onPress={FavoriPublication}>
           {liked ? (
             <Ionicons name={"heart"} size={25} color={"red"} />
           ) : (
