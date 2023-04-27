@@ -43,11 +43,11 @@ const RechercheScreen = () => {
     });
   }, []);
 
-
   const startSearch = () => {
     if (searchValue !== "") {
       const params = {
         query: {
+          // TODO: attendre demain que Victor fasse son taf
           ressource: {
             // "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
             // "datePublication[lowerThanEquals]=": filtres.value.dateFin,
@@ -65,23 +65,6 @@ const RechercheScreen = () => {
         RechercheService.SetListeResRessources(listeResultats.ressources);
         RechercheService.SetListeResUtilisateurs(listeResultats.utilisateurs);
       });
-    } else {
-      const filtresRequete: any = {
-        "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
-        "datePublication[lowerThanEquals]=": filtres.value.dateFin,
-        "partage[equals]=": "PUBLIC",
-        "status[equals]=": "APPROVED",
-        include: "utilisateur",
-      };
-      if (filtres.value.categorie === 0) {
-        filtresRequete["idCategorie[equals]="] = filtres.value.categorie;
-      }
-
-      PublicationService.GetPublications(filtresRequete).then(
-        (listeResultats) => {
-          RechercheService.SetListeResRessources(listeResultats);
-        }
-      );
     }
   };
 

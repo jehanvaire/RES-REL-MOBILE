@@ -47,6 +47,8 @@ const RechercheRessourceScreen = (props: any) => {
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
       lienImage: publication.image,
+      idCategorie: publication.idCategorie,
+      idUtilisateur: publication.idUtilisateur,
       auteur:
         publication.utilisateur.nom + " " + publication.utilisateur.prenom,
     });
