@@ -55,7 +55,7 @@ function ListePublicationsScreen({ navigation }: any) {
             categorie="Loisirs"
             contenu="Le film sortira au cinéma le 28 janvier 2023."
             dateCreation={new Date(2023, 0, 7, 15, 10, 30)}
-            typePieceJointe='IMAGE'
+            typePieceJointe='ACTIVITE'
             status={StatusPublicationEnum.ENATTENTE}
             raisonRefus={undefined}
             lienImage="https://fr.web.img3.acsta.net/r_654_368/newsv7/21/04/29/14/22/0010719.jpg"
