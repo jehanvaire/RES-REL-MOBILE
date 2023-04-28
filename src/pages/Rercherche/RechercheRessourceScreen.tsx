@@ -88,17 +88,22 @@ const RechercheRessourceScreen = (props: any) => {
 
   return (
     <View style={styles.container}>
-      {/* TODO: ajouter un texte "Publications suggérées" si searchValue est vide */}
-      <FlatList
-        style={{ width: "100%" }}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={PER_PAGE}
-        initialNumToRender={PER_PAGE}
-        data={listeResultats}
-        renderItem={renderItem}
-        keyExtractor={(item: any) => item.id.toString()}
-      />
-      <Spacer />
+      {listeResultats.length === 0 ? (
+        <Text>Effectuez une recherche pour trouver des ressources</Text>
+      ) : (
+        <>
+          <FlatList
+            style={{ width: "100%" }}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={PER_PAGE}
+            initialNumToRender={PER_PAGE}
+            data={listeResultats}
+            renderItem={renderItem}
+            keyExtractor={(item: any) => item.id.toString()}
+          />
+          <Spacer />
+        </>
+      )}
     </View>
   );
 };

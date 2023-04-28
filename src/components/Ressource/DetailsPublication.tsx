@@ -42,6 +42,10 @@ const DetailsPublication = (props: any) => {
     idUtilisateur,
   } = props.route.params;
 
+  const date = new Date(
+    Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
+  );
+
   function LikePublication() {
     setLiked(!liked);
     PublicationService.AddLikeToPublication(1).then((res) => {
@@ -69,10 +73,6 @@ const DetailsPublication = (props: any) => {
   function AfficherPlusOptions() {
     console.log("TODO: afficher plus d'options");
   }
-
-  const date = new Date(
-    Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
-  );
 
   const image = () => {
     return (
@@ -138,9 +138,9 @@ const DetailsPublication = (props: any) => {
 
           <Center>
             <Text style={styles.date}>
-              {moment(props.dateCreation).fromNow() === "Invalid date"
+              {moment(date).fromNow() === "Invalid date"
                 ? "quelques secondes"
-                : moment(props.dateCreation).fromNow()}
+                : moment(date).fromNow()}
             </Text>
           </Center>
         </Stack>

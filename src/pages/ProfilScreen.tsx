@@ -1,6 +1,6 @@
-import { Box, Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
+import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, BackHandler } from "react-native";
+import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -107,6 +107,7 @@ const ProfilScreen = (props: any) => {
 
   return (
     <GestureHandlerRootView>
+      <StatusBar translucent backgroundColor="transparent" />
       <View
         style={
           autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
@@ -161,7 +162,7 @@ export default ProfilScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 38,
+    marginTop: 40,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#BBBBBB",
