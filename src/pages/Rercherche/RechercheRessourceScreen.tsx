@@ -30,6 +30,7 @@ const RechercheRessourceScreen = (props: any) => {
     RechercheService.GetListeResRessources().subscribe((result) => {
       if (result) {
         result = result.filter((item) => item.titre);
+        console.log(result);
         setListeResultats(result);
       } else {
         setListeResultats([]);
@@ -46,6 +47,8 @@ const RechercheRessourceScreen = (props: any) => {
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
+      idPieceJointe: publication.idPieceJointe,
+      // typePj: publication.typePieceJointe,
       lienImage: publication.image,
       idCategorie: publication.idCategorie,
       idUtilisateur: publication.idUtilisateur,

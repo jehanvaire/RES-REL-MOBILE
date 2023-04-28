@@ -1,6 +1,11 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  LayoutChangeEvent,
+} from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -17,6 +22,7 @@ const Publication = (props: any) => {
 
   function LikePublication() {
     setLiked(!liked);
+    console.log("props", props);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log("TODO: like publication");
     });
@@ -59,11 +65,11 @@ const Publication = (props: any) => {
 
   const image = () => {
     return (
-      <View key={props.idPieceJointe}>
+      <View key={props.id}>
         <FastImage
           style={styles.image}
           source={{
-            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+            uri: piecesJointesURL + "/" + props.id + "/download",
             priority: FastImage.priority.normal,
           }}
           resizeMode={FastImage.resizeMode.contain}
@@ -77,11 +83,10 @@ const Publication = (props: any) => {
   //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
   const video = () => {
     return (
-      <View key={props.idPieceJointe}>
+      <View key={props.id}>
         <Video
-
           source={{
-            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+            uri: piecesJointesURL + "/" + props.id + "/download",
           }}
           rate={1.0}
           volume={1.0}
@@ -98,7 +103,6 @@ const Publication = (props: any) => {
           }}
         />
       </View>
-
     );
   };
 
@@ -114,13 +118,12 @@ const Publication = (props: any) => {
   // const activite = () => {
   //   return (
   //     <View style={styles.activite}>
-  //       <FastImage 
+  //       <FastImage
   //         source={{
   //           uri: "api.victor-gombert.fr/api/v1/piecesJointes/9/download",
   //           priority: FastImage.priority.normal,
   //         }}
   //         />
-
 
   //       <Text style={styles.activiteText}>{[
   //         props.contenu,
@@ -159,27 +162,28 @@ const Publication = (props: any) => {
         </Center>
       </Stack>
 
-      <Text style={styles.titre}>{props.titre}</Text>
-
       <DoubleTap
         AfficherPublication={AfficherPublication}
         LikePublication={LikePublication}
       >
         <View>
-          {props.typePieceJointe === "IMAGE" && (
-            <View key={`${props.idPieceJointe}-image`}>{image()}</View>
-          )}
-          {props.typePieceJointe === "VIDEO" && (
-            <View key={`${props.idPieceJointe}-video`}>{video()}</View>
-          )}
-          {/*
+          <Text style={styles.titre}>{props.titre}</Text>
+          <View>
+            {props.typePieceJointe === "IMAGE" && (
+              <View key={`${props.idPieceJointe}-image`}>{image()}</View>
+            )}
+            {props.typePieceJointe === "VIDEO" && (
+              <View key={`${props.idPieceJointe}-video`}>{video()}</View>
+            )}
+            {/*
   props.typePieceJointe === "ACTIVITE" && (
     <View key={`${props.idPieceJointe}-activite`}>{activite()}</View>
-  )
-  props.typePieceJointe === "PDF" && (
-    <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
-  )
-  */}
+    )
+    props.typePieceJointe === "PDF" && (
+      <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
+      )
+    */}
+          </View>
         </View>
       </DoubleTap>
 
@@ -256,6 +260,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
+    borderRadius: 10,
   },
   video: {
     marginTop: 0,
