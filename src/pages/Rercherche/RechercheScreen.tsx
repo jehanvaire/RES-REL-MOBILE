@@ -1,14 +1,17 @@
 import { Center, Stack } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  StatusBar,
+} from "react-native";
 import { View } from "native-base";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import RechercheService from "../../services/RechercheService";
-import PublicationService from "../../services/PublicationService";
-import { BehaviorSubject } from "rxjs";
 import Filtre from "../../components/Filtre";
 import FiltreService from "../../services/FiltreService";
 import RechercheScreenTopNavigator from "../../components/Navigators/Recherche/RerchercheScreenTopNavigator";
@@ -18,10 +21,10 @@ const RechercheScreen = () => {
     {} as UtilisateurEntity
   );
 
-  const [searchValue, setSeachValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [afficheHeader, setAfficheHeader] = useState(true);
 
-  const filtres = new BehaviorSubject<FiltreEntity>({} as FiltreEntity);
+  const [filtres, setFiltres] = useState<FiltreEntity>({} as FiltreEntity);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -33,8 +36,7 @@ const RechercheScreen = () => {
     }
 
     FiltreService.getFiltres().subscribe((nouveauxFiltres) => {
-      filtres.next(nouveauxFiltres);
-      setSeachValue("");
+      setFiltres(nouveauxFiltres);
       startSearch();
     });
 
@@ -43,16 +45,17 @@ const RechercheScreen = () => {
     });
   }, []);
 
-
   const startSearch = () => {
     if (searchValue !== "") {
       const params = {
         query: {
+          // TODO: attendre demain que Victor fasse son taf
           ressource: {
-            // "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
-            // "datePublication[lowerThanEquals]=": filtres.value.dateFin,
-            // "partage[equals]=": "PUBLIC",
-            // "status[equals]=": "APPROVED",
+            "datePublication[greaterThanEquals]=": filtres.dateDebut,
+            "datePublication[lowerThanEquals]=": filtres.dateFin,
+            "idCategorie[equals]=": filtres.categorie,
+            "partage[equals]=": "PUBLIC",
+            "status[equals]=": "APPROVED",
             q: searchValue,
             include: ["utilisateur"],
           },
@@ -65,23 +68,6 @@ const RechercheScreen = () => {
         RechercheService.SetListeResRessources(listeResultats.ressources);
         RechercheService.SetListeResUtilisateurs(listeResultats.utilisateurs);
       });
-    } else {
-      const filtresRequete: any = {
-        "datePublication[greaterThanEquals]=": filtres.value.dateDebut,
-        "datePublication[lowerThanEquals]=": filtres.value.dateFin,
-        "partage[equals]=": "PUBLIC",
-        "status[equals]=": "APPROVED",
-        include: "utilisateur",
-      };
-      if (filtres.value.categorie === 0) {
-        filtresRequete["idCategorie[equals]="] = filtres.value.categorie;
-      }
-
-      PublicationService.GetPublications(filtresRequete).then(
-        (listeResultats) => {
-          RechercheService.SetListeResRessources(listeResultats);
-        }
-      );
     }
   };
 
@@ -94,6 +80,7 @@ const RechercheScreen = () => {
 
   return (
     <>
+      <StatusBar translucent backgroundColor="transparent" />
       <View style={{ marginTop: 38, width: "100%" }}>
         <Center
           style={[styles.searchStack, afficheHeader ? null : styles.cache]}
@@ -101,7 +88,7 @@ const RechercheScreen = () => {
           <Stack direction="row">
             <TextInput
               style={styles.textInput}
-              onChangeText={setSeachValue}
+              onChangeText={setSearchValue}
               value={searchValue}
               placeholder="Ressource, utilisateur, catégorie..."
               returnKeyType="search"

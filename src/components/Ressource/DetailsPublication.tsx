@@ -38,7 +38,13 @@ const DetailsPublication = (props: any) => {
     status,
     raisonRefus,
     lienImage,
+    idCategorie,
+    idUtilisateur,
   } = props.route.params;
+
+  const date = new Date(
+    Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
+  );
 
   function LikePublication() {
     setLiked(!liked);
@@ -55,7 +61,7 @@ const DetailsPublication = (props: any) => {
 
     props.navigation.setOptions({
       title: "Commentaires",
-    })
+    });
   }
 
   function SauvegarderPublication() {
@@ -68,18 +74,13 @@ const DetailsPublication = (props: any) => {
     console.log("TODO: afficher plus d'options");
   }
 
-  const date = new Date(
-    Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
-  );
-
-
   const image = () => {
     return (
       <View key={idPieceJointe}>
         <FastImage
           style={styles.image}
           source={{
-            uri: piecesJointesURL + '/' + idPieceJointe + "/download",
+            uri: piecesJointesURL + "/" + idPieceJointe + "/download",
             priority: FastImage.priority.normal,
           }}
           resizeMode={FastImage.resizeMode.contain}
@@ -96,7 +97,7 @@ const DetailsPublication = (props: any) => {
       <View key={idPieceJointe}>
         <Video
           source={{
-            uri: piecesJointesURL + '/' + idPieceJointe + "/download",
+            uri: piecesJointesURL + "/" + idPieceJointe + "/download",
           }}
           id={idPieceJointe}
           rate={1.0}
@@ -116,21 +117,20 @@ const DetailsPublication = (props: any) => {
     );
   };
 
-
   return (
     <Box style={styles.container}>
       <ScrollView>
         <Stack direction="row" style={styles.header}>
           <Avatar
             source={{
-              uri: apiURL + "/" + id + "/download",
+              uri: apiURL + "/" + idUtilisateur + "/download",
             }}
           ></Avatar>
 
           <Stack direction="column" marginLeft={2}>
             <Text>Partagé par {auteur}</Text>
             <View style={styles.categorieWrapper}>
-              <Text style={styles.categorie}>{categorie}</Text>
+              <Text style={styles.categorie}>{idCategorie}</Text>
             </View>
           </Stack>
 
@@ -138,9 +138,9 @@ const DetailsPublication = (props: any) => {
 
           <Center>
             <Text style={styles.date}>
-              {moment(props.dateCreation).fromNow() === "Invalid date"
+              {moment(date).fromNow() === "Invalid date"
                 ? "quelques secondes"
-                : moment(props.dateCreation).fromNow()}
+                : moment(date).fromNow()}
             </Text>
           </Center>
         </Stack>
