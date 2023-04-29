@@ -7,7 +7,7 @@ export class UtilisateurEntity {
   dateNaissance!: Date;
   dateInscription!: Date;
   image!: ArrayBuffer;
-  role!: number;
+  idRole!: number;
   codePostal!: string;
   motDePasse!: string;
 
