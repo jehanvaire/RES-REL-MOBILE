@@ -1,6 +1,6 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent, ImageBackground } from "react-native";
+import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent, ImageBackground, Linking, Platform } from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -8,6 +8,7 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
@@ -130,8 +131,18 @@ const Publication = (props: any) => {
   //   );
   // };
 
+  const openGps = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+    const url =
+      Platform.OS === 'ios'
+        ? `${scheme}?q=${encodedAddress}`
+        : `${scheme}?q=${encodedAddress}&z=16`; // z=16 sets the zoom level
+    Linking.openURL(url);
+  };
+
   const renderPublication = () => {
-    props.typePieceJointe 
+    props.typePieceJointe
     if (props.typePieceJointe !== 'ACTIVITE') {
       return (
         <Box style={[styles.container, styles.shadow]}>
@@ -215,22 +226,44 @@ const Publication = (props: any) => {
     } else {
       return (
         <Box style={[styles.container, styles.shadow]}>
-          {/* <Stack direction="row" style={styles.header}>
-          
-         
-           
+          <View>
+            <View style={styles.containerImageActivite}>
+              <ImageBackground
+                style={styles.coverImageActivite}
+                source={{
+                  uri: 'https://cdn.discordapp.com/attachments/422038388116422657/1101418209128759316/concert-crop.jpg',
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            </View>
+            <View style={styles.footerActivite}>
+              <View style={styles.dateBubbleActivite}>
+                <Text style={styles.dateBubbleText}>Mai{"\n"}10</Text>
+              </View>
+              {/* <Text style={styles.locationTextActivite}>Location: Event Venue</Text> */}
+              <Text style={styles.titreActivite}>{props.titre}</Text>
+              <Text style={styles.sousTitreActivite}>21000 - Dijon - Zénith</Text>
+              <Text style={styles.sousTitreActivite}>10 personne(s) intéressée(s)</Text>
 
-          </Stack> */}
-          <View style={styles.containerActivite}>
-            <ImageBackground
-              style={styles.coverActivite}
-              source={{
-                uri: 'https://cdn.discordapp.com/attachments/422038388116422657/1101418209128759316/concert-crop.jpg',
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
+              <View style={styles.activiteButtonContainer}>
+                <TouchableOpacity style={styles.buttonJoinActivite}>
+                  <Text style={styles.textButtonActivite}>Rejoindre l'évenement</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                  openGps('Zénith de Dijon');
+                }}
+                  style={styles.buttonGpsActivite}>
+                  <Ionicons
+                    name="navigate-outline"
+                    size={25}
+                    color="white"
+                    style={[styles.gpsIcon]}
+                  />
+                  {/* </Text> */}
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-
         </Box>
       );
     }
@@ -315,16 +348,99 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  containerActivite: {
+  containerImageActivite: {
     width: '100%',
-    aspectRatio: 16 / 11,
-    borderRadius: 10, // Set the borderRadius for the container
-    overflow: 'hidden', // Apply overflow: 'hidden' to properly clip the image
+    height: 100,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
-  coverActivite: {
+  coverImageActivite: {
     //width: "100%",
-    
-    aspectRatio: 16 / 11,
-    
+    //marginTop: 0,
+    width: '100%',
+    height: '100%',
+    //borderRadius: 10,
+    //aspectRatio: 16 / 11,
   },
+  footerActivite: {
+    margin: 10,
+    marginTop: 10,
+  },
+  titreActivite: {
+    fontSize: 26,
+    fontWeight: "bold",
+    paddingTop: 5,
+    paddingBottom: 5,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+  },
+  sousTitreActivite: {
+    fontSize: 16,
+    marginHorizontal: 10,
+    textAlign: "center",
+  },
+  buttonJoinActivite: {
+    marginTop: 10,
+    width: "85%",
+    height: 50,
+    backgroundColor: "#4283f4",
+    borderRadius: 10,
+  },
+  activiteButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonGpsActivite: {
+    marginTop: 10,
+    width: 50,
+    height: 50,
+    backgroundColor: "#4283f4",
+    borderRadius: 10,
+    marginLeft: 10,
+  },
+  gpsIcon: {
+    position: 'absolute',
+    right: 12,
+    bottom: 12,
+    backgroundColor: '#4283f4',
+  },
+  textButtonActivite: {
+    fontSize: 20,
+    fontWeight: "bold",
+    //paddingTop: 10,
+    //paddingHorizontal: 10,
+    paddingTop: 15,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+    color: "white",
+  },
+  dateBubbleActivite: {
+    position: 'absolute',
+    left: 0,
+    bottom: 46,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 16,
+    backgroundColor: '#d9d9d9',
+  },
+  dateBubbleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  locationTextActivite: {
+    fontSize: 14,
+    color: '#333',
+    fontStyle: 'italic',
+    textAlign: 'left',
+    alignSelf: 'flex-start',
+    marginBottom: 0,
+  },
+ 
+  
 });

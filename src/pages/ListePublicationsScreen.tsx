@@ -51,9 +51,12 @@ function ListePublicationsScreen({ navigation }: any) {
            <Publication
             auteur="Adrien"
             utilisateurId="2"
-            titre="Sortie au cinéma"
+            titre="Concert de Johnny Hallyday"
             categorie="Loisirs"
-            contenu="Le film sortira au cinéma le 28 janvier 2023."
+            lieuActivite="Dijon"
+            dateActivite={new Date(2023, 0, 28, 15, 10, 30)}
+            codePostalActivite="21000"
+            contenu=""
             dateCreation={new Date(2023, 0, 7, 15, 10, 30)}
             typePieceJointe='ACTIVITE'
             status={StatusPublicationEnum.ENATTENTE}
