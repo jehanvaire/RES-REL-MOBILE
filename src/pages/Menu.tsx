@@ -43,8 +43,13 @@ const Menu = ({ props }: any) => {
   // }, [utilisateur]);
 
   useEffect(() => {
-    setIsAutorized(true);
-  }, []);
+    // console.log(utilisateur.idRole)
+    if (utilisateur.idRole != 4 && utilisateur.idRole != undefined) {
+      setIsAutorized(true);
+    } else {
+      setIsAutorized(false);
+    }
+  }, [utilisateur]);
 
   useEffect(() => {
     setIsLoading(false);

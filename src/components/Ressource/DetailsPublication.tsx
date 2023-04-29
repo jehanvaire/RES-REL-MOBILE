@@ -12,7 +12,7 @@ import { TouchableOpacity, StyleSheet, LayoutChangeEvent } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
@@ -23,6 +23,7 @@ const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const DetailsPublication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
+  const [favoris, setFavoris] = useState([]);
 
   const {
     id,
@@ -46,11 +47,28 @@ const DetailsPublication = (props: any) => {
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
   );
 
-  function LikePublication() {
-    setLiked(!liked);
-    PublicationService.AddLikeToPublication(1).then((res) => {
-      console.log("TODO: like publication");
+  const loadFavoris = () => {
+    PublicationService.GetUserFavoris().then((favorisList) => {
+      setFavoris(favorisList);
     });
+  };
+
+  useEffect(() => {
+    loadFavoris();
+  }, []);
+
+  function toggleFavori() {
+    if (liked) {
+      PublicationService.RemoveFavoriFromPublication(id).then(() => {
+        setLiked(false);
+        loadFavoris();
+      });
+    } else {
+      PublicationService.AddFavoriToPublication(id).then(() => {
+        setLiked(true);
+        loadFavoris();
+      });
+    }
   }
 
   function ShowCommentsSection() {
@@ -147,7 +165,7 @@ const DetailsPublication = (props: any) => {
 
         <Text style={styles.titre}>{titre}</Text>
 
-        <DoubleTap AfficherPublication={null} LikePublication={LikePublication}>
+        <DoubleTap AfficherPublication={null} LikePublication={toggleFavori}>
           <View>
             {[
               typePj === "IMAGE" ? image() : null,
@@ -161,7 +179,7 @@ const DetailsPublication = (props: any) => {
         <Text style={styles.contenu}>{contenu}</Text>
 
         <Stack direction="row" style={styles.footer}>
-          <TouchableOpacity onPress={LikePublication}>
+          <TouchableOpacity onPress={toggleFavori}>
             {liked ? (
               <Ionicons name={"heart"} size={25} color={"red"} />
             ) : (

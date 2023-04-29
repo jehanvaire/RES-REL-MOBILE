@@ -1,12 +1,17 @@
 import { BehaviorSubject } from "rxjs";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RestClient from "./RestClient";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
+import { storage } from "./AuthentificationService";
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 
 export class PublicationService {
   private baseUrl = "ressources";
   private pieceJointeUrl = "piecesJointes";
 
-  private restClient: RestClient;
+  private restClient: RestClient;;
+  private user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+  private user = JSON.parse(this.user_json) as UtilisateurEntity;
 
   private rechargerPublications = new BehaviorSubject<boolean>(false);
 
@@ -14,14 +19,32 @@ export class PublicationService {
     this.restClient = new RestClient();
   }
 
-  public async AddLikeToPublication(id: number): Promise<any> {
-    // const response = await fetch(`${this.baseUrl}/${id}/like`, {
-    //   method: "POST",
-    // });
-    // const data = await response.json();
-    const data = "Publication likée";
-    return data;
+
+  public async GetUserFavoris(): Promise<any> {
+    const response = await this.restClient.get(`favoris`, {
+      idUtilisateur: this.user.id,
+    });
+    return response;
   }
+
+  public async AddFavoriToPublication(id: number): Promise<any> {
+    const response = await this.restClient.post(
+      `favoris`,
+      {
+        idUtilisateur: this.user.id,
+        idRessource: id
+      }
+    );
+    return response;
+  }
+
+  public async RemoveFavoriFromPublication(id: number): Promise<any> {
+    const response = await this.restClient.delete(
+      `favoris/${id}`
+    );
+    return response;
+  }
+
 
   public async SauvegarderPublication(id: number): Promise<any> {
     // const response = await fetch(`${this.baseUrl}/${id}/save`, {

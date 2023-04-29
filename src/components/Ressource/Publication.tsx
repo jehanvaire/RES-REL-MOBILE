@@ -17,9 +17,9 @@ const Publication = (props: any) => {
 
   function LikePublication() {
     setLiked(!liked);
-    PublicationService.AddLikeToPublication(1).then((res) => {
-      console.log("TODO: like publication");
-    });
+    // PublicationService.AddLikeToPublication(1).then((res) => {
+    //   console.log("TODO: like publication");
+    // });
   }
 
   function ShowCommentsSection() {

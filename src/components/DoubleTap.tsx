@@ -4,7 +4,7 @@ import { State, TapGestureHandler } from "react-native-gesture-handler";
 export const DoubleTap = ({
   children,
   AfficherPublication,
-  LikePublication,
+  FavoriPublication,
 }: any) => {
   const doubleTapRef = useRef(null);
 
@@ -18,7 +18,7 @@ export const DoubleTap = ({
 
   const onDoubleTapEvent = (event: any) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      LikePublication();
+      FavoriPublication();
     }
   };
 
