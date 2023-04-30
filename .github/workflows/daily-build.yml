@@ -1,0 +1,50 @@
+name: Daily APK Build and Release
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight (UTC)
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build Android APK
+      run: |
+        npx react-native link
+        cd android
+        ./gradlew assembleRelease
+      env:
+        JAVA_HOME: /usr/lib/jvm/adoptopenjdk-11-hotspot-amd64
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: daily-build-${{ github.sha }}
+        release_name: Daily build ${{ github.sha }}
+        body: Automated daily build APK for ${{ github.sha }}
+        draft: false
+        prerelease: false
+
+    - name: Upload APK to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: android/app/build/outputs/apk/release/app-release.apk
+        asset_name: app-release.apk
+        asset_content_type: application/vnd.android.package-archive
