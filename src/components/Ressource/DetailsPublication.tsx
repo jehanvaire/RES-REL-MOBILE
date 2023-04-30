@@ -152,7 +152,7 @@ const DetailsPublication = (props: any) => {
               typePj === "IMAGE" ? image() : null,
               typePj === "VIDEO" ? video() : null,
               //props.typePieceJointe === "ACTIVITE" ? activite() : null,
-              //props.typePieceJointe === "PDF" ? pdf() : null,
+              //PDF cannot be seen in details, it is preview in another screen
             ]}
           </View>
         </DoubleTap>

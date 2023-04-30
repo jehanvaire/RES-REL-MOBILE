@@ -1,5 +1,5 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent, ImageBackground, Linking, Platform } from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
@@ -8,12 +8,15 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
+import axios from 'axios';
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
+  const [fileName, setFileName] = useState('');
+  const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
   function LikePublication() {
     setLiked(!liked);
@@ -58,6 +61,28 @@ const Publication = (props: any) => {
     });
   }
 
+  async function fetchPdfName() {
+    try {
+      const response = await axios.head('https://api.victor-gombert.fr/api/v1/piecesJointes/' + props.idPieceJointe + '/download');
+      const contentDisposition = response.headers['content-disposition'];
+      const regex = /filename=([^;]+)/;
+      const match = contentDisposition?.match(regex);
+      
+      if (match && match[1]) {
+        setFileName(match[1]);
+      }
+    } catch (error) {
+      console.error('Error fetching PDF name:', error);
+    }
+  }
+
+  function AfficherPdf() {
+    props.navigation.navigate("PdfView", {
+      idPieceJointe: props.idPieceJointe,
+      nomFichier: fileName,
+    });
+  }
+
   const image = () => {
     return (
       <View key={props.idPieceJointe}>
@@ -73,14 +98,10 @@ const Publication = (props: any) => {
     );
   };
 
-  const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
-
-  //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
   const video = () => {
     return (
       <View key={props.idPieceJointe}>
         <Video
-
           source={{
             uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
           }}
@@ -101,35 +122,32 @@ const Publication = (props: any) => {
     );
   };
 
-  // const pdf = () => {
-  //   return (
+  //only called on pdfs dont worry @Adrien
+  useEffect(() => {
+    if (props.typePieceJointe === 'PDF') {
+      fetchPdfName();
+    }
+  }, [props.typePieceJointe]);
 
-  //     <object data="http://africau.edu/images/default/sample.pdf" type="application/pdf" width="100%" height="100%">
-  //       <p>Alternative text - include a link <a href="http://africau.edu/images/default/sample.pdf">to the PDF!</a></p>
-  //     </object>
-  //   );
-  // };
-
-  // const activite = () => {
-  //   return (
-  //     <View style={styles.activite}>
-  //       <FastImage 
-  //         source={{
-  //           uri: "api.victor-gombert.fr/api/v1/piecesJointes/9/download",
-  //           priority: FastImage.priority.normal,
-  //         }}
-  //         />
-
-
-  //       <Text style={styles.activiteText}>{[
-  //         props.contenu,
-  //         moment(props.dateActivite).fromNow() === "Invalid date" ? "quelques secondes" : moment(props.dateActivite).fromNow()
-  //       ]
-  //         }</Text>
-
-  //     </View>
-  //   );
-  // };
+  const pdf = () => {
+    return (
+      <View key={props.idPieceJointe}>
+        <TouchableOpacity onPress={AfficherPdf}
+          style={styles.containerPdf}>
+          <View style={styles.pdfIcon}>
+            <Ionicons
+              name="document-outline"
+              size={40}
+              color="black"
+            />
+          </View>
+          <Text style={styles.pdfText}>
+            {fileName || 'Chargement...'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   const openGps = (address: string) => {
     const encodedAddress = encodeURIComponent(address);
@@ -184,13 +202,17 @@ const Publication = (props: any) => {
               {props.typePieceJointe === "VIDEO" && (
                 <View key={`${props.idPieceJointe}-video`}>{video()}</View>
               )}
-              {/*
+
+            </View>
+          </DoubleTap>
+          <View>
+            {/* Pas possible de double tap sinon ça nous envoie sur détails publication */}
+            {
               props.typePieceJointe === "PDF" && (
                 <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
               )
-              */}
-            </View>
-          </DoubleTap>
+            }
+          </View>
 
           <Description contenu={props.contenu}></Description>
 
@@ -224,7 +246,6 @@ const Publication = (props: any) => {
         </Box>
       );
     } else {
-
       // Vue Activité (container différent)
       return (
         <Box style={[styles.container, styles.shadow]}>
@@ -241,10 +262,10 @@ const Publication = (props: any) => {
             <View style={styles.footerActivite}>
               <View style={styles.dateBubbleActivite}>
                 <Text style={styles.dateBubbleText}>{
-                moment(props.dateActivite).format('MMM').charAt(0).toUpperCase()  +
-                moment(props.dateActivite).format('MMM').slice(1) + "\n" +
-                moment(props.dateActivite).format('DD')
-               }</Text>
+                  moment(props.dateActivite).format('MMM').charAt(0).toUpperCase() +
+                  moment(props.dateActivite).format('MMM').slice(1) + "\n" +
+                  moment(props.dateActivite).format('DD')
+                }</Text>
               </View>
               {/* <Text style={styles.locationTextActivite}>Location: Event Venue</Text> */}
               <Text style={styles.titreActivite}>{props.titre}</Text>
@@ -255,7 +276,7 @@ const Publication = (props: any) => {
                 <TouchableOpacity style={styles.buttonJoinActivite} onPress={
                   () => {
                     console.log("TODO : Rejoindre l'évenement");
-                  }   
+                  }
                 }>
                   <Text style={styles.textButtonActivite}>Rejoindre l'évenement</Text>
                 </TouchableOpacity>
@@ -445,6 +466,32 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 0,
   },
- 
-  
+  pdfIcon: {
+    position: 'absolute',
+    left: 12,
+    bottom: 15,
+  },
+  pdfText: {
+    marginTop: 15,
+    marginLeft: 55,
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 15,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+    color: "black",
+  },
+  containerPdf: {
+    flexDirection: 'row',
+    width: 'auto',
+    height: 75,
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: '#d9d9d9',
+    borderColor: 'black',
+  },
 });
