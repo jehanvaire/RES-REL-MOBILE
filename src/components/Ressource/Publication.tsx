@@ -9,6 +9,7 @@ import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
 import axios from 'axios';
+import CategoryBubble from "../CategoryBubble";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
@@ -67,7 +68,7 @@ const Publication = (props: any) => {
       const contentDisposition = response.headers['content-disposition'];
       const regex = /filename=([^;]+)/;
       const match = contentDisposition?.match(regex);
-      
+
       if (match && match[1]) {
         setFileName(match[1]);
       }
@@ -173,9 +174,7 @@ const Publication = (props: any) => {
 
             <Stack direction="column" marginLeft={2}>
               <Text>Partagé par {props.auteur}</Text>
-              <View style={styles.categorieWrapper}>
-                <Text style={styles.categorie}>{props.categorie}</Text>
-              </View>
+              <CategoryBubble categoryId={props.categorieId} categoryName={props.categorie} />
             </Stack>
 
             <Spacer />
