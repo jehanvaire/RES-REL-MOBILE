@@ -12,7 +12,7 @@ import Pdf from "react-native-pdf";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import PublicationService from "../../services/PublicationService";
 import DocumentPicker from "react-native-document-picker";
-import RNFetchBlob from "rn-fetch-blob";
+// import RNFetchBlob from "rn-fetch-blob";
 import { WebView } from "react-native-webview";
 import { Menu, Portal } from "react-native-paper";
 import { PublicationEntity } from "../../ressources/models/PublicationEntity";
@@ -108,7 +108,9 @@ function CreationRessourceScreen() {
       }
     }
 
-    const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
+    // const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
+
+    const fileBlob = null;
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,

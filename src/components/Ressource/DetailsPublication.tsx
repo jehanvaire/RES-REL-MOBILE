@@ -91,8 +91,7 @@ const DetailsPublication = (props: any) => {
 
   const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
-  //FIXME : Each child in a list should have a unique "key" prop. (only on video?)
-  const video = () => {
+  const video = (): any => {
     return (
       <View key={idPieceJointe}>
         <Video
