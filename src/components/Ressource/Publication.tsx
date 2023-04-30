@@ -8,7 +8,6 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
@@ -49,6 +48,7 @@ const Publication = (props: any) => {
       idPieceJointe: props.idPieceJointe,
       typePj: props.typePieceJointe,
       dateActivite: props.dateActivite,
+      codePostalActivite: props.codePostal,
       contenu: props.contenu,
       status: props.status,
       raisonRefus: props.raisonRefus,
@@ -137,7 +137,7 @@ const Publication = (props: any) => {
     const url =
       Platform.OS === 'ios'
         ? `${scheme}?q=${encodedAddress}`
-        : `${scheme}?q=${encodedAddress}&z=16`; // z=16 sets the zoom level
+        : `${scheme}?q=${encodedAddress}&z=16`; // zoom level
     Linking.openURL(url);
   };
 
@@ -224,6 +224,8 @@ const Publication = (props: any) => {
         </Box>
       );
     } else {
+
+      // Vue Activité (container différent)
       return (
         <Box style={[styles.container, styles.shadow]}>
           <View>
@@ -238,19 +240,27 @@ const Publication = (props: any) => {
             </View>
             <View style={styles.footerActivite}>
               <View style={styles.dateBubbleActivite}>
-                <Text style={styles.dateBubbleText}>Mai{"\n"}10</Text>
+                <Text style={styles.dateBubbleText}>{
+                moment(props.dateActivite).format('MMM').charAt(0).toUpperCase()  +
+                moment(props.dateActivite).format('MMM').slice(1) + "\n" +
+                moment(props.dateActivite).format('DD')
+               }</Text>
               </View>
               {/* <Text style={styles.locationTextActivite}>Location: Event Venue</Text> */}
               <Text style={styles.titreActivite}>{props.titre}</Text>
-              <Text style={styles.sousTitreActivite}>21000 - Dijon - Zénith</Text>
-              <Text style={styles.sousTitreActivite}>10 personne(s) intéressée(s)</Text>
+              <Text style={styles.sousTitreActivite}>{props.codePostalActivite + ' - ' + props.lieuActivite}</Text>
+              <Text style={styles.sousTitreActivite}>x personne(s) intéressée(s)</Text>
 
               <View style={styles.activiteButtonContainer}>
-                <TouchableOpacity style={styles.buttonJoinActivite}>
+                <TouchableOpacity style={styles.buttonJoinActivite} onPress={
+                  () => {
+                    console.log("TODO : Rejoindre l'évenement");
+                  }   
+                }>
                   <Text style={styles.textButtonActivite}>Rejoindre l'évenement</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                  openGps('Zénith de Dijon');
+                  openGps(props.codePostalActivite + ' ' + props.lieuActivite);
                 }}
                   style={styles.buttonGpsActivite}>
                   <Ionicons
@@ -355,12 +365,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   coverImageActivite: {
-    //width: "100%",
-    //marginTop: 0,
     width: '100%',
     height: '100%',
-    //borderRadius: 10,
-    //aspectRatio: 16 / 11,
   },
   footerActivite: {
     margin: 10,
@@ -410,8 +416,6 @@ const styles = StyleSheet.create({
   textButtonActivite: {
     fontSize: 20,
     fontWeight: "bold",
-    //paddingTop: 10,
-    //paddingHorizontal: 10,
     paddingTop: 15,
     textBreakStrategy: "simple",
     marginHorizontal: 10,
@@ -421,7 +425,7 @@ const styles = StyleSheet.create({
   dateBubbleActivite: {
     position: 'absolute',
     left: 0,
-    bottom: 46,
+    bottom: 50,
     marginBottom: 10,
     paddingHorizontal: 8,
     paddingVertical: 4,

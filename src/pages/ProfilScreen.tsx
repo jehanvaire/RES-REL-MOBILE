@@ -95,6 +95,8 @@ const ProfilScreen = (props: any) => {
         idPieceJointe={item.pieceJointe?.id}
         typePieceJointe={item.pieceJointe?.type}
         dateActivite={item.pieceJointe?.dateActivite}
+        lieuActivite={item.pieceJointe?.lieu}
+        codePostalActivite={item.pieceJointe?.codePostal}
         contenu={item.contenu}
         status={item.status}
         raisonRefus={item.raisonRefus}
