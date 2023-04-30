@@ -13,12 +13,12 @@ import images from "../ressources/ListeImagesLocales";
 //importe mode invité de AuthentificationMenuScreen
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
+import { useFonts } from "expo-font";
 
 const HeaderComponent = () => {
   return (
     <View style={[styles.vendorHeader, styles.shadow]}>
       <Image source={images.logo} alt="icon" style={styles.logo} />
-      {/* TODO Font Santisa Swached sur le texte */}
       <Text style={styles.headerText}>Ressources Relationnelles</Text>
     </View>
   );
@@ -39,6 +39,23 @@ function ListePublicationsScreen({ navigation }: any) {
   const navigateToCreation = () => {
     navigation.navigate("CreationRessourceScreen");
   };
+
+  const [fontsLoaded] = useFonts({
+    "Sansita-Swashed":
+      require("../assets/fonts/SansitaSwashed-Light.ttf") as any,
+    "Sansita-Swashed-Bold":
+      require("../assets/fonts/SansitaSwashed-Bold.ttf") as any,
+    "Sansita-Swashed-Black":
+      require("../assets/fonts/SansitaSwashed-Black.ttf") as any,
+    "Sansita-Swashed-SemiBold":
+      require("../assets/fonts/SansitaSwashed-SemiBold.ttf") as any,
+  });
+
+  //TODO en vrai éviter ça
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <Box style={styles.container}>
       <CustomButton
@@ -66,11 +83,14 @@ function ListePublicationsScreen({ navigation }: any) {
           <Publication
             auteur="Adrien"
             utilisateurId="2"
-            titre="Sortie au cinéma"
+            titre="Concert de Johnny Hallyday"
             categorie="Loisirs"
-            contenu="Le film sortira au cinéma le 28 janvier 2023."
+            lieuActivite="Dijon"
+            dateActivite={new Date(2023, 0, 28, 15, 10, 30)}
+            codePostalActivite="21000"
+            contenu=""
             dateCreation={new Date(2023, 0, 7, 15, 10, 30)}
-            typePieceJointe="IMAGE"
+            typePieceJointe="ACTIVITE"
             status={StatusPublicationEnum.ENATTENTE}
             raisonRefus={undefined}
             lienImage="https://fr.web.img3.acsta.net/r_654_368/newsv7/21/04/29/14/22/0010719.jpg"
@@ -171,9 +191,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    fontFamily: "SansitaSwashed-Bold",
+    fontFamily: "Sansita-Swashed-SemiBold",
     color: "#000000",
-    fontWeight: "bold",
     textAlign: "center",
   },
   logo: {
