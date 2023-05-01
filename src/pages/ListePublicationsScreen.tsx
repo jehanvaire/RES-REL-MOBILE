@@ -67,7 +67,7 @@ function ListePublicationsScreen({ navigation }: any) {
         <ScrollView style={styles.scrollView}>
           <Publication
             id="1"
-            utilisateurId="2"
+            idUtilisateur="2"
             idPieceJointe="2"
             auteur="Adrien"
             titre="Mais quel drip indécent !"
@@ -82,7 +82,7 @@ function ListePublicationsScreen({ navigation }: any) {
           />
           <Publication
             auteur="Adrien"
-            utilisateurId="2"
+            idUtilisateur="2"
             titre="Concert de Johnny Hallyday"
             categorie="Loisirs"
             lieuActivite="Dijon"
@@ -99,7 +99,7 @@ function ListePublicationsScreen({ navigation }: any) {
 
           <Publication
             auteur="Adrien"
-            utilisateurId="2"
+            idUtilisateur="2"
             idPieceJointe="3"
             titre="L'art abstrait"
             categorie="Intelligence émotionnelle"

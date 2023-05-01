@@ -1,6 +1,14 @@
 import { Text, Box, Spacer, Center, Stack, Avatar } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View, LayoutChangeEvent, ImageBackground, Linking, Platform } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  LayoutChangeEvent,
+  ImageBackground,
+  Linking,
+  Platform,
+} from "react-native";
 import Description from "../Description";
 import PublicationService from "../../services/PublicationService";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -8,14 +16,14 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
-import axios from 'axios';
+import axios from "axios";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const Publication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
   function LikePublication() {
@@ -58,21 +66,26 @@ const Publication = (props: any) => {
       dateCreation: JSON.stringify(props.dateCreation),
       datePublication: JSON.stringify(props.datePublication),
       lienImage: props.lienImage,
+      idUtilisateur: props.idUtilisateur,
     });
   }
 
   async function fetchPdfName() {
     try {
-      const response = await axios.head('https://api.victor-gombert.fr/api/v1/piecesJointes/' + props.idPieceJointe + '/download');
-      const contentDisposition = response.headers['content-disposition'];
+      const response = await axios.head(
+        "https://api.victor-gombert.fr/api/v1/piecesJointes/" +
+          props.idPieceJointe +
+          "/download"
+      );
+      const contentDisposition = response.headers["content-disposition"];
       const regex = /filename=([^;]+)/;
       const match = contentDisposition?.match(regex);
-      
+
       if (match && match[1]) {
         setFileName(match[1]);
       }
     } catch (error) {
-      console.error('Error fetching PDF name:', error);
+      console.error("Error fetching PDF name:", error);
     }
   }
 
@@ -89,7 +102,7 @@ const Publication = (props: any) => {
         <FastImage
           style={styles.image}
           source={{
-            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+            uri: piecesJointesURL + "/" + props.idPieceJointe + "/download",
             priority: FastImage.priority.normal,
           }}
           resizeMode={FastImage.resizeMode.contain}
@@ -103,7 +116,7 @@ const Publication = (props: any) => {
       <View key={props.idPieceJointe}>
         <Video
           source={{
-            uri: piecesJointesURL + '/' + props.idPieceJointe + "/download",
+            uri: piecesJointesURL + "/" + props.idPieceJointe + "/download",
           }}
           rate={1.0}
           volume={1.0}
@@ -118,13 +131,12 @@ const Publication = (props: any) => {
           }}
         />
       </View>
-
     );
   };
 
   //only called on pdfs dont worry @Adrien
   useEffect(() => {
-    if (props.typePieceJointe === 'PDF') {
+    if (props.typePieceJointe === "PDF") {
       fetchPdfName();
     }
   }, [props.typePieceJointe]);
@@ -132,18 +144,11 @@ const Publication = (props: any) => {
   const pdf = () => {
     return (
       <View key={props.idPieceJointe}>
-        <TouchableOpacity onPress={AfficherPdf}
-          style={styles.containerPdf}>
+        <TouchableOpacity onPress={AfficherPdf} style={styles.containerPdf}>
           <View style={styles.pdfIcon}>
-            <Ionicons
-              name="document-outline"
-              size={40}
-              color="black"
-            />
+            <Ionicons name="document-outline" size={40} color="black" />
           </View>
-          <Text style={styles.pdfText}>
-            {fileName || 'Chargement...'}
-          </Text>
+          <Text style={styles.pdfText}>{fileName || "Chargement..."}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -151,23 +156,22 @@ const Publication = (props: any) => {
 
   const openGps = (address: string) => {
     const encodedAddress = encodeURIComponent(address);
-    const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+    const scheme = Platform.OS === "ios" ? "maps:" : "geo:";
     const url =
-      Platform.OS === 'ios'
+      Platform.OS === "ios"
         ? `${scheme}?q=${encodedAddress}`
         : `${scheme}?q=${encodedAddress}&z=16`; // zoom level
     Linking.openURL(url);
   };
 
   const renderPublication = () => {
-    props.typePieceJointe
-    if (props.typePieceJointe !== 'ACTIVITE') {
+    if (props.typePieceJointe !== "ACTIVITE") {
       return (
         <Box style={[styles.container, styles.shadow]}>
           <Stack direction="row" style={styles.header}>
             <Avatar
               source={{
-                uri: apiURL + "/" + props.utilisateurId + "/download",
+                uri: apiURL + "/" + props.idUtilisateur + "/download",
               }}
             ></Avatar>
 
@@ -189,29 +193,25 @@ const Publication = (props: any) => {
             </Center>
           </Stack>
 
-          <Text style={styles.titre}>{props.titre}</Text>
-
           <DoubleTap
             AfficherPublication={AfficherPublication}
             LikePublication={LikePublication}
           >
             <View>
+              <Text style={styles.titre}>{props.titre}</Text>
               {props.typePieceJointe === "IMAGE" && (
                 <View key={`${props.idPieceJointe}-image`}>{image()}</View>
               )}
               {props.typePieceJointe === "VIDEO" && (
                 <View key={`${props.idPieceJointe}-video`}>{video()}</View>
               )}
-
             </View>
           </DoubleTap>
           <View>
             {/* Pas possible de double tap sinon ça nous envoie sur détails publication */}
-            {
-              props.typePieceJointe === "PDF" && (
-                <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
-              )
-            }
+            {props.typePieceJointe === "PDF" && (
+              <View key={`${props.idPieceJointe}-pdf`}>{pdf()}</View>
+            )}
           </View>
 
           <Description contenu={props.contenu}></Description>
@@ -254,36 +254,51 @@ const Publication = (props: any) => {
               <ImageBackground
                 style={styles.coverImageActivite}
                 source={{
-                  uri: 'https://cdn.discordapp.com/attachments/422038388116422657/1101418209128759316/concert-crop.jpg',
+                  uri: "https://cdn.discordapp.com/attachments/422038388116422657/1101418209128759316/concert-crop.jpg",
                 }}
                 resizeMode={FastImage.resizeMode.cover}
               />
             </View>
             <View style={styles.footerActivite}>
               <View style={styles.dateBubbleActivite}>
-                <Text style={styles.dateBubbleText}>{
-                  moment(props.dateActivite).format('MMM').charAt(0).toUpperCase() +
-                  moment(props.dateActivite).format('MMM').slice(1) + "\n" +
-                  moment(props.dateActivite).format('DD')
-                }</Text>
+                <Text style={styles.dateBubbleText}>
+                  {moment(props.dateActivite)
+                    .format("MMM")
+                    .charAt(0)
+                    .toUpperCase() +
+                    moment(props.dateActivite).format("MMM").slice(1) +
+                    "\n" +
+                    moment(props.dateActivite).format("DD")}
+                </Text>
               </View>
               {/* <Text style={styles.locationTextActivite}>Location: Event Venue</Text> */}
               <Text style={styles.titreActivite}>{props.titre}</Text>
-              <Text style={styles.sousTitreActivite}>{props.codePostalActivite + ' - ' + props.lieuActivite}</Text>
-              <Text style={styles.sousTitreActivite}>x personne(s) intéressée(s)</Text>
+              <Text style={styles.sousTitreActivite}>
+                {props.codePostalActivite + " - " + props.lieuActivite}
+              </Text>
+              <Text style={styles.sousTitreActivite}>
+                x personne(s) intéressée(s)
+              </Text>
 
               <View style={styles.activiteButtonContainer}>
-                <TouchableOpacity style={styles.buttonJoinActivite} onPress={
-                  () => {
+                <TouchableOpacity
+                  style={styles.buttonJoinActivite}
+                  onPress={() => {
                     console.log("TODO : Rejoindre l'évenement");
-                  }
-                }>
-                  <Text style={styles.textButtonActivite}>Rejoindre l'évenement</Text>
+                  }}
+                >
+                  <Text style={styles.textButtonActivite}>
+                    Rejoindre l'évenement
+                  </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
-                  openGps(props.codePostalActivite + ' ' + props.lieuActivite);
-                }}
-                  style={styles.buttonGpsActivite}>
+                <TouchableOpacity
+                  onPress={() => {
+                    openGps(
+                      props.codePostalActivite + " " + props.lieuActivite
+                    );
+                  }}
+                  style={styles.buttonGpsActivite}
+                >
                   <Ionicons
                     name="navigate-outline"
                     size={25}
@@ -380,14 +395,14 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   containerImageActivite: {
-    width: '100%',
+    width: "100%",
     height: 100,
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   coverImageActivite: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   footerActivite: {
     margin: 10,
@@ -415,9 +430,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   activiteButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 10,
   },
   buttonGpsActivite: {
@@ -429,10 +444,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   gpsIcon: {
-    position: 'absolute',
+    position: "absolute",
     right: 12,
     bottom: 12,
-    backgroundColor: '#4283f4',
+    backgroundColor: "#4283f4",
   },
   textButtonActivite: {
     fontSize: 20,
@@ -444,14 +459,14 @@ const styles = StyleSheet.create({
     color: "white",
   },
   dateBubbleActivite: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     bottom: 50,
     marginBottom: 10,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 16,
-    backgroundColor: '#d9d9d9',
+    backgroundColor: "#d9d9d9",
   },
   dateBubbleText: {
     fontSize: 20,
@@ -460,14 +475,14 @@ const styles = StyleSheet.create({
   },
   locationTextActivite: {
     fontSize: 14,
-    color: '#333',
-    fontStyle: 'italic',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
+    color: "#333",
+    fontStyle: "italic",
+    textAlign: "left",
+    alignSelf: "flex-start",
     marginBottom: 0,
   },
   pdfIcon: {
-    position: 'absolute',
+    position: "absolute",
     left: 12,
     bottom: 15,
   },
@@ -483,15 +498,15 @@ const styles = StyleSheet.create({
     color: "black",
   },
   containerPdf: {
-    flexDirection: 'row',
-    width: 'auto',
+    flexDirection: "row",
+    width: "auto",
     height: 75,
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginTop: 10,
     marginLeft: 20,
     marginRight: 20,
-    backgroundColor: '#d9d9d9',
-    borderColor: 'black',
+    backgroundColor: "#d9d9d9",
+    borderColor: "black",
   },
 });
