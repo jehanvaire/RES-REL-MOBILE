@@ -12,6 +12,7 @@ import Publication from "../Ressource/Publication";
 import React from "react";
 import PdfView from "../../pages/PdfView";
 import EspaceCommentaireScreen from "../../pages/Publication/EspaceCommentaireScreen";
+import AboutScreen from "../../pages/MenuProfilUtilisateur/Parametres/AboutScreen";
 
 export const StackNav = createStackNavigator();
 
@@ -52,8 +53,18 @@ const ProfilStackNavigator = (props: any) => {
         name="StatistiquesScreen"
         component={StatistiquesScreen}
       />
-      <StackNav.Screen name="ParametresScreen" component={ParametresScreen} />
-      <StackNav.Screen name="FavorisScreen" component={FavorisScreen} />
+      <StackNav.Screen 
+        name="ParametresScreen" 
+        component={ParametresScreen} 
+      />
+      <StackNav.Screen 
+        name="FavorisScreen" 
+        component={FavorisScreen} 
+      />
+      <StackNav.Screen
+        name="AboutScreen"
+        component={AboutScreen}
+      />
       <StackNav.Screen
         name="PublicationsEnregistrees"
         component={PublicationsEnregistreesScreen}
