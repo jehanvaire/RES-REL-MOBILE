@@ -102,7 +102,7 @@ const ProfilScreen = (props: any) => {
         raisonRefus={item.raisonRefus}
         dateCreation={item.dateCreation}
         navigation={navigation}
-        utilisateurId={utilisateur.id}
+        idUtilisateur={utilisateur.id}
       />
     </View>
   );
