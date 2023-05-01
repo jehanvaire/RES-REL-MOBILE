@@ -3,17 +3,15 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  Image,
   Text,
   Platform,
+  LayoutChangeEvent,
 } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import Pdf from "react-native-pdf";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import PublicationService from "../../services/PublicationService";
 import DocumentPicker from "react-native-document-picker";
-// import RNFetchBlob from "rn-fetch-blob";
-import { WebView } from "react-native-webview";
 import { Menu, Portal } from "react-native-paper";
 import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import { PieceJointeEntity } from "../../ressources/models/PieceJointeEntity";
@@ -21,8 +19,10 @@ import RNFS from "react-native-fs";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
-
-// import { FileSystem } from 'react-native-unimodules';
+import ReactNativeBlobUtil from "react-native-blob-util";
+import FastImage from "react-native-fast-image";
+import Video from "react-native-video";
+import { Buffer } from "buffer";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -33,6 +33,7 @@ function CreationRessourceScreen() {
 
   const [publication, setPublication] = useState({} as PublicationEntity);
   const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
+  const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
   const ouvrirMenu = () => setMenuVisible(true);
   const fermerMenu = () => setMenuVisible(false);
@@ -108,9 +109,10 @@ function CreationRessourceScreen() {
       }
     }
 
-    // const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
+    const fileBlob = await ReactNativeBlobUtil.fs.readFile(filePath, "base64");
 
-    const fileBlob = null;
+    // const buffer = Buffer.from(fileBlob, "base64");
+    // const file = new Blob([buffer], { type: result.type ?? "" });
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
@@ -127,14 +129,13 @@ function CreationRessourceScreen() {
   const soumettre = async () => {
     publication.idUtilisateur = utilisateur.id;
     await PublicationService.CreerPublication(publication).then((res) => {
-      console.log("res", res);
       if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
         gererNavigation();
         return;
       }
 
       const formData = new FormData();
-      formData.append("file", pieceJointe.file, pieceJointe.titre);
+      formData.append("file", pieceJointe.file);
       formData.append("titre", pieceJointe.titre);
       formData.append("type", pieceJointe.type);
       formData.append("idUtilisateur", String(utilisateur));
@@ -163,15 +164,33 @@ function CreationRessourceScreen() {
         : pieceJointe.uri.replace("content://", "");
 
     if (pieceJointe.type.startsWith("image/")) {
-      return <Image source={{ uri }} style={styles.imagePieceJointe} />;
+      return (
+        <FastImage
+          style={styles.image}
+          source={{
+            uri: uri,
+            priority: FastImage.priority.normal,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
+      );
     } else if (pieceJointe.type.startsWith("video/")) {
       return (
-        <WebView
-          source={{ uri }}
-          style={styles.videoPieceJointe}
-          allowsFullscreenVideo={true}
-          javaScriptEnabled={true}
-          mediaPlaybackRequiresUserAction={false}
+        <Video
+          source={{
+            uri: uri,
+          }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="center"
+          shouldPlay={true}
+          isLooping={true}
+          style={[styles.video, { aspectRatio: videoAspectRatio }]}
+          onLayout={(e: LayoutChangeEvent) => {
+            const { width, height } = e.nativeEvent.layout;
+            setVideoAspectRatio(width / height);
+          }}
         />
       );
     } else if (pieceJointe.type === "application/pdf") {
@@ -294,6 +313,19 @@ const styles = StyleSheet.create({
     height: 250,
     resizeMode: "contain",
     marginBottom: 16,
+  },
+  image: {
+    marginTop: 10,
+    width: "100%",
+    height: undefined,
+    aspectRatio: 1,
+  },
+  video: {
+    marginTop: 0,
+    width: "100%",
+    height: undefined,
+    marginBottom: 0,
+    aspectRatio: 1,
   },
   videoPieceJointe: {
     width: "100%",

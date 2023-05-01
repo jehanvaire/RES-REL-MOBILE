@@ -20,7 +20,6 @@ export default class RestClient {
 
   async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    console.log("token", this.token);
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -79,7 +78,7 @@ export default class RestClient {
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "multipart/form-data; charset=utf-8;",
       },
     });
 
