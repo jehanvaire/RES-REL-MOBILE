@@ -9,8 +9,23 @@ export default class RestClient {
 
   async get(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
-
     const response = await axios.get(url, { params });
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
+    }
+  }
+
+  async getWithToken(path: string, params = {}): Promise<any> {
+    const url = this.baseUrl + path;
+    // console.log("url", url)
+    const response = await axios.get(url, {
+      params,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
@@ -45,6 +60,7 @@ export default class RestClient {
 
   async delete(path: string): Promise<any> {
     const url = this.baseUrl + path;
+    // console.log("url", url)
     const response = await axios.delete(url, {
       headers: {
         Authorization: `Bearer ${this.token}`,

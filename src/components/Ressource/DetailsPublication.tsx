@@ -58,7 +58,7 @@ const DetailsPublication = (props: any) => {
   }, []);
 
   function toggleFavori() {
-    if (liked) {
+    if (liked === true) {
       PublicationService.RemoveFavoriFromPublication(id).then(() => {
         setLiked(false);
         loadFavoris();

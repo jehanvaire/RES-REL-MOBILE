@@ -21,11 +21,16 @@ export class PublicationService {
 
 
   public async GetUserFavoris(): Promise<any> {
-    const response = await this.restClient.get(`favoris`, {
-      idUtilisateur: this.user.id,
+    // get if the publication has been liked by the user
+    const response = await this.restClient.getWithToken(`favoris`, {
+      params: {
+        idUtilisateur: this.user.id,
+      },
     });
-    return response;
+    console.log(response.data);
+    return response.data;
   }
+
 
   public async AddFavoriToPublication(id: number): Promise<any> {
     const response = await this.restClient.post(
