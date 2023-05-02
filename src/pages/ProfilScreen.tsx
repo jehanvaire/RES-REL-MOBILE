@@ -1,5 +1,5 @@
 import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
@@ -10,11 +10,12 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Publication from "../components/Ressource/Publication";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
+import { useFocusEffect } from "@react-navigation/native";
 
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
-const ProfilScreen = (props: any) => {
+function ProfilScreen(props: any) {
   const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
@@ -25,9 +26,11 @@ const ProfilScreen = (props: any) => {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchListePublicationsUtilisateur();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchListePublicationsUtilisateur();
+    }, [])
+  );
 
   useEffect(() => {
     const retourHandler = BackHandler.addEventListener(
@@ -48,6 +51,7 @@ const ProfilScreen = (props: any) => {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
+      sortBy: "id,desc",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
@@ -141,7 +145,7 @@ const ProfilScreen = (props: any) => {
         </Stack>
 
         <FlatList
-          style={styles.contenu}
+          style={styles.listePublications}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
@@ -156,7 +160,7 @@ const ProfilScreen = (props: any) => {
       </View>
     </GestureHandlerRootView>
   );
-};
+}
 
 export default ProfilScreen;
 
@@ -170,7 +174,6 @@ const styles = StyleSheet.create({
   containerAutreUtilisateur: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 50,
     backgroundColor: "#BBBBBB",
   },
   header: {
@@ -211,9 +214,8 @@ const styles = StyleSheet.create({
   bio: {
     marginBottom: 10,
   },
-  contenu: {
+  listePublications: {
     paddingTop: 120,
     width: "95%",
-    marginBottom: 50,
   },
 });

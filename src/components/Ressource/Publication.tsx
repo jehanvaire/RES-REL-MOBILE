@@ -22,7 +22,6 @@ const Publication = (props: any) => {
 
   function LikePublication() {
     setLiked(!liked);
-    console.log("props", props);
     PublicationService.AddLikeToPublication(1).then((res) => {
       console.log("TODO: like publication");
     });

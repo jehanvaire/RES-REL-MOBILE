@@ -125,7 +125,6 @@ function CreationRessourceScreen() {
   const soumettre = async () => {
     publication.idUtilisateur = utilisateur.id;
     await PublicationService.CreerPublication(publication).then((res) => {
-      console.log("res", res);
       if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
         gererNavigation();
         return;

@@ -20,7 +20,6 @@ export default class RestClient {
 
   async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    console.log("token", this.token);
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
