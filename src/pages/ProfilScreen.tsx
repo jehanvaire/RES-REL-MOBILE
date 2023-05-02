@@ -162,7 +162,6 @@ export default ProfilScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#BBBBBB",
@@ -214,5 +213,7 @@ const styles = StyleSheet.create({
   },
   contenu: {
     paddingTop: 120,
+    width: "95%",
+    marginBottom: 50,
   },
 });
