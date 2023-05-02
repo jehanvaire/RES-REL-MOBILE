@@ -1,5 +1,7 @@
 # Lancer l'application sur un téléphone android
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/62b4642f1631448b978ecbfb4d80ae2f)](https://app.codacy.com/gh/jehanvaire/RES-REL-MOBILE?utm_source=github.com&utm_medium=referral&utm_content=jehanvaire/RES-REL-MOBILE&utm_campaign=Badge_Grade)
+
 ## Objectif : tester l'application, en pouvant recharger rapidement les nouveaux contenus.
 
 # Prerequis
