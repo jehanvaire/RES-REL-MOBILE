@@ -15,6 +15,7 @@ import RechercheService from "../../services/RechercheService";
 import Filtre from "../../components/Filtre";
 import FiltreService from "../../services/FiltreService";
 import RechercheScreenTopNavigator from "../../components/Navigators/Recherche/RerchercheScreenTopNavigator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const RechercheScreen = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -80,31 +81,33 @@ const RechercheScreen = () => {
 
   return (
     <>
-      <StatusBar translucent backgroundColor="transparent" />
-      <View style={{ marginTop: 38, width: "100%" }}>
-        <Center
-          style={[styles.searchStack, afficheHeader ? null : styles.cache]}
-        >
-          <Stack direction="row">
-            <TextInput
-              style={styles.textInput}
-              onChangeText={setSearchValue}
-              value={searchValue}
-              placeholder="Ressource, utilisateur, catégorie..."
-              returnKeyType="search"
-            />
-            <TouchableOpacity>
-              <Ionicons
-                name="search-outline"
-                size={25}
-                style={[styles.searchIcon]}
+      <SafeAreaView>
+        <StatusBar translucent backgroundColor="transparent" />
+        <View style={{ width: "100%" }}>
+          <Center
+            style={[styles.searchStack, afficheHeader ? null : styles.cache]}
+          >
+            <Stack direction="row">
+              <TextInput
+                style={styles.textInput}
+                onChangeText={setSearchValue}
+                value={searchValue}
+                placeholder="Ressource, utilisateur, catégorie..."
+                returnKeyType="search"
               />
-            </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons
+                  name="search-outline"
+                  size={25}
+                  style={[styles.searchIcon]}
+                />
+              </TouchableOpacity>
 
-            <Filtre></Filtre>
-          </Stack>
-        </Center>
-      </View>
+              <Filtre></Filtre>
+            </Stack>
+          </Center>
+        </View>
+      </SafeAreaView>
       <RechercheScreenTopNavigator></RechercheScreenTopNavigator>
     </>
   );

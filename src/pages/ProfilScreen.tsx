@@ -11,6 +11,7 @@ import Publication from "../components/Ressource/Publication";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
 import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
@@ -112,37 +113,36 @@ function ProfilScreen(props: any) {
   return (
     <GestureHandlerRootView>
       <StatusBar translucent backgroundColor="transparent" />
-      <View
-        style={
-          autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
-        }
-      >
-        <Stack style={[styles.header, styles.shadow]}>
-          <Stack style={styles.flex}>
-            <Avatar
-              size={100}
-              style={styles.avatar}
-              source={{
-                uri: apiURL + "/" + utilisateur.id + "/download",
-              }}
-            ></Avatar>
 
-            <VStack marginLeft={3} style={{ marginTop: 30 }}>
-              <Text style={styles.title}>
-                {utilisateur.nom} {utilisateur.prenom}
-              </Text>
-              <Description contenu={utilisateur.bio ?? ""}></Description>
-            </VStack>
+      <View>
+        <SafeAreaView>
+          <Stack style={[styles.header, styles.shadow]}>
+            <Stack style={styles.flex}>
+              <Avatar
+                size={100}
+                style={styles.avatar}
+                source={{
+                  uri: apiURL + "/" + utilisateur.id + "/download",
+                }}
+              ></Avatar>
 
-            <Spacer />
+              <VStack marginLeft={3} style={{ marginTop: 30 }}>
+                <Text style={styles.title}>
+                  {utilisateur.nom} {utilisateur.prenom}
+                </Text>
+                <Description contenu={utilisateur.bio ?? ""}></Description>
+              </VStack>
 
-            <Center>
-              <MenuHamburgerProfil
-                navigation={navigation}
-              ></MenuHamburgerProfil>
-            </Center>
+              <Spacer />
+
+              <Center>
+                <MenuHamburgerProfil
+                  navigation={navigation}
+                ></MenuHamburgerProfil>
+              </Center>
+            </Stack>
           </Stack>
-        </Stack>
+        </SafeAreaView>
 
         <FlatList
           style={styles.listePublications}
@@ -177,13 +177,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#BBBBBB",
   },
   header: {
-    height: 120,
     alignItems: "center",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 2,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: "space-between",
@@ -215,7 +209,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   listePublications: {
-    paddingTop: 120,
     width: "95%",
   },
 });
