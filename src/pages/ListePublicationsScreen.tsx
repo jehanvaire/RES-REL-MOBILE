@@ -195,15 +195,15 @@ const styles = StyleSheet.create({
   },
   customButton: {
     position: "absolute",
-    right: 5,
-    bottom: 16,
+    right: "4%",
+    bottom: "14%",
     backgroundColor: "#4183F4",
     borderRadius: 50,
     width: 56,
     height: 56,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 100,
+    zIndex: 999,
   },
   buttonText: {
     fontSize: 36,

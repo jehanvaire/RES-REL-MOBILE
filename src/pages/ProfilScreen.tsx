@@ -110,39 +110,52 @@ function ProfilScreen(props: any) {
     </View>
   );
 
+  const banniereProfilUtilisateur = () => {
+    return (
+      <Stack style={[styles.header, styles.shadow]}>
+        <Stack style={styles.flex}>
+          <Avatar
+            size={100}
+            style={styles.avatar}
+            source={{
+              uri: apiURL + "/" + utilisateur.id + "/download",
+            }}
+          ></Avatar>
+
+          <VStack
+            marginLeft={3}
+            style={{ marginTop: 30, alignItems: "center" }}
+          >
+            <Text style={styles.title}>
+              {utilisateur.nom} {utilisateur.prenom}
+            </Text>
+            <Description contenu={utilisateur.bio ?? ""}></Description>
+          </VStack>
+
+          <Spacer />
+
+          <Center>
+            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
+          </Center>
+        </Stack>
+      </Stack>
+    );
+  };
+
   return (
     <GestureHandlerRootView>
       <StatusBar translucent backgroundColor="transparent" />
 
       <View>
-        <SafeAreaView style={{ backgroundColor: "white", height: 180 }}>
-          <Stack style={[styles.header, styles.shadow]}>
-            <Stack style={styles.flex}>
-              <Avatar
-                size={100}
-                style={styles.avatar}
-                source={{
-                  uri: apiURL + "/" + utilisateur.id + "/download",
-                }}
-              ></Avatar>
-
-              <VStack marginLeft={3} style={{ marginTop: 30 }}>
-                <Text style={styles.title}>
-                  {utilisateur.nom} {utilisateur.prenom}
-                </Text>
-                <Description contenu={utilisateur.bio ?? ""}></Description>
-              </VStack>
-
-              <Spacer />
-
-              <Center>
-                <MenuHamburgerProfil
-                  navigation={navigation}
-                ></MenuHamburgerProfil>
-              </Center>
-            </Stack>
-          </Stack>
-        </SafeAreaView>
+        {autreUtilisateur ? (
+          <View style={styles.containerAutreUtilisateur}>
+            {banniereProfilUtilisateur()}
+          </View>
+        ) : (
+          <SafeAreaView style={styles.container}>
+            {banniereProfilUtilisateur()}
+          </SafeAreaView>
+        )}
 
         <FlatList
           style={styles.listePublications}
@@ -172,6 +185,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   containerAutreUtilisateur: {
+    width: "65%",
+    alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#BBBBBB",
@@ -211,5 +226,6 @@ const styles = StyleSheet.create({
   listePublications: {
     width: "100%",
     alignSelf: "center",
+    marginBottom: 335,
   },
 });

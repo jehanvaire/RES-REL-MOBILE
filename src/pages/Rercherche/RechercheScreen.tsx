@@ -23,7 +23,6 @@ const RechercheScreen = () => {
   );
 
   const [searchValue, setSearchValue] = useState("");
-  const [afficheHeader, setAfficheHeader] = useState(true);
 
   const [filtres, setFiltres] = useState<FiltreEntity>({} as FiltreEntity);
 
@@ -40,10 +39,6 @@ const RechercheScreen = () => {
       setFiltres(nouveauxFiltres);
       startSearch();
     });
-
-    // RechercheService.GetAfficheHeader().subscribe((affiche) => {
-    //   setAfficheHeader(affiche);
-    // });
   }, []);
 
   const startSearch = () => {
@@ -58,7 +53,7 @@ const RechercheScreen = () => {
             "partage[equals]=": "PUBLIC",
             "status[equals]=": "APPROVED",
             q: searchValue,
-            include: ["utilisateur"],
+            include: ["utilisateur", "categorie", "pieceJointe"],
           },
           utilisateur: {
             q: searchValue,
@@ -86,7 +81,7 @@ const RechercheScreen = () => {
         <View style={{ width: "100%" }}>
           <Center
             // style={styles.searchStack}
-            style={[styles.searchStack, afficheHeader ? null : styles.cache]}
+            style={styles.searchStack}
           >
             <Stack direction="row" backgroundColor="red">
               <TextInput

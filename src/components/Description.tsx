@@ -7,8 +7,6 @@ const MAX_LINES = 3;
 export default function Description(props: any) {
   const [etendu, setEtendu] = useState(false);
 
-  const toggleShowMoreText = etendu ? " Voir moins" : "...plus";
-
   const handleOnPress = useCallback(() => {
     setEtendu((etendu) => !etendu);
   }, []);
