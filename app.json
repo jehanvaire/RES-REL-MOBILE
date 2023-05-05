@@ -19,7 +19,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.VASP.RESRE"
+      "bundleIdentifier": "com.VASP.RESREL"
     },
     "android": {
       "adaptiveIcon": {

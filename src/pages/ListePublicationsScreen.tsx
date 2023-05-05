@@ -8,19 +8,18 @@ import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-// import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
 import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
 //importe mode invité de AuthentificationMenuScreen
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
 
 const HeaderComponent = () => {
   return (
     <View style={[styles.vendorHeader, styles.shadow]}>
       <Image source={images.logo} alt="icon" style={styles.logo} />
-      {/* TODO Font Santisa Swached sur le texte */}
       <Text style={styles.headerText}>Ressources Relationnelles</Text>
     </View>
   );
@@ -41,6 +40,23 @@ function ListePublicationsScreen({ navigation }: any) {
   const navigateToCreation = () => {
     navigation.navigate("CreationRessourceScreen");
   };
+
+  const [fontsLoaded] = useFonts({
+    "Sansita-Swashed":
+      require("../assets/fonts/SansitaSwashed-Light.ttf") as any,
+    "Sansita-Swashed-Bold":
+      require("../assets/fonts/SansitaSwashed-Bold.ttf") as any,
+    "Sansita-Swashed-Black":
+      require("../assets/fonts/SansitaSwashed-Black.ttf") as any,
+    "Sansita-Swashed-SemiBold":
+      require("../assets/fonts/SansitaSwashed-SemiBold.ttf") as any,
+  });
+
+  //TODO en vrai éviter ça
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <>
       <SafeAreaView>
@@ -148,7 +164,6 @@ const ListePublicationStack = () => {
         name="CreationRessourceScreen"
         component={WrappedCreationRessourceScreen}
       />
-      {/* <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} /> */}
     </StackNav.Navigator>
   );
 };
@@ -172,7 +187,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     // fontFamily: "SansitaSwashed-Bold",
     color: "#000000",
-    fontWeight: "bold",
     textAlign: "center",
   },
   logo: {
