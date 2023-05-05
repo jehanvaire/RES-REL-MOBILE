@@ -109,7 +109,6 @@ function CreationRessourceScreen() {
     }
 
     // const fileBlob = await RNFetchBlob.fs.readFile(filePath, "base64");
-
     const fileBlob = null;
 
     const nouvellePieceJointe = {
@@ -127,7 +126,6 @@ function CreationRessourceScreen() {
   const soumettre = async () => {
     publication.idUtilisateur = utilisateur.id;
     await PublicationService.CreerPublication(publication).then((res) => {
-      console.log("res", res);
       if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
         gererNavigation();
         return;

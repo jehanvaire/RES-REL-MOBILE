@@ -98,7 +98,7 @@ const Publication = (props: any) => {
 
   const image = () => {
     return (
-      <View key={props.idPieceJointe}>
+      <View key={props.id}>
         <FastImage
           style={styles.image}
           source={{
@@ -113,7 +113,7 @@ const Publication = (props: any) => {
 
   const video = () => {
     return (
-      <View key={props.idPieceJointe}>
+      <View key={props.id}>
         <Video
           source={{
             uri: piecesJointesURL + "/" + props.idPieceJointe + "/download",
@@ -358,6 +358,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
+    borderRadius: 10,
   },
   video: {
     marginTop: 0,

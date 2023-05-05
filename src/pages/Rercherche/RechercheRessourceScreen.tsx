@@ -46,6 +46,8 @@ const RechercheRessourceScreen = (props: any) => {
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
+      idPieceJointe: publication.idPieceJointe,
+      // typePj: publication.typePieceJointe,
       lienImage: publication.image,
       idCategorie: publication.idCategorie,
       idUtilisateur: publication.idUtilisateur,
