@@ -8,7 +8,7 @@ import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
+// import AjouterPJScreen from "../components/Ressource/AjouterPJScreen";
 import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
 //importe mode invité de AuthentificationMenuScreen
@@ -148,7 +148,7 @@ const ListePublicationStack = () => {
         name="CreationRessourceScreen"
         component={WrappedCreationRessourceScreen}
       />
-      <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} />
+      {/* <StackNav.Screen name="AjouterPJScreen" component={AjouterPJScreen} /> */}
     </StackNav.Navigator>
   );
 };
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    fontFamily: "SansitaSwashed-Bold",
+    // fontFamily: "SansitaSwashed-Bold",
     color: "#000000",
     fontWeight: "bold",
     textAlign: "center",

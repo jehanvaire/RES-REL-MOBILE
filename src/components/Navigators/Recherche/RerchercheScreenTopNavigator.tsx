@@ -24,7 +24,7 @@ function RechercheScreenTopNavigator() {
           backgroundColor: "red", // changer la couleur de l'indicateur
         },
         // hide bar
-        tabBarStyle: { display: afficheHeader ? "flex" : "none" },
+        // tabBarStyle: { display: afficheHeader ? "flex" : "none" },
       }}
     >
       <TopNav.Screen

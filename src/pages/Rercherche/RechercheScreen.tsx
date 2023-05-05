@@ -41,9 +41,9 @@ const RechercheScreen = () => {
       startSearch();
     });
 
-    RechercheService.GetAfficheHeader().subscribe((affiche) => {
-      setAfficheHeader(affiche);
-    });
+    // RechercheService.GetAfficheHeader().subscribe((affiche) => {
+    //   setAfficheHeader(affiche);
+    // });
   }, []);
 
   const startSearch = () => {
@@ -81,13 +81,14 @@ const RechercheScreen = () => {
 
   return (
     <>
-      <SafeAreaView>
+      <SafeAreaView style={{ backgroundColor: "white", height: 110 }}>
         <StatusBar translucent backgroundColor="transparent" />
         <View style={{ width: "100%" }}>
           <Center
+            // style={styles.searchStack}
             style={[styles.searchStack, afficheHeader ? null : styles.cache]}
           >
-            <Stack direction="row">
+            <Stack direction="row" backgroundColor="red">
               <TextInput
                 style={styles.textInput}
                 onChangeText={setSearchValue}

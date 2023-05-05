@@ -1,5 +1,5 @@
 import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
@@ -17,7 +17,7 @@ const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 function ProfilScreen(props: any) {
-  const { navigation } = props;
+  const { navigation, gestureHandlerRef } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
@@ -115,7 +115,7 @@ function ProfilScreen(props: any) {
       <StatusBar translucent backgroundColor="transparent" />
 
       <View>
-        <SafeAreaView>
+        <SafeAreaView style={{ backgroundColor: "white", height: 180 }}>
           <Stack style={[styles.header, styles.shadow]}>
             <Stack style={styles.flex}>
               <Avatar
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   shadow: {
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
+      width: 2,
       height: 2,
     },
     shadowOpacity: 1,
@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   listePublications: {
-    width: "95%",
+    width: "100%",
+    alignSelf: "center",
   },
 });

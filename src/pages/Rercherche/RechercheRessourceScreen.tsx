@@ -30,7 +30,6 @@ const RechercheRessourceScreen = (props: any) => {
     RechercheService.GetListeResRessources().subscribe((result) => {
       if (result) {
         result = result.filter((item) => item.titre);
-        console.log(result);
         setListeResultats(result);
       } else {
         setListeResultats([]);

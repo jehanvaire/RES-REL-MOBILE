@@ -153,7 +153,7 @@ const NotificationScreen = (props: any) => {
 
   return (
     <>
-      <SafeAreaView>
+      <SafeAreaView style={{ backgroundColor: "white", height: 110 }}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Notifications</Text>
         </View>
