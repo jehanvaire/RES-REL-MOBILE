@@ -5,38 +5,29 @@ import { Text, StyleSheet, View } from "react-native";
 const MAX_LINES = 3;
 
 export default function Description(props: any) {
-  const [afficherTexteComplet, setAfficherTexteComplet] = useState(false);
+  const [etendu, setEtendu] = useState(false);
 
-  const toggleShowMoreText = afficherTexteComplet ? " Voir moins" : "...plus";
+  const toggleShowMoreText = etendu ? " Voir moins" : "...plus";
+
+  const handleOnPress = useCallback(() => {
+    setEtendu((etendu) => !etendu);
+  }, []);
 
   return (
-    <>
-      <Text>
-        {props.contenu.length > 100
-          ? afficherTexteComplet
-            ? props.contenu
-            : `${props.contenu.substring(0, 100)}`
-          : props.contenu}
+    <View>
+      <Text
+        style={styles.contenu}
+        numberOfLines={etendu ? undefined : MAX_LINES}
+        onPress={handleOnPress}
+      >
+        {etendu ? props.contenu : props.contenu.slice(0, 100)}
+        {props.contenu.length > 100 && !etendu ? (
+          <Text style={styles.toggleShowMore}> ...</Text>
+        ) : (
+          ""
+        )}
       </Text>
-      {props.contenu.length > 100 && !afficherTexteComplet && (
-        <Text onPress={() => setAfficherTexteComplet(true)}></Text>
-      )}
-    </>
-    // <View>
-    //   <Text
-    //     style={styles.contenu}
-    //     numberOfLines={etendu ? undefined : MAX_LINES}
-    //     onTextLayout={affichePlusOuMoins}
-    //     onPress={handleOnPress}
-    //   >
-    //     {etendu || !affichePlus ? props.contenu : props.contenu.slice(0, -20)}
-    //     {affichePlus && (
-    //       <Text style={styles.toggleShowMore} onPress={switchEtendu}>
-    //         {toggleShowMoreText}
-    //       </Text>
-    //     )}
-    //   </Text>
-    // </View>
+    </View>
   );
 }
 
