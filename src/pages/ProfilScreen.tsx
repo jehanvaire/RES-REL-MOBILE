@@ -183,15 +183,13 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#BBBBBB",
-    zIndex: 1,
+    zIndex: 100,
   },
   containerAutreUtilisateur: {
     width: "65%",
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#BBBBBB",
   },
   header: {
     alignItems: "center",
