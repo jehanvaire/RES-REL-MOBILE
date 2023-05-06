@@ -10,6 +10,7 @@ import RechercheService from "../../services/RechercheService";
 import FastImage from "react-native-fast-image";
 
 const PER_PAGE = 15;
+const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const RechercheRessourceScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -47,9 +48,9 @@ const RechercheRessourceScreen = (props: any) => {
       dateCreation: publication.dateCreation,
       datePublication: publication.datePublication,
       idPieceJointe: publication.idPieceJointe,
-      // typePj: publication.typePieceJointe,
+      typePj: publication.pieceJointe.type,
       lienImage: publication.image,
-      idCategorie: publication.idCategorie,
+      categorie: publication.categorie.nom,
       idUtilisateur: publication.idUtilisateur,
       auteur:
         publication.utilisateur.nom + " " + publication.utilisateur.prenom,
@@ -77,7 +78,7 @@ const RechercheRessourceScreen = (props: any) => {
             <FastImage
               style={styles.imagePrewiew}
               source={{
-                uri: item.lienImage,
+                uri: piecesJointesURL + "/" + item.idPieceJointe + "/download",
               }}
               resizeMode={FastImage.resizeMode.contain}
             />
