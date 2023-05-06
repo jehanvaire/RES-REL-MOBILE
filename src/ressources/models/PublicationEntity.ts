@@ -14,6 +14,9 @@ export class PublicationEntity {
   idUtilisateur!: number;
   utilisateur!: UtilisateurEntity;
   navigation!: any;
+  idPieceJointe!: number;
+  pieceJointe!: any;
+  categorie!: any;
 
   constructor(init?: Partial<PublicationEntity>) {
     Object.assign(this, init);

@@ -15,6 +15,7 @@ import RechercheService from "../../services/RechercheService";
 import Filtre from "../../components/Filtre";
 import FiltreService from "../../services/FiltreService";
 import RechercheScreenTopNavigator from "../../components/Navigators/Recherche/RerchercheScreenTopNavigator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const RechercheScreen = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -22,7 +23,6 @@ const RechercheScreen = () => {
   );
 
   const [searchValue, setSearchValue] = useState("");
-  const [afficheHeader, setAfficheHeader] = useState(true);
 
   const [filtres, setFiltres] = useState<FiltreEntity>({} as FiltreEntity);
 
@@ -39,10 +39,6 @@ const RechercheScreen = () => {
       setFiltres(nouveauxFiltres);
       startSearch();
     });
-
-    RechercheService.GetAfficheHeader().subscribe((affiche) => {
-      setAfficheHeader(affiche);
-    });
   }, []);
 
   const startSearch = () => {
@@ -57,7 +53,7 @@ const RechercheScreen = () => {
             "partage[equals]=": "PUBLIC",
             "status[equals]=": "APPROVED",
             q: searchValue,
-            include: ["utilisateur"],
+            include: ["utilisateur", "categorie", "pieceJointe"],
           },
           utilisateur: {
             q: searchValue,
@@ -80,31 +76,34 @@ const RechercheScreen = () => {
 
   return (
     <>
-      <StatusBar translucent backgroundColor="transparent" />
-      <View style={{ marginTop: 38, width: "100%" }}>
-        <Center
-          style={[styles.searchStack, afficheHeader ? null : styles.cache]}
-        >
-          <Stack direction="row">
-            <TextInput
-              style={styles.textInput}
-              onChangeText={setSearchValue}
-              value={searchValue}
-              placeholder="Ressource, utilisateur, catégorie..."
-              returnKeyType="search"
-            />
-            <TouchableOpacity>
-              <Ionicons
-                name="search-outline"
-                size={25}
-                style={[styles.searchIcon]}
+      <SafeAreaView style={{ backgroundColor: "white", height: 110 }}>
+        <StatusBar translucent backgroundColor="transparent" />
+        <View style={{ width: "100%" }}>
+          <Center
+            // style={styles.searchStack}
+            style={styles.searchStack}
+          >
+            <Stack direction="row" backgroundColor="red">
+              <TextInput
+                style={styles.textInput}
+                onChangeText={setSearchValue}
+                value={searchValue}
+                placeholder="Ressource, utilisateur, catégorie..."
+                returnKeyType="search"
               />
-            </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons
+                  name="search-outline"
+                  size={25}
+                  style={[styles.searchIcon]}
+                />
+              </TouchableOpacity>
 
-            <Filtre></Filtre>
-          </Stack>
-        </Center>
-      </View>
+              <Filtre></Filtre>
+            </Stack>
+          </Center>
+        </View>
+      </SafeAreaView>
       <RechercheScreenTopNavigator></RechercheScreenTopNavigator>
     </>
   );

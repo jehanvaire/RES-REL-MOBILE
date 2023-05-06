@@ -129,7 +129,7 @@ const DetailsPublication = (props: any) => {
           <Stack direction="column" marginLeft={2}>
             <Text>Partagé par {auteur}</Text>
             <View style={styles.categorieWrapper}>
-              <Text style={styles.categorie}>{idCategorie}</Text>
+              <Text style={styles.categorie}>{categorie}</Text>
             </View>
           </Stack>
 

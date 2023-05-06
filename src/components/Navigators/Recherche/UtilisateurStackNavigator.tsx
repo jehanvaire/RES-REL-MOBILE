@@ -18,7 +18,7 @@ const UtilisateurStackNavigator = () => {
         options={{ headerShown: false }}
       />
       <StackNav.Screen
-        name="DetailsUtilisateur"
+        name="DetailsAutreUtilisateur"
         component={ProfilScreen}
         options={{ headerShown: false, title: "" }}
         initialParams={{ autreUtilisateur: true }}

@@ -88,13 +88,11 @@ export const AuthContainer = ({ children }: any) => {
     );
 
     if (!response.data == null) {
-      console.log("Log de la réponse:", response.data);
       throw new Error("Erreur lors de l'inscription");
     }
 
     return response.data;
   };
-
 
   const facade = useMemo(
     () => ({
