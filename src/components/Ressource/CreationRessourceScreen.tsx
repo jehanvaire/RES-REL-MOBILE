@@ -6,13 +6,12 @@ import {
   Text,
   Platform,
   LayoutChangeEvent,
+  TextInput,
 } from "react-native";
-import { TextInput, Button } from "react-native-paper";
 import Pdf from "react-native-pdf";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import PublicationService from "../../services/PublicationService";
 import DocumentPicker from "react-native-document-picker";
-import { Menu, Portal } from "react-native-paper";
 import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import { PieceJointeEntity } from "../../ressources/models/PieceJointeEntity";
 import RNFS from "react-native-fs";
@@ -22,7 +21,7 @@ import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnu
 import ReactNativeBlobUtil from "react-native-blob-util";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
-import { Buffer } from "buffer";
+import { Button, FormControl, Select } from "native-base";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -206,20 +205,48 @@ function CreationRessourceScreen() {
         <Text style={styles.title}>Créer une publication</Text>
       </View>
       <TextInput
-        label="Titre"
+        placeholder="Titre"
         value={publication.titre}
         onChangeText={gererChangementTitre}
         style={styles.input}
       />
       <TextInput
-        label="Contenu"
+        placeholder="Contenu"
         value={publication.contenu}
         onChangeText={validerContenu}
         style={styles.input}
         multiline
         numberOfLines={4}
       />
-      <Portal>
+      <FormControl>
+        <FormControl.Label>Catégorie</FormControl.Label>
+        <Select
+          selectedValue={selectedCategorie.nom}
+          minWidth={200}
+          accessibilityLabel="Sélectionnez une catégorie"
+          placeholder="Sélectionnez une catégorie"
+          onValueChange={(itemValue) => {
+            const catSelectionnee: any = categories.find(
+              (c) => c.nom === itemValue
+            );
+            setSelectedCategorie(catSelectionnee);
+          }}
+          defaultValue=""
+          _selectedItem={{
+            bg: "teal.600",
+          }}
+        >
+          <Select.Item key="0" label="Toutes les catégorie" value="0" />
+          {categories.map((categorie: any) => (
+            <Select.Item
+              key={categorie.id}
+              label={categorie.nom}
+              value={categorie.nom}
+            />
+          ))}
+        </Select>
+      </FormControl>
+      {/* <Portal>
         <Menu
           visible={menuVisible}
           onDismiss={fermerMenu}
@@ -230,7 +257,6 @@ function CreationRessourceScreen() {
           }
           style={styles.menuStyle}
         >
-          {/* Voir pour récupérer les catégories depuis l'api puis sélectionner leur id */}
           <Menu.Item
             onPress={() => selectionnerCategorie(1)}
             title="Catégorie 1"
@@ -243,12 +269,10 @@ function CreationRessourceScreen() {
             onPress={() => selectionnerCategorie(3)}
             title="Catégorie 3"
           />
-          {/* Ajoutez d'autres catégories ici */}
         </Menu>
-      </Portal>
+      </Portal> */}
 
       <Button
-        mode="contained"
         onPress={selectionnerPieceJointe}
         style={styles.boutonSelectionFichier}
       >
@@ -263,7 +287,6 @@ function CreationRessourceScreen() {
       )}
 
       <Button
-        mode="contained"
         onPress={() => soumettre()}
         style={styles.boutonSoumettre}
         disabled={
