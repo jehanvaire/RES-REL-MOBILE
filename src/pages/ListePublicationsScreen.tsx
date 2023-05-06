@@ -8,7 +8,7 @@ import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { Provider as PaperProvider } from "react-native-paper";
+// import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
 //importe mode invité de AuthentificationMenuScreen
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
@@ -138,19 +138,19 @@ function CustomButton({
 
 const StackNav = createStackNavigator();
 
-const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
-  return (props: any) => {
-    return (
-      <PaperProvider>
-        <WrappedComponent {...props} />
-      </PaperProvider>
-    );
-  };
-};
+// const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
+//   return (props: any) => {
+//     return (
+//       <PaperProvider>
+//         <WrappedComponent {...props} />
+//       </PaperProvider>
+//     );
+//   };
+// };
 
-const WrappedCreationRessourceScreen = withPaperProvider(
-  CreationRessourceScreen
-);
+// const WrappedCreationRessourceScreen = withPaperProvider(
+//   CreationRessourceScreen
+// );
 
 const ListePublicationStack = () => {
   return (
@@ -162,7 +162,8 @@ const ListePublicationStack = () => {
       />
       <StackNav.Screen
         name="CreationRessourceScreen"
-        component={WrappedCreationRessourceScreen}
+        component={CreationRessourceScreen}
+        options={{ headerShown: true, title: "Création d'une ressource" }}
       />
     </StackNav.Navigator>
   );

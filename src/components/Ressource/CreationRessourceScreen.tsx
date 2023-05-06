@@ -22,29 +22,27 @@ import ReactNativeBlobUtil from "react-native-blob-util";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
 import { Button, FormControl, Select } from "native-base";
+import CategorieService from "../../services/CategorieService";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
 
   const [pieceJointe, setPieceJointe] = useState({} as PieceJointeEntity);
 
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [categories, setCategories] = useState([] as CategorieEntity[]);
 
   const [publication, setPublication] = useState({} as PublicationEntity);
   const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
   const [videoAspectRatio, setVideoAspectRatio] = React.useState(1);
 
-  const ouvrirMenu = () => setMenuVisible(true);
-  const fermerMenu = () => setMenuVisible(false);
-  const selectionnerCategorie = (value: number) => {
-    setPublication({ ...publication, idCategorie: value });
-    fermerMenu();
-  };
-
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setUtilisateur(user);
+
+    CategorieService.GetAllCategories().then((categories: any) => {
+      setCategories(categories);
+    });
   }, []);
 
   const LONGUEUR_MIN_TITRE = 5;
@@ -109,9 +107,6 @@ function CreationRessourceScreen() {
     }
 
     const fileBlob = await ReactNativeBlobUtil.fs.readFile(filePath, "base64");
-
-    // const buffer = Buffer.from(fileBlob, "base64");
-    // const file = new Blob([buffer], { type: result.type ?? "" });
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
@@ -204,24 +199,29 @@ function CreationRessourceScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Créer une publication</Text>
       </View>
-      <TextInput
-        placeholder="Titre"
-        value={publication.titre}
-        onChangeText={gererChangementTitre}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Contenu"
-        value={publication.contenu}
-        onChangeText={validerContenu}
-        style={styles.input}
-        multiline
-        numberOfLines={4}
-      />
-      <FormControl>
+      <FormControl style={styles.formControl}>
+        <FormControl.Label>Titre</FormControl.Label>
+
+        <TextInput
+          placeholder="Titre"
+          value={publication.titre}
+          onChangeText={gererChangementTitre}
+          style={styles.input}
+        />
+        <FormControl.Label>Description/Contenu</FormControl.Label>
+
+        <TextInput
+          placeholder="Contenu"
+          value={publication.contenu}
+          onChangeText={validerContenu}
+          style={styles.input}
+          multiline
+          numberOfLines={4}
+        />
         <FormControl.Label>Catégorie</FormControl.Label>
+
         <Select
-          selectedValue={selectedCategorie.nom}
+          selectedValue={publication?.categorie?.nom}
           minWidth={200}
           accessibilityLabel="Sélectionnez une catégorie"
           placeholder="Sélectionnez une catégorie"
@@ -229,14 +229,16 @@ function CreationRessourceScreen() {
             const catSelectionnee: any = categories.find(
               (c) => c.nom === itemValue
             );
-            setSelectedCategorie(catSelectionnee);
+            setPublication({
+              ...publication,
+              categorie: catSelectionnee as CategorieEntity,
+            });
           }}
           defaultValue=""
           _selectedItem={{
             bg: "teal.600",
           }}
         >
-          <Select.Item key="0" label="Toutes les catégorie" value="0" />
           {categories.map((categorie: any) => (
             <Select.Item
               key={categorie.id}
@@ -246,31 +248,6 @@ function CreationRessourceScreen() {
           ))}
         </Select>
       </FormControl>
-      {/* <Portal>
-        <Menu
-          visible={menuVisible}
-          onDismiss={fermerMenu}
-          anchor={
-            <Button onPress={ouvrirMenu} style={styles.boutonCategorie}>
-              Catégorie: {publication.idCategorie || "Sélectionner"}
-            </Button>
-          }
-          style={styles.menuStyle}
-        >
-          <Menu.Item
-            onPress={() => selectionnerCategorie(1)}
-            title="Catégorie 1"
-          />
-          <Menu.Item
-            onPress={() => selectionnerCategorie(2)}
-            title="Catégorie 2"
-          />
-          <Menu.Item
-            onPress={() => selectionnerCategorie(3)}
-            title="Catégorie 3"
-          />
-        </Menu>
-      </Portal> */}
 
       <Button
         onPress={selectionnerPieceJointe}
@@ -312,7 +289,10 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
     backgroundColor: "#F5F5F5",
-    borderRadius: 30,
+    borderRadius: 5,
+    paddingHorizontal: 16,
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
   },
   boutonSoumettre: {
     marginTop: 16,
@@ -381,5 +361,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
+  },
+  formControl: {
+    marginBottom: 16,
   },
 });

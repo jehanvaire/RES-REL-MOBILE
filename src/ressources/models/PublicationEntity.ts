@@ -1,4 +1,5 @@
 import { StatusPublicationEnum } from "../enums/StatusPublicationEnum";
+import { PieceJointeEntity } from "./PieceJointeEntity";
 import { UtilisateurEntity } from "./UtilisateurEntity";
 
 export class PublicationEntity {
@@ -15,8 +16,8 @@ export class PublicationEntity {
   utilisateur!: UtilisateurEntity;
   navigation!: any;
   idPieceJointe!: number;
-  pieceJointe!: any;
-  categorie!: any;
+  pieceJointe!: PieceJointeEntity;
+  categorie!: CategorieEntity;
 
   constructor(init?: Partial<PublicationEntity>) {
     Object.assign(this, init);
