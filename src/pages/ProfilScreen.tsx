@@ -1,6 +1,6 @@
 import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
+import { StyleSheet, FlatList, BackHandler, StatusBar, Platform } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -12,9 +12,12 @@ import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Animated } from "react-native";
 
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+const NAVBAR_HEIGHT = 64;
+const STATUS_BAR_HEIGHT = Platform.select({ ios: 20, android: 24 });
 
 function ProfilScreen(props: any) {
   const { navigation, gestureHandlerRef } = props;
@@ -26,6 +29,8 @@ function ProfilScreen(props: any) {
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [scrollY, setScrollY] = useState(new Animated.Value(0));
 
   useFocusEffect(
     useCallback(() => {
@@ -90,6 +95,8 @@ function ProfilScreen(props: any) {
     setRefreshing(false);
   };
 
+  // const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
       <Publication
@@ -113,34 +120,41 @@ function ProfilScreen(props: any) {
   );
 
   const banniereProfilUtilisateur = () => {
+    const headerHeight = scrollY.interpolate({
+      inputRange: [0, 10],
+      outputRange: [300, 60],
+      extrapolate: "clamp",
+    });
     return (
-      <Stack style={[styles.header, styles.shadow]}>
-        <Stack style={styles.flex}>
-          <Avatar
-            size={100}
-            style={styles.avatar}
-            source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
-            }}
-          ></Avatar>
+      <Animated.View style={{ height: headerHeight }}>
+        <Stack style={[styles.header, styles.shadow]}>
+          <Stack style={styles.flex}>
+            <Avatar
+              size={100}
+              style={styles.avatar}
+              source={{
+                uri: apiURL + "/" + utilisateur.id + "/download",
+              }}
+            ></Avatar>
 
-          <VStack
-            marginLeft={3}
-            style={{ marginTop: 30, alignItems: "center" }}
-          >
-            <Text style={styles.title}>
-              {utilisateur.nom} {utilisateur.prenom}
-            </Text>
-            <Description contenu={utilisateur.bio ?? ""}></Description>
-          </VStack>
+            <VStack
+              marginLeft={3}
+              style={{ marginTop: 30, alignItems: "center" }}
+            >
+              <Text style={styles.title}>
+                {utilisateur.nom} {utilisateur.prenom}
+              </Text>
+              <Description contenu={utilisateur.bio ?? ""}></Description>
+            </VStack>
 
-          <Spacer />
+            <Spacer />
 
-          <Center>
-            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
-          </Center>
+            <Center>
+              <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
+            </Center>
+          </Stack>
         </Stack>
-      </Stack>
+      </Animated.View>
     );
   };
 
@@ -165,12 +179,16 @@ function ProfilScreen(props: any) {
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
           data={listePublications}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item: any) => item.id.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={PER_PAGE}
           refreshing={refreshing}
           onRefresh={handleRefresh}
           renderItem={renderItem}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
         />
       </View>
     </GestureHandlerRootView>
