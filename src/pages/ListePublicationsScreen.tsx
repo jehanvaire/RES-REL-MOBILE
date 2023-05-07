@@ -1,20 +1,19 @@
-import { Box, ScrollView, View, Image } from "native-base";
+import { ScrollView, View, Image } from "native-base";
 import React, { useEffect, useState } from "react";
 import { StatusBar, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 import Publication from "../components/Ressource/Publication";
 import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-// import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
-//importe mode invité de AuthentificationMenuScreen
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
+
+const StackNav = createStackNavigator();
 
 const HeaderComponent = () => {
   return (
@@ -136,22 +135,6 @@ function CustomButton({
   return null;
 }
 
-const StackNav = createStackNavigator();
-
-// const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
-//   return (props: any) => {
-//     return (
-//       <PaperProvider>
-//         <WrappedComponent {...props} />
-//       </PaperProvider>
-//     );
-//   };
-// };
-
-// const WrappedCreationRessourceScreen = withPaperProvider(
-//   CreationRessourceScreen
-// );
-
 const ListePublicationStack = () => {
   return (
     <StackNav.Navigator initialRouteName="ListePublicationsScreen">
@@ -163,7 +146,7 @@ const ListePublicationStack = () => {
       <StackNav.Screen
         name="CreationRessourceScreen"
         component={CreationRessourceScreen}
-        options={{ headerShown: true, title: "Création d'une ressource" }}
+        options={{ headerShown: true, title: "Créer une ressource" }}
       />
     </StackNav.Navigator>
   );

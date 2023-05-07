@@ -21,8 +21,9 @@ import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnu
 import ReactNativeBlobUtil from "react-native-blob-util";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
-import { Button, FormControl, Select } from "native-base";
+import { FormControl, Select } from "native-base";
 import CategorieService from "../../services/CategorieService";
+import { TouchableOpacity } from "react-native";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -121,8 +122,12 @@ function CreationRessourceScreen() {
   };
 
   const soumettre = async () => {
-    publication.idUtilisateur = utilisateur.id;
-    await PublicationService.CreerPublication(publication).then((res) => {
+    await PublicationService.CreerPublication({
+      idCategorie: publication.categorie.id,
+      contenu: publication.contenu,
+      titre: publication.titre,
+      idUtilisateur: utilisateur.id,
+    } as PublicationEntity).then((res) => {
       if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
         gererNavigation();
         return;
@@ -199,7 +204,7 @@ function CreationRessourceScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Créer une publication</Text>
       </View>
-      <FormControl style={styles.formControl}>
+      <FormControl style={styles.formData}>
         <FormControl.Label>Titre</FormControl.Label>
 
         <TextInput
@@ -247,33 +252,33 @@ function CreationRessourceScreen() {
             />
           ))}
         </Select>
+
+        <TouchableOpacity
+          onPress={selectionnerPieceJointe}
+          style={styles.bouton}
+        >
+          <Text>Sélectionner une pièce jointe</Text>
+        </TouchableOpacity>
+
+        {pieceJointe.uri && pieceJointe.uri.length > 0 && (
+          <View style={styles.previewPieceJointe}>
+            <Text style={styles.titrePieceJointe}>Pièce jointe :</Text>
+            {renderPieceJointe()}
+          </View>
+        )}
+
+        <TouchableOpacity
+          onPress={() => soumettre()}
+          disabled={
+            publication?.titre?.length < LONGUEUR_MIN_TITRE ||
+            publication?.contenu?.length === 0 ||
+            !publication?.categorie?.nom
+          }
+          style={styles.bouton}
+        >
+          <Text>Soumettre une publication</Text>
+        </TouchableOpacity>
       </FormControl>
-
-      <Button
-        onPress={selectionnerPieceJointe}
-        style={styles.boutonSelectionFichier}
-      >
-        Sélectionner une pièce jointe
-      </Button>
-
-      {pieceJointe.uri && pieceJointe.uri.length > 0 && (
-        <View style={styles.previewPieceJointe}>
-          <Text style={styles.titrePieceJointe}>Pièce jointe :</Text>
-          {renderPieceJointe()}
-        </View>
-      )}
-
-      <Button
-        onPress={() => soumettre()}
-        style={styles.boutonSoumettre}
-        disabled={
-          publication?.titre?.length < LONGUEUR_MIN_TITRE ||
-          publication?.contenu?.length === 0 ||
-          !publication?.idCategorie
-        }
-      >
-        Soumettre une publication
-      </Button>
     </ScrollView>
   );
 }
@@ -294,14 +299,6 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     borderWidth: 1,
   },
-  boutonSoumettre: {
-    marginTop: 16,
-    backgroundColor: "#4183F4",
-  },
-  boutonSelectionFichier: {
-    marginBottom: 16,
-    backgroundColor: "#4183F4",
-  },
   previewPieceJointe: {
     alignItems: "center",
     marginVertical: 16,
@@ -310,12 +307,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 8,
-  },
-  imagePieceJointe: {
-    width: "100%",
-    height: 250,
-    resizeMode: "contain",
-    marginBottom: 16,
   },
   image: {
     marginTop: 10,
@@ -330,27 +321,10 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     aspectRatio: 1,
   },
-  videoPieceJointe: {
-    width: "100%",
-    height: 250,
-    marginBottom: 16,
-  },
   pdfPieceJointe: {
     width: "100%",
     height: 250,
     marginBottom: 16,
-  },
-  boutonCategorie: {
-    marginBottom: 16,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 30,
-    justifyContent: "center",
-    alignSelf: "stretch",
-    paddingHorizontal: 16,
-  },
-  menuStyle: {
-    marginTop: 50,
-    marginLeft: 16,
   },
   header: {
     fontSize: 24,
@@ -362,7 +336,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 8,
   },
-  formControl: {
+  bouton: {
+    backgroundColor: "#4183F4",
+    padding: 16,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 16,
+  },
+  formData: {
     marginBottom: 16,
   },
 });

@@ -53,7 +53,7 @@ const Menu = ({ props }: any) => {
 
   return loading ? null : (
     <BottomTab.Navigator
-      initialRouteName="Recherche"
+      initialRouteName="Menu"
       barStyle={styles.bottomTabBar}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
