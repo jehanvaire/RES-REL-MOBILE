@@ -7222,6 +7222,13 @@ expo-file-system@~15.1.0, expo-file-system@~15.1.1:
   dependencies:
     uuid "^3.4.0"
 
+expo-font@^11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.1.1.tgz#268eed407e94f6e88083c01b68c357d010748d23"
+  integrity sha512-X+aICqYY69hiiDDtcNrjq8KutHrH2TrHuMqk0Rfq0P7hF6hMd+YefwLBNkvIrqrgmTAuqiLjMUwj2rHLqmgluw==
+  dependencies:
+    fontfaceobserver "^2.1.0"
+
 expo-font@~11.0.1:
   version "11.0.1"
   resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.0.1.tgz#0758ce4e505995d0193a33e3c4325b35bf1fb7f7"
@@ -12758,12 +12765,12 @@ react-native-mmkv@2.5.1:
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.5.1.tgz#29fc462077fab16a5e1b79570fbf8acaac9d87b4"
   integrity sha512-5eQu25z3H6zf6w0NkJoTuFEFrbOu6luZxZ6+rK1W+XwY/rjPSFZFQPVtMaz3im90RbILFXXM/KrFGZrpaJJRoQ==
 
-react-native-pager-view@6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.0.1.tgz#353abf38d3c2b91ed7c586f10af0f94700f5b1dc"
-  integrity sha512-kOVNu+4JnR3Gpykviy4WbOAnQz8TgP6O2pRvne221oPUDQLYrvEE/FINR0P85TxbMgvKTPlLejGw0ZHQbezK/g==
+react-native-pager-view@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.2.0.tgz#51380d93fbe47f6380dc71d613a787bf27a4ca37"
+  integrity sha512-pf9OnL/Tkr+5s4Gjmsn7xh91PtJLDa6qxYa/bmtUhd/+s4cQdWQ8DIFoOFghwZIHHHwVdWtoXkp6HtpjN+r20g==
 
-react-native-paper@^5.1.4:
+react-native-paper@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.7.2.tgz#a9f9a6e381bbc3e05f2a3b0f7f5849f7dd29f862"
   integrity sha512-v4py1Zx2OuZ85Pk4K0+0vOIi/VcfkufbXofiXsxVN/HMGd+YeShTITq8aK3p/zuq9qm5OlzxoHga7xA7D51CIQ==
