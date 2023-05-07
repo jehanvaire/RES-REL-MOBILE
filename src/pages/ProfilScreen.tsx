@@ -1,6 +1,12 @@
 import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  StyleSheet,
+  FlatList,
+  BackHandler,
+  StatusBar,
+  Animated,
+} from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -16,6 +22,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
+const HEADER_MAX_HEIGHT = 150;
+const HEADER_MIN_HEIGHT = 30;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
 function ProfilScreen(props: any) {
   const { navigation, gestureHandlerRef } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
@@ -26,6 +36,8 @@ function ProfilScreen(props: any) {
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
     useCallback(() => {
@@ -44,6 +56,24 @@ function ProfilScreen(props: any) {
     );
     return () => retourHandler.remove();
   }, []);
+
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const avatarOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const avatarTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, -50],
+    extrapolate: "clamp",
+  });
 
   const fetchListePublicationsUtilisateur = async () => {
     // Get the list of publications
@@ -114,15 +144,25 @@ function ProfilScreen(props: any) {
 
   const banniereProfilUtilisateur = () => {
     return (
-      <Stack style={[styles.header, styles.shadow]}>
+      <Animated.View
+        style={[styles.header, styles.shadow, { height: headerHeight }]}
+      >
         <Stack style={styles.flex}>
-          <Avatar
-            size={100}
-            style={styles.avatar}
-            source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
+          <Animated.View
+            style={{
+              opacity: avatarOpacity,
+              transform: [{ translateY: avatarTranslateY }],
             }}
-          ></Avatar>
+          >
+            <Avatar
+              size={100}
+              style={styles.avatar}
+              source={{
+                uri: apiURL + "/" + utilisateur.id + "/download",
+              }}
+            />
+            <Description contenu={utilisateur.bio ?? ""} />
+          </Animated.View>
 
           <VStack
             marginLeft={3}
@@ -131,16 +171,23 @@ function ProfilScreen(props: any) {
             <Text style={styles.title}>
               {utilisateur.nom} {utilisateur.prenom}
             </Text>
-            <Description contenu={utilisateur.bio ?? ""}></Description>
           </VStack>
 
           <Spacer />
 
-          <Center>
-            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
-          </Center>
+          <Animated.View
+            style={{
+              opacity: avatarOpacity,
+              transform: [{ translateY: avatarTranslateY }],
+              marginTop: 30,
+            }}
+          >
+            <Center>
+              <MenuHamburgerProfil navigation={navigation} />
+            </Center>
+          </Animated.View>
         </Stack>
-      </Stack>
+      </Animated.View>
     );
   };
 
@@ -159,7 +206,7 @@ function ProfilScreen(props: any) {
           </SafeAreaView>
         )}
 
-        <FlatList
+        <Animated.FlatList
           style={styles.listePublications}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
@@ -171,6 +218,11 @@ function ProfilScreen(props: any) {
           refreshing={refreshing}
           onRefresh={handleRefresh}
           renderItem={renderItem}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
         />
       </View>
     </GestureHandlerRootView>
