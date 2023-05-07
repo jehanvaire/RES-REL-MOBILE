@@ -1,5 +1,5 @@
 import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
