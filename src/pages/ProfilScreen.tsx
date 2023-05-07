@@ -1,6 +1,12 @@
 import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, FlatList, BackHandler, StatusBar, Platform } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  StyleSheet,
+  FlatList,
+  BackHandler,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -12,25 +18,26 @@ import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Animated } from "react-native";
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+import { storage } from "../services/AuthentificationService";
+import RelationService from "../services/RelationService";
 
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
-const NAVBAR_HEIGHT = 64;
-const STATUS_BAR_HEIGHT = Platform.select({ ios: 20, android: 24 });
 
 function ProfilScreen(props: any) {
-  const { navigation, gestureHandlerRef } = props;
+  const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
     PublicationEntity[]
   >([]);
+  const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
+  // const [listeRelations, setListeRelations] = useState<RelationEntity[]>([]);
+  const [estEnRelation, setEstEnRelation] = useState<boolean>(false);
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
-
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
 
   useFocusEffect(
     useCallback(() => {
@@ -39,6 +46,23 @@ function ProfilScreen(props: any) {
   );
 
   useEffect(() => {
+    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+
+    var user = JSON.parse(user_json) as UtilisateurEntity;
+    setMoi(user);
+
+    // const params = {
+    //   "idDemandeur[equals]=": user.id,
+    //   "idReceveur[equals]=": utilisateur.id,
+    // };
+
+    // RelationService.GetRelations(params).then((response) => {
+    //   console.log(response);
+    //   if (response.length > 0) {
+    //     setEstEnRelation(true);
+    //   }
+    // });
+
     const retourHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
@@ -51,7 +75,6 @@ function ProfilScreen(props: any) {
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
-    // Get the list of publications
     const params = {
       page: 1,
       perPage: PER_PAGE,
@@ -61,6 +84,17 @@ function ProfilScreen(props: any) {
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
+  };
+
+  const demanderConnexionUtilisateur = () => {
+    const params = {
+      idDemandeur: moi.id,
+      idReceveur: utilisateur.id,
+      typeRelation: 1,
+    };
+    RelationService.DemanderRelation(params).then((response) => {
+      console.log(response);
+    });
   };
 
   const handleLoadMore = () => {
@@ -95,8 +129,6 @@ function ProfilScreen(props: any) {
     setRefreshing(false);
   };
 
-  // const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
-
   const renderItem = ({ item }: any) => (
     <View key={item.id}>
       <Publication
@@ -120,41 +152,34 @@ function ProfilScreen(props: any) {
   );
 
   const banniereProfilUtilisateur = () => {
-    const headerHeight = scrollY.interpolate({
-      inputRange: [0, 10],
-      outputRange: [300, 60],
-      extrapolate: "clamp",
-    });
     return (
-      <Animated.View style={{ height: headerHeight }}>
-        <Stack style={[styles.header, styles.shadow]}>
-          <Stack style={styles.flex}>
-            <Avatar
-              size={100}
-              style={styles.avatar}
-              source={{
-                uri: apiURL + "/" + utilisateur.id + "/download",
-              }}
-            ></Avatar>
+      <Stack style={[styles.header, styles.shadow]}>
+        <Stack style={styles.flex}>
+          <Avatar
+            size={100}
+            style={styles.avatar}
+            source={{
+              uri: apiURL + "/" + utilisateur.id + "/download",
+            }}
+          ></Avatar>
 
-            <VStack
-              marginLeft={3}
-              style={{ marginTop: 30, alignItems: "center" }}
-            >
-              <Text style={styles.title}>
-                {utilisateur.nom} {utilisateur.prenom}
-              </Text>
-              <Description contenu={utilisateur.bio ?? ""}></Description>
-            </VStack>
+          <VStack
+            marginLeft={3}
+            style={{ marginTop: 30, alignItems: "center" }}
+          >
+            <Text style={styles.title}>
+              {utilisateur.nom} {utilisateur.prenom}
+            </Text>
+            <Description contenu={utilisateur.bio ?? ""}></Description>
+          </VStack>
 
-            <Spacer />
+          <Spacer />
 
-            <Center>
-              <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
-            </Center>
-          </Stack>
+          <Center>
+            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
+          </Center>
         </Stack>
-      </Animated.View>
+      </Stack>
     );
   };
 
@@ -173,6 +198,21 @@ function ProfilScreen(props: any) {
           </SafeAreaView>
         )}
 
+        <View style={styles.relations}>
+          <Stack direction="row">
+            <Text style={styles.title}>102 Relations</Text>
+            <Spacer />
+            {autreUtilisateur && (
+              <TouchableOpacity
+                style={styles.buttonDemandeConnexion}
+                onPress={demanderConnexionUtilisateur}
+              >
+                <Text>Demander connexion</Text>
+              </TouchableOpacity>
+            )}
+          </Stack>
+        </View>
+
         <FlatList
           style={styles.listePublications}
           removeClippedSubviews={true}
@@ -185,10 +225,6 @@ function ProfilScreen(props: any) {
           refreshing={refreshing}
           onRefresh={handleRefresh}
           renderItem={renderItem}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
         />
       </View>
     </GestureHandlerRootView>
@@ -215,6 +251,17 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
+  },
+  relations: {
+    width: "100%",
+    alignSelf: "center",
+    marginVertical: 25,
+  },
+  buttonDemandeConnexion: {
+    backgroundColor: "#44BE80",
+    borderRadius: 5,
+    padding: 5,
+    marginRight: 10,
   },
   flex: {
     flexDirection: "row",
