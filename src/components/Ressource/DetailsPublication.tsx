@@ -22,8 +22,10 @@ const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const DetailsPublication = (props: any) => {
-  const [liked, setLiked] = React.useState(false);
   const [favoris, setFavoris] = useState([]);
+  const [favoriId, setFavoriId] = useState<number | null>(null);
+  const [favorisCount, setFavorisCount] = useState(0);
+  const [liked, setLiked] = useState(false);
 
   const {
     id,
@@ -48,28 +50,45 @@ const DetailsPublication = (props: any) => {
   );
 
   const loadFavoris = () => {
-    PublicationService.GetUserFavoris().then((favorisList) => {
-      setFavoris(favorisList);
+    PublicationService.GetFavorisFromPublication(id).then((res) => {
+      setFavoris(res.data);
+      setFavorisCount(res.data.length);
+      if (res.data.length > 0) {
+        setLiked(true);
+        setFavoriId(res.data[0].id);
+      } else {
+        setLiked(false);
+        setFavoriId(null);
+      }
     });
   };
+
 
   useEffect(() => {
     loadFavoris();
   }, []);
 
+
   function toggleFavori() {
     if (liked === true) {
-      PublicationService.RemoveFavoriFromPublication(id).then(() => {
-        setLiked(false);
-        loadFavoris();
-      });
+      if (favoriId) {
+        PublicationService.RemoveFavoriFromPublication(favoriId).then(() => {
+          setLiked(false);
+          setFavoriId(null);
+          setFavorisCount(favorisCount - 1);
+          loadFavoris();
+        });
+      }
     } else {
       PublicationService.AddFavoriToPublication(id).then(() => {
         setLiked(true);
+        setFavorisCount(favorisCount + 1);
         loadFavoris();
       });
     }
   }
+
+
 
   function ShowCommentsSection() {
     props.navigation.navigate("EspaceCommentaireScreen", {

@@ -19,7 +19,6 @@ export default class RestClient {
 
   async getWithToken(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
-    // console.log("url", url)
     const response = await axios.get(url, {
       params,
       headers: {
@@ -35,7 +34,7 @@ export default class RestClient {
 
   async post(path: string, body: any): Promise<any> {
     const url = this.baseUrl + path;
-    console.log("token", this.token);
+    // console.log("token", this.token);
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,

@@ -21,14 +21,21 @@ export class PublicationService {
 
 
   public async GetUserFavoris(): Promise<any> {
-    // get if the publication has been liked by the user
-    const response = await this.restClient.getWithToken(`favoris`, {
-      params: {
-        idUtilisateur: this.user.id,
-      },
-    });
-    console.log(response.data);
+    const response = await this.restClient.getWithToken(`favoris?idUtilisateur=${this.user.id}`);
+    return response;
+  }
+
+  public async GetFavorisFromPublication(id: number): Promise<any> {
+    const response = await this.restClient.getWithToken(`favoris?idUtilisateur=${this.user.id}&idRessource=${id}`);
     return response.data;
+  }
+
+  public async GetCurrentUserFavorites(): Promise<PublicationEntity[]> {
+    const response = await this.restClient.get(`favoris/${this.user.id}`);
+    const listePublications = response.data.map((publication: any) => {
+      return new PublicationEntity(publication);
+    });
+    return listePublications;
   }
 
 
@@ -40,6 +47,7 @@ export class PublicationService {
         idRessource: id
       }
     );
+    console.log("Response", response)
     return response;
   }
 
