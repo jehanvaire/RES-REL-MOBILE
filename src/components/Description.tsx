@@ -4,7 +4,7 @@ import { Text, StyleSheet, View } from "react-native";
 
 const MAX_LINES = 3;
 
-export default function Description(props: any) {
+export default function Description({ contenu }: any) {
   const [etendu, setEtendu] = useState(false);
 
   const handleOnPress = useCallback(() => {
@@ -18,8 +18,8 @@ export default function Description(props: any) {
         numberOfLines={etendu ? undefined : MAX_LINES}
         onPress={handleOnPress}
       >
-        {etendu ? props.contenu : props.contenu.slice(0, 100)}
-        {props.contenu.length > 100 && !etendu ? (
+        {etendu ? contenu : contenu.slice(0, 100)}
+        {contenu.length > 100 && !etendu ? (
           <Text style={styles.toggleShowMore}> ...</Text>
         ) : (
           ""

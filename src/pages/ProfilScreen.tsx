@@ -1,12 +1,6 @@
-import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
+import { Center, Spacer, Stack, Text, VStack } from "native-base";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  FlatList,
-  BackHandler,
-  StatusBar,
-  Animated,
-} from "react-native";
+import { StyleSheet, BackHandler, StatusBar, Animated } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -23,11 +17,11 @@ const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const HEADER_MAX_HEIGHT = 150;
-const HEADER_MIN_HEIGHT = 30;
+const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 function ProfilScreen(props: any) {
-  const { navigation, gestureHandlerRef } = props;
+  const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
@@ -63,15 +57,27 @@ function ProfilScreen(props: any) {
     extrapolate: "clamp",
   });
 
-  const avatarOpacity = scrollY.interpolate({
+  const headerElementsOpacity = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [1, 0],
     extrapolate: "clamp",
   });
 
-  const avatarTranslateY = scrollY.interpolate({
+  const headerElementsTranslateY = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [0, -50],
+    extrapolate: "clamp",
+  });
+
+  const titreTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, -10],
+    extrapolate: "clamp",
+  });
+
+  const avatarSize = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [100, 40],
     extrapolate: "clamp",
   });
 
@@ -148,37 +154,50 @@ function ProfilScreen(props: any) {
         style={[styles.header, styles.shadow, { height: headerHeight }]}
       >
         <Stack style={styles.flex}>
-          <Animated.View
-            style={{
-              opacity: avatarOpacity,
-              transform: [{ translateY: avatarTranslateY }],
+          <Animated.Image
+            style={[
+              styles.avatar,
+              {
+                height: avatarSize,
+                width: avatarSize,
+                borderRadius: 50,
+              },
+            ]}
+            source={{
+              uri: apiURL + "/" + utilisateur.id + "/download",
             }}
-          >
-            <Avatar
-              size={100}
-              style={styles.avatar}
-              source={{
-                uri: apiURL + "/" + utilisateur.id + "/download",
-              }}
-            />
-            <Description contenu={utilisateur.bio ?? ""} />
-          </Animated.View>
+          />
 
           <VStack
             marginLeft={3}
             style={{ marginTop: 30, alignItems: "center" }}
           >
-            <Text style={styles.title}>
-              {utilisateur.nom} {utilisateur.prenom}
-            </Text>
+            <Animated.View
+              style={{
+                transform: [{ translateY: titreTranslateY }],
+              }}
+            >
+              <Text style={styles.title}>
+                {utilisateur.nom} {utilisateur.prenom}
+              </Text>
+            </Animated.View>
+
+            <Animated.View
+              style={{
+                opacity: headerElementsOpacity,
+                transform: [{ translateY: headerElementsTranslateY }],
+              }}
+            >
+              <Description contenu={utilisateur.bio ?? ""} />
+            </Animated.View>
           </VStack>
 
           <Spacer />
 
           <Animated.View
             style={{
-              opacity: avatarOpacity,
-              transform: [{ translateY: avatarTranslateY }],
+              opacity: headerElementsOpacity,
+              transform: [{ translateY: headerElementsTranslateY }],
               marginTop: 30,
             }}
           >
@@ -278,6 +297,6 @@ const styles = StyleSheet.create({
   listePublications: {
     width: "100%",
     alignSelf: "center",
-    marginBottom: 335,
+    marginBottom: 160,
   },
 });
