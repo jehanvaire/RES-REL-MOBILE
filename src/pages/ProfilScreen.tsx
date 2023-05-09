@@ -1,6 +1,6 @@
-import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
+import { Center, Spacer, Stack, Text, VStack } from "native-base";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { StyleSheet, BackHandler, StatusBar, Animated } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -16,8 +16,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
+const HEADER_MAX_HEIGHT = 150;
+const HEADER_MIN_HEIGHT = 60;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
 function ProfilScreen(props: any) {
-  const { navigation, gestureHandlerRef } = props;
+  const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
   const [listePublications, setListePublications] = useState<
@@ -26,6 +30,12 @@ function ProfilScreen(props: any) {
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [headerDescriptionExpanded, setHeaderDescriptionExpanded] =
+    useState(false);
+
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
     useCallback(() => {
@@ -42,7 +52,68 @@ function ProfilScreen(props: any) {
         return true;
       }
     );
+
     return () => retourHandler.remove();
+  }, []);
+
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const headerDescriptionHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
+    extrapolate: "clamp",
+  });
+
+  const headerElementsOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const headerElementsTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, -50],
+    extrapolate: "clamp",
+  });
+
+  const titreTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, -10],
+    extrapolate: "clamp",
+  });
+
+  const avatarSize = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [100, 40],
+    extrapolate: "clamp",
+  });
+
+  const containterAutreUtilisateurWidth = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: ["65%", "80%"],
+    extrapolate: "clamp",
+  });
+
+  useEffect(() => {
+    setHeaderDescriptionExpanded(descriptionExpanded);
+  }, [descriptionExpanded]);
+
+  useEffect(() => {
+    const listener = scrollY.addListener((value) => {
+      const scrollPosition = value.value;
+      if (scrollPosition > 0) {
+        setHeaderDescriptionExpanded(false);
+      } else if (descriptionExpanded) {
+        setHeaderDescriptionExpanded(true);
+      }
+    });
+    return () => {
+      scrollY.removeListener(listener);
+    };
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
@@ -114,33 +185,78 @@ function ProfilScreen(props: any) {
 
   const banniereProfilUtilisateur = () => {
     return (
-      <Stack style={[styles.header, styles.shadow]}>
+      <Animated.View
+        style={[
+          styles.header,
+          styles.shadow,
+          {
+            height:
+              headerDescriptionExpanded && descriptionExpanded
+                ? headerDescriptionHeight
+                : headerHeight,
+            width: autreUtilisateur ? containterAutreUtilisateurWidth : "100%",
+          },
+        ]}
+      >
         <Stack style={styles.flex}>
-          <Avatar
-            size={100}
-            style={styles.avatar}
+          <Animated.Image
+            style={[
+              styles.avatar,
+              {
+                height: avatarSize,
+                width: avatarSize,
+                borderRadius: 50,
+              },
+            ]}
             source={{
               uri: apiURL + "/" + utilisateur.id + "/download",
             }}
-          ></Avatar>
+          />
 
           <VStack
             marginLeft={3}
             style={{ marginTop: 30, alignItems: "center" }}
           >
-            <Text style={styles.title}>
-              {utilisateur.nom} {utilisateur.prenom}
-            </Text>
-            <Description contenu={utilisateur.bio ?? ""}></Description>
+            <Animated.View
+              style={{
+                transform: [{ translateY: titreTranslateY }],
+              }}
+            >
+              <Text style={styles.title}>
+                {utilisateur.nom} {utilisateur.prenom}
+              </Text>
+            </Animated.View>
+
+            <Animated.View
+              style={{
+                opacity: headerElementsOpacity,
+                transform: [{ translateY: headerElementsTranslateY }],
+              }}
+            >
+              <Description
+                contenu={utilisateur.bio ?? ""}
+                onDescExpand={() =>
+                  setDescriptionExpanded(!descriptionExpanded)
+                }
+              />
+            </Animated.View>
           </VStack>
 
           <Spacer />
 
-          <Center>
-            <MenuHamburgerProfil navigation={navigation}></MenuHamburgerProfil>
-          </Center>
+          <Animated.View
+            style={{
+              opacity: headerElementsOpacity,
+              transform: [{ translateY: headerElementsTranslateY }],
+              marginTop: 30,
+            }}
+          >
+            <Center>
+              <MenuHamburgerProfil navigation={navigation} />
+            </Center>
+          </Animated.View>
         </Stack>
-      </Stack>
+      </Animated.View>
     );
   };
 
@@ -159,7 +275,7 @@ function ProfilScreen(props: any) {
           </SafeAreaView>
         )}
 
-        <FlatList
+        <Animated.FlatList
           style={styles.listePublications}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
@@ -171,6 +287,11 @@ function ProfilScreen(props: any) {
           refreshing={refreshing}
           onRefresh={handleRefresh}
           renderItem={renderItem}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
         />
       </View>
     </GestureHandlerRootView>
@@ -186,7 +307,6 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   containerAutreUtilisateur: {
-    width: "65%",
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
@@ -226,6 +346,6 @@ const styles = StyleSheet.create({
   listePublications: {
     width: "100%",
     alignSelf: "center",
-    marginBottom: 335,
+    marginBottom: 160,
   },
 });

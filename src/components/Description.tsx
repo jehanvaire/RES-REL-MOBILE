@@ -4,12 +4,19 @@ import { Text, StyleSheet, View } from "react-native";
 
 const MAX_LINES = 3;
 
-export default function Description(props: any) {
+
+type Props = {
+  contenu: string;
+  onDescExpand: (etendu: boolean) => void;
+};
+
+export default function Description({ contenu, onDescExpand }: Props) {
   const [etendu, setEtendu] = useState(false);
 
   const handleOnPress = useCallback(() => {
     setEtendu((etendu) => !etendu);
-  }, []);
+    onDescExpand(!etendu);
+  }, [etendu, onDescExpand]);
 
   return (
     <View>
@@ -18,8 +25,8 @@ export default function Description(props: any) {
         numberOfLines={etendu ? undefined : MAX_LINES}
         onPress={handleOnPress}
       >
-        {etendu ? props.contenu : props.contenu.slice(0, 100)}
-        {props.contenu.length > 100 && !etendu ? (
+        {etendu ? contenu : contenu.slice(0, 100)}
+        {contenu.length > 100 && !etendu ? (
           <Text style={styles.toggleShowMore}> ...</Text>
         ) : (
           ""
