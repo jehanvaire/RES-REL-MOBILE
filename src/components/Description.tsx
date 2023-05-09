@@ -4,12 +4,19 @@ import { Text, StyleSheet, View } from "react-native";
 
 const MAX_LINES = 3;
 
-export default function Description({ contenu }: any) {
+
+type Props = {
+  contenu: string;
+  onDescExpand: (etendu: boolean) => void;
+};
+
+export default function Description({ contenu, onDescExpand }: Props) {
   const [etendu, setEtendu] = useState(false);
 
   const handleOnPress = useCallback(() => {
     setEtendu((etendu) => !etendu);
-  }, []);
+    onDescExpand(!etendu);
+  }, [etendu, onDescExpand]);
 
   return (
     <View>

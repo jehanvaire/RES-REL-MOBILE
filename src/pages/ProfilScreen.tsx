@@ -31,6 +31,10 @@ function ProfilScreen(props: any) {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
 
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [headerDescriptionExpanded, setHeaderDescriptionExpanded] =
+    useState(false);
+
   const scrollY = useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
@@ -48,12 +52,19 @@ function ProfilScreen(props: any) {
         return true;
       }
     );
+
     return () => retourHandler.remove();
   }, []);
 
   const headerHeight = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE],
     outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const headerDescriptionHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
     extrapolate: "clamp",
   });
 
@@ -80,6 +91,30 @@ function ProfilScreen(props: any) {
     outputRange: [100, 40],
     extrapolate: "clamp",
   });
+
+  const containterAutreUtilisateurWidth = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: ["65%", "80%"],
+    extrapolate: "clamp",
+  });
+
+  useEffect(() => {
+    setHeaderDescriptionExpanded(descriptionExpanded);
+  }, [descriptionExpanded]);
+
+  useEffect(() => {
+    const listener = scrollY.addListener((value) => {
+      const scrollPosition = value.value;
+      if (scrollPosition > 0) {
+        setHeaderDescriptionExpanded(false);
+      } else if (descriptionExpanded) {
+        setHeaderDescriptionExpanded(true);
+      }
+    });
+    return () => {
+      scrollY.removeListener(listener);
+    };
+  }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
     // Get the list of publications
@@ -151,7 +186,17 @@ function ProfilScreen(props: any) {
   const banniereProfilUtilisateur = () => {
     return (
       <Animated.View
-        style={[styles.header, styles.shadow, { height: headerHeight }]}
+        style={[
+          styles.header,
+          styles.shadow,
+          {
+            height:
+              headerDescriptionExpanded && descriptionExpanded
+                ? headerDescriptionHeight
+                : headerHeight,
+            width: autreUtilisateur ? containterAutreUtilisateurWidth : "100%",
+          },
+        ]}
       >
         <Stack style={styles.flex}>
           <Animated.Image
@@ -188,7 +233,12 @@ function ProfilScreen(props: any) {
                 transform: [{ translateY: headerElementsTranslateY }],
               }}
             >
-              <Description contenu={utilisateur.bio ?? ""} />
+              <Description
+                contenu={utilisateur.bio ?? ""}
+                onDescExpand={() =>
+                  setDescriptionExpanded(!descriptionExpanded)
+                }
+              />
             </Animated.View>
           </VStack>
 
@@ -257,7 +307,6 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   containerAutreUtilisateur: {
-    width: "65%",
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
