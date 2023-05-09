@@ -157,12 +157,15 @@ function ProfilScreen(props: any) {
     setListePublications(listePublications);
   };
 
+  // TODO: afficher select avec les types de relations
   const demanderConnexionUtilisateur = () => {
     const params = {
       idDemandeur: moi.id,
       idReceveur: utilisateur.id,
-      typeRelation: 1,
+      typeRelation: 5,
     };
+
+    console.log(params);
     RelationService.DemanderRelation(params).then((response) => {
       console.log(response);
     });
