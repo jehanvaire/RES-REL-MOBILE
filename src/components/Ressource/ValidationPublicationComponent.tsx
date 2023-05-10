@@ -21,13 +21,20 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
 
   function AfficherPublication(publication: PublicationEntity) {
     navigation.navigate("DetailsPublication", {
-      auteur: publication.utilisateur.nom,
+      id: publication.id,
       titre: publication.titre,
       contenu: publication.contenu,
       status: publication.status,
       raisonRefus: publication.raisonRefus,
       dateCreation: publication.dateCreation,
+      datePublication: publication.datePublication,
+      idPieceJointe: publication.idPieceJointe,
+      typePj: publication.pieceJointe.type,
       lienImage: publication.image,
+      categorie: publication.categorie.nom,
+      idUtilisateur: publication.idUtilisateur,
+      auteur:
+        publication.utilisateur.nom + " " + publication.utilisateur.prenom,
     });
   }
 
@@ -60,10 +67,13 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
     >
       <Stack style={styles.publicationPreview} direction="row">
         {/* TODO: Mettre l'auteur de la publication */}
-        <Text>Adrien - {moment(publication.dateCreation).fromNow()}</Text>
+        <Text>
+          {publication.utilisateur.nom} {publication.utilisateur.prenom} -{" "}
+          {moment(publication.dateCreation).fromNow()}
+        </Text>
         <Spacer />
         {/* TODO: mettre le type de la publication */}
-        <Text>Type: Image</Text>
+        <Text>Type: {publication.pieceJointe.type}</Text>
       </Stack>
 
       <Text style={styles.titrePreview} numberOfLines={2}>

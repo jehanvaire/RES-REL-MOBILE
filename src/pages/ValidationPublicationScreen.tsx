@@ -43,7 +43,7 @@ const ValidationRessourcesScreen = (props: any) => {
       perPage: PER_PAGE,
       "status[equals]=": "PENDING",
       "partage[equals]=": "PUBLIC",
-      include: "utilisateur,pieceJointe",
+      include: "utilisateur,pieceJointe,categorie",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublicationsEnAttente(listePublications);
@@ -58,7 +58,7 @@ const ValidationRessourcesScreen = (props: any) => {
         perPage: PER_PAGE,
         "status[equals]=": "PENDING",
         "partage[equals]=": "PUBLIC",
-        include: "utilisateur,pieceJointe",
+        include: "utilisateur,pieceJointe,categorie",
       };
       PublicationService.GetPublications(params).then((publications) => {
         setListePublicationsEnAttente([
@@ -79,7 +79,7 @@ const ValidationRessourcesScreen = (props: any) => {
         perPage: PER_PAGE,
         "status[equals]=": "PENDING",
         "partage[equals]=": "PUBLIC",
-        include: "utilisateur,pieceJointe",
+        include: "utilisateur,pieceJointe,categorie",
       };
       PublicationService.GetPublications(params).then((publications) => {
         setListePublicationsEnAttente(publications);
