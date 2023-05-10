@@ -214,7 +214,10 @@ const Publication = (props: any) => {
             )}
           </View>
 
-          <Description contenu={props.contenu}></Description>
+          <Description
+            contenu={props.contenu}
+            onDescExpand={() => {}}
+          ></Description>
 
           <Stack direction="row" style={styles.footer}>
             <TouchableOpacity onPress={LikePublication}>
