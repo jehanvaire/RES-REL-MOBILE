@@ -8,11 +8,17 @@ import {
   ScrollView,
   View,
 } from "native-base";
-import { TouchableOpacity, StyleSheet, LayoutChangeEvent } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  LayoutChangeEvent,
+  Linking,
+  Platform,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
@@ -41,6 +47,7 @@ const DetailsPublication = (props: any) => {
     idCategorie,
     idUtilisateur,
   } = props.route.params;
+  const [fileName, setFileName] = useState("");
 
   const date = new Date(
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
@@ -73,6 +80,24 @@ const DetailsPublication = (props: any) => {
   function AfficherPlusOptions() {
     console.log("TODO: afficher plus d'options");
   }
+
+  const fetchPdfName = async () => {
+    const response = await PublicationService.getPdfName(idPieceJointe);
+    const contentDisposition = response.headers["content-disposition"];
+    const regex = /filename=([^;]+)/;
+    const match = contentDisposition?.match(regex);
+
+    if (match && match[1]) {
+      setFileName(match[1]);
+    }
+  };
+
+  const AfficherPdf = () => {
+    props.navigation.navigate("PdfView", {
+      idPieceJointe: idPieceJointe,
+      nomFichier: fileName,
+    });
+  };
 
   const image = () => {
     return (
@@ -116,6 +141,36 @@ const DetailsPublication = (props: any) => {
     );
   };
 
+  //only called on pdfs dont worry @Adrien
+  useEffect(() => {
+    if (typePj === "PDF") {
+      fetchPdfName();
+    }
+  }, [props.pieceJointe?.type]);
+
+  const pdf = () => {
+    return (
+      <View key={props.idPieceJointe}>
+        <TouchableOpacity onPress={AfficherPdf} style={styles.containerPdf}>
+          <View style={styles.pdfIcon}>
+            <Ionicons name="document-outline" size={40} color="black" />
+          </View>
+          <Text style={styles.pdfText}>{fileName || "Chargement..."}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const openGps = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    const scheme = Platform.OS === "ios" ? "maps:" : "geo:";
+    const url =
+      Platform.OS === "ios"
+        ? `${scheme}?q=${encodedAddress}`
+        : `${scheme}?q=${encodedAddress}&z=16`; // zoom level
+    Linking.openURL(url);
+  };
+
   return (
     <Box style={styles.container}>
       <ScrollView>
@@ -151,11 +206,15 @@ const DetailsPublication = (props: any) => {
             {[
               typePj === "IMAGE" ? image() : null,
               typePj === "VIDEO" ? video() : null,
-              //props.typePieceJointe === "ACTIVITE" ? activite() : null,
-              //PDF cannot be seen in details, it is preview in another screen
             ]}
           </View>
         </DoubleTap>
+        <View>
+          {/* Pas possible de double tap sinon ça nous envoie sur détails publication */}
+          {typePj === "PDF" && (
+            <View key={`${idPieceJointe}-pdf`}>{pdf()}</View>
+          )}
+        </View>
 
         <Text style={styles.contenu}>{contenu}</Text>
 
@@ -244,6 +303,34 @@ const styles = StyleSheet.create({
   },
   date: {
     color: "#828282",
+  },
+  pdfIcon: {
+    position: "absolute",
+    left: 12,
+    bottom: 15,
+  },
+  pdfText: {
+    marginTop: 15,
+    marginLeft: 55,
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 15,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+    color: "black",
+  },
+  containerPdf: {
+    flexDirection: "row",
+    width: "auto",
+    height: 75,
+    borderRadius: 10,
+    overflow: "hidden",
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: "#d9d9d9",
+    borderColor: "black",
   },
 });
 
