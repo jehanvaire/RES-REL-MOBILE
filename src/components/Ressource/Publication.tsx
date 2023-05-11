@@ -16,7 +16,6 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
-import axios from "axios";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
@@ -71,21 +70,13 @@ const Publication = (props: any) => {
   }
 
   async function fetchPdfName() {
-    try {
-      const response = await axios.head(
-        "https://api.victor-gombert.fr/api/v1/piecesJointes/" +
-          props.idPieceJointe +
-          "/download"
-      );
-      const contentDisposition = response.headers["content-disposition"];
-      const regex = /filename=([^;]+)/;
-      const match = contentDisposition?.match(regex);
+    const response = await PublicationService.getPdfName(props.idPieceJointe);
+    const contentDisposition = response.headers["content-disposition"];
+    const regex = /filename=([^;]+)/;
+    const match = contentDisposition?.match(regex);
 
-      if (match && match[1]) {
-        setFileName(match[1]);
-      }
-    } catch (error) {
-      console.error("Error fetching PDF name:", error);
+    if (match && match[1]) {
+      setFileName(match[1]);
     }
   }
 

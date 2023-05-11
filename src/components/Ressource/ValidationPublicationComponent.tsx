@@ -35,6 +35,8 @@ function ValidationPublicationComponent({ publication, navigation }: any) {
       idUtilisateur: publication.idUtilisateur,
       auteur:
         publication.utilisateur.nom + " " + publication.utilisateur.prenom,
+      codePostalActivite: publication.pieceJointe.codePostal,
+      lieuActivite: publication.pieceJointe.lieu,
     });
   }
 
