@@ -8,11 +8,18 @@ import {
   ScrollView,
   View,
 } from "native-base";
-import { TouchableOpacity, StyleSheet, LayoutChangeEvent } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  LayoutChangeEvent,
+  Linking,
+  Platform,
+  ImageBackground,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublicationService from "../../services/PublicationService";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
@@ -40,7 +47,10 @@ const DetailsPublication = (props: any) => {
     lienImage,
     idCategorie,
     idUtilisateur,
+    codePostalActivite,
+    lieuActivite,
   } = props.route.params;
+  const [fileName, setFileName] = useState("");
 
   const date = new Date(
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
@@ -73,6 +83,24 @@ const DetailsPublication = (props: any) => {
   function AfficherPlusOptions() {
     console.log("TODO: afficher plus d'options");
   }
+
+  const fetchPdfName = async () => {
+    const response = await PublicationService.getPdfName(idPieceJointe);
+    const contentDisposition = response.headers["content-disposition"];
+    const regex = /filename=([^;]+)/;
+    const match = contentDisposition?.match(regex);
+
+    if (match && match[1]) {
+      setFileName(match[1]);
+    }
+  };
+
+  const AfficherPdf = () => {
+    props.navigation.navigate("PdfView", {
+      idPieceJointe: idPieceJointe,
+      nomFichier: fileName,
+    });
+  };
 
   const image = () => {
     return (
@@ -116,79 +144,179 @@ const DetailsPublication = (props: any) => {
     );
   };
 
-  return (
-    <Box style={styles.container}>
-      <ScrollView>
-        <Stack direction="row" style={styles.header}>
-          <Avatar
-            source={{
-              uri: apiURL + "/" + idUtilisateur + "/download",
-            }}
-          ></Avatar>
+  //only called on pdfs dont worry @Adrien
+  useEffect(() => {
+    if (typePj === "PDF") {
+      fetchPdfName();
+    }
+  }, [props.pieceJointe?.type]);
 
-          <Stack direction="column" marginLeft={2}>
-            <Text>Partagé par {auteur}</Text>
-            <View style={styles.categorieWrapper}>
-              <Text style={styles.categorie}>{categorie}</Text>
-            </View>
+  const pdf = () => {
+    return (
+      <View key={props.idPieceJointe}>
+        <TouchableOpacity onPress={AfficherPdf} style={styles.containerPdf}>
+          <View style={styles.pdfIcon}>
+            <Ionicons name="document-outline" size={40} color="black" />
+          </View>
+          <Text style={styles.pdfText}>{fileName || "Chargement..."}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const openGps = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    const scheme = Platform.OS === "ios" ? "maps:" : "geo:";
+    const url =
+      Platform.OS === "ios"
+        ? `${scheme}?q=${encodedAddress}`
+        : `${scheme}?q=${encodedAddress}&z=16`; // zoom level
+    Linking.openURL(url);
+  };
+
+  if (typePj !== "ACTIVITE") {
+    return (
+      <Box style={styles.container}>
+        <ScrollView>
+          <Stack direction="row" style={styles.header}>
+            <Avatar
+              source={{
+                uri: apiURL + "/" + idUtilisateur + "/download",
+              }}
+            ></Avatar>
+
+            <Stack direction="column" marginLeft={2}>
+              <Text>Partagé par {auteur}</Text>
+              <View style={styles.categorieWrapper}>
+                <Text style={styles.categorie}>{categorie}</Text>
+              </View>
+            </Stack>
+
+            <Spacer />
+
+            <Center>
+              <Text style={styles.date}>
+                {moment(date).fromNow() === "Invalid date"
+                  ? "quelques secondes"
+                  : moment(date).fromNow()}
+              </Text>
+            </Center>
           </Stack>
 
-          <Spacer />
+          <Text style={styles.titre}>{titre}</Text>
 
-          <Center>
-            <Text style={styles.date}>
-              {moment(date).fromNow() === "Invalid date"
-                ? "quelques secondes"
-                : moment(date).fromNow()}
-            </Text>
-          </Center>
-        </Stack>
-
-        <Text style={styles.titre}>{titre}</Text>
-
-        <DoubleTap AfficherPublication={null} LikePublication={LikePublication}>
+          <DoubleTap
+            AfficherPublication={null}
+            LikePublication={LikePublication}
+          >
+            <View>
+              {[
+                typePj === "IMAGE" ? image() : null,
+                typePj === "VIDEO" ? video() : null,
+              ]}
+            </View>
+          </DoubleTap>
           <View>
-            {[
-              typePj === "IMAGE" ? image() : null,
-              typePj === "VIDEO" ? video() : null,
-              //props.typePieceJointe === "ACTIVITE" ? activite() : null,
-              //PDF cannot be seen in details, it is preview in another screen
-            ]}
-          </View>
-        </DoubleTap>
-
-        <Text style={styles.contenu}>{contenu}</Text>
-
-        <Stack direction="row" style={styles.footer}>
-          <TouchableOpacity onPress={LikePublication}>
-            {liked ? (
-              <Ionicons name={"heart"} size={25} color={"red"} />
-            ) : (
-              <Ionicons name={"heart-outline"} size={25} />
+            {/* Pas possible de double tap sinon ça nous envoie sur détails publication */}
+            {typePj === "PDF" && (
+              <View key={`${idPieceJointe}-pdf`}>{pdf()}</View>
             )}
-          </TouchableOpacity>
+          </View>
 
-          <Spacer />
+          <Text style={styles.contenu}>{contenu}</Text>
 
-          <TouchableOpacity onPress={ShowCommentsSection}>
-            <Ionicons name={"chatbubble-outline"} size={25} />
-          </TouchableOpacity>
+          <Stack direction="row" style={styles.footer}>
+            <TouchableOpacity onPress={LikePublication}>
+              {liked ? (
+                <Ionicons name={"heart"} size={25} color={"red"} />
+              ) : (
+                <Ionicons name={"heart-outline"} size={25} />
+              )}
+            </TouchableOpacity>
 
-          <Spacer />
+            <Spacer />
 
-          <TouchableOpacity onPress={SauvegarderPublication}>
-            <Ionicons name={"bookmark-outline"} size={25} />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={ShowCommentsSection}>
+              <Ionicons name={"chatbubble-outline"} size={25} />
+            </TouchableOpacity>
 
-          <Spacer />
+            <Spacer />
 
-          <TouchableOpacity onPress={AfficherPlusOptions}>
-            <Ionicons name={"ellipsis-vertical"} size={25} />
-          </TouchableOpacity>
-        </Stack>
-      </ScrollView>
-    </Box>
-  );
+            <TouchableOpacity onPress={SauvegarderPublication}>
+              <Ionicons name={"bookmark-outline"} size={25} />
+            </TouchableOpacity>
+
+            <Spacer />
+
+            <TouchableOpacity onPress={AfficherPlusOptions}>
+              <Ionicons name={"ellipsis-vertical"} size={25} />
+            </TouchableOpacity>
+          </Stack>
+        </ScrollView>
+      </Box>
+    );
+  } else {
+    return (
+      <Box style={[styles.container, styles.shadow]}>
+        <View>
+          <View style={styles.containerImageActivite}>
+            <ImageBackground
+              style={styles.coverImageActivite}
+              source={{
+                uri: "https://cdn.discordapp.com/attachments/422038388116422657/1101418209128759316/concert-crop.jpg",
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </View>
+          <View style={styles.footerActivite}>
+            <View style={styles.dateBubbleActivite}>
+              <Text style={styles.dateBubbleText}>
+                {moment(dateActivite).format("MMM").charAt(0).toUpperCase() +
+                  moment(dateActivite).format("MMM").slice(1) +
+                  "\n" +
+                  moment(dateActivite).format("DD")}
+              </Text>
+            </View>
+            {/* <Text style={styles.locationTextActivite}>Location: Event Venue</Text> */}
+            <Text style={styles.titreActivite}>{titre}</Text>
+            <Text style={styles.sousTitreActivite}>
+              {codePostalActivite + " - " + lieuActivite}
+            </Text>
+            <Text style={styles.sousTitreActivite}>
+              x personne(s) intéressée(s)
+            </Text>
+
+            <View style={styles.activiteButtonContainer}>
+              <TouchableOpacity
+                style={styles.buttonJoinActivite}
+                onPress={() => {
+                  console.log("TODO : Rejoindre l'évenement");
+                }}
+              >
+                <Text style={styles.textButtonActivite}>
+                  Rejoindre l'évenement
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  openGps(codePostalActivite + " " + lieuActivite);
+                }}
+                style={styles.buttonGpsActivite}
+              >
+                <Ionicons
+                  name="navigate-outline"
+                  size={25}
+                  color="white"
+                  style={[styles.gpsIcon]}
+                />
+                {/* </Text> */}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Box>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -244,6 +372,131 @@ const styles = StyleSheet.create({
   },
   date: {
     color: "#828282",
+  },
+  pdfIcon: {
+    position: "absolute",
+    left: 12,
+    bottom: 15,
+  },
+  pdfText: {
+    marginTop: 15,
+    marginLeft: 55,
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 15,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+    color: "black",
+  },
+  containerPdf: {
+    flexDirection: "row",
+    width: "auto",
+    height: 75,
+    borderRadius: 10,
+    overflow: "hidden",
+    marginTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: "#d9d9d9",
+    borderColor: "black",
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  containerImageActivite: {
+    width: "100%",
+    height: 100,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  coverImageActivite: {
+    width: "100%",
+    height: "100%",
+  },
+  footerActivite: {
+    margin: 10,
+    marginTop: 10,
+  },
+  titreActivite: {
+    fontSize: 26,
+    fontWeight: "bold",
+    paddingTop: 5,
+    paddingBottom: 5,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+  },
+  sousTitreActivite: {
+    fontSize: 16,
+    marginHorizontal: 10,
+    textAlign: "center",
+  },
+  buttonJoinActivite: {
+    marginTop: 10,
+    width: "85%",
+    height: 50,
+    backgroundColor: "#4283f4",
+    borderRadius: 10,
+  },
+  activiteButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonGpsActivite: {
+    marginTop: 10,
+    width: 50,
+    height: 50,
+    backgroundColor: "#4283f4",
+    borderRadius: 10,
+    marginLeft: 10,
+  },
+  gpsIcon: {
+    position: "absolute",
+    right: 12,
+    bottom: 12,
+    backgroundColor: "#4283f4",
+  },
+  textButtonActivite: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 15,
+    textBreakStrategy: "simple",
+    marginHorizontal: 10,
+    textAlign: "center",
+    color: "white",
+  },
+  dateBubbleActivite: {
+    position: "absolute",
+    left: 0,
+    bottom: 50,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 16,
+    backgroundColor: "#d9d9d9",
+  },
+  dateBubbleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  locationTextActivite: {
+    fontSize: 14,
+    color: "#333",
+    fontStyle: "italic",
+    textAlign: "left",
+    alignSelf: "flex-start",
+    marginBottom: 0,
   },
 });
 
