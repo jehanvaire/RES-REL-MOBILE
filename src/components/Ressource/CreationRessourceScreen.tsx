@@ -24,6 +24,7 @@ import Video from "react-native-video";
 import { FormControl, Select } from "native-base";
 import CategorieService from "../../services/CategorieService";
 import { TouchableOpacity } from "react-native";
+import { Buffer } from "buffer";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -107,7 +108,15 @@ function CreationRessourceScreen() {
       }
     }
 
-    const fileBlob = await ReactNativeBlobUtil.fs.readFile(filePath, "base64");
+    const base64File = await ReactNativeBlobUtil.fs.readFile(
+      filePath,
+      "base64"
+    );
+    const buffer = Buffer.from(base64File, "base64");
+    const mimeType = "image/png"; // Set the appropriate MIME type for your file
+    const blob = new Blob([buffer], { type: mimeType });
+
+    console.log("jusque ici tout va bien");
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
@@ -115,7 +124,7 @@ function CreationRessourceScreen() {
       titre: result.name,
       taille: result.size,
       uri: filePath,
-      file: fileBlob,
+      file: blob,
     } as PieceJointeEntity;
 
     setPieceJointe(nouvellePieceJointe);
@@ -134,16 +143,30 @@ function CreationRessourceScreen() {
       }
 
       const formData = new FormData();
-      formData.append("file", pieceJointe.file);
+      formData.append("file", pieceJointe.file, "file");
       formData.append("titre", pieceJointe.titre);
       formData.append("type", pieceJointe.type);
       formData.append("idUtilisateur", String(utilisateur));
       formData.append("idRessource", String(res.id));
 
-      PublicationService.AjouterPieceJointe(formData).then((res) => {
-        console.log("pj", res);
-        gererNavigation();
-      });
+      fetch("https://api.victor-gombert.fr/api/v1/piecesJointes", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization:
+            "Bearer " + "93|5DeOMsfqq1PPOrKynVmaqc9bYHmnmK8iFyleGfyz",
+        },
+      })
+        .then((response) => response.text())
+        .then((responseText) => {
+          console.log(responseText);
+        });
+
+      // PublicationService.AjouterPieceJointe(formData).then((res) => {
+      //   console.log("pj", res);
+      //   gererNavigation();
+      // });
     });
   };
 
