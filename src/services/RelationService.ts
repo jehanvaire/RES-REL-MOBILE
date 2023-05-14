@@ -11,7 +11,7 @@ class RelationService {
 
   public async GetRelation(params: any = {}): Promise<RelationEntity> {
     const response = await this.restClient.get(this.baseUrl, params);
-    return response.data;
+    return response.data[0];
   }
 
   public async GetRelations(params: any = {}): Promise<RelationEntity[]> {

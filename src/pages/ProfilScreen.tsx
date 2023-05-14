@@ -29,6 +29,41 @@ const HEADER_MAX_HEIGHT = 150;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
+const HEADER_VALUES = [
+  {
+    name: "headerHeight",
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+  },
+  {
+    name: "headerDescriptionHeight",
+    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
+  },
+  {
+    name: "headerElementsOpacity",
+    outputRange: [1, 0],
+  },
+  {
+    name: "headerElementsTranslateY",
+    outputRange: [0, -50],
+  },
+  {
+    name: "titreTranslateY",
+    outputRange: [0, -10],
+  },
+  {
+    name: "avatarSize",
+    outputRange: [100, 40],
+  },
+  {
+    name: "relationHeight",
+    outputRange: [40, 0],
+  },
+  {
+    name: "containterAutreUtilisateurWidth",
+    outputRange: ["65%", "80%"],
+  },
+];
+
 function ProfilScreen(props: any) {
   const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
@@ -62,17 +97,7 @@ function ProfilScreen(props: any) {
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setMoi(user);
 
-    // const params = {
-    //   "idDemandeur[equals]=": user.id,
-    //   "idReceveur[equals]=": utilisateur.id,
-    // };
-
-    // RelationService.GetRelations(params).then((response) => {
-    //   console.log(response);
-    //   if (response.length > 0) {
-    //     setEstEnRelation(true);
-    //   }
-    // });
+    checkSiEnRelation();
 
     const retourHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -86,47 +111,13 @@ function ProfilScreen(props: any) {
     return () => retourHandler.remove();
   }, []);
 
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-    extrapolate: "clamp",
-  });
-
-  const headerDescriptionHeight = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
-    extrapolate: "clamp",
-  });
-
-  const headerElementsOpacity = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [1, 0],
-    extrapolate: "clamp",
-  });
-
-  const headerElementsTranslateY = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [0, -50],
-    extrapolate: "clamp",
-  });
-
-  const titreTranslateY = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [0, -10],
-    extrapolate: "clamp",
-  });
-
-  const avatarSize = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [100, 40],
-    extrapolate: "clamp",
-  });
-
-  const containterAutreUtilisateurWidth = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: ["65%", "80%"],
-    extrapolate: "clamp",
-  });
+  const interpolatedValues = HEADER_VALUES.map(({ name, outputRange }) =>
+    scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE],
+      outputRange,
+      extrapolate: "clamp",
+    })
+  );
 
   useEffect(() => {
     setHeaderDescriptionExpanded(descriptionExpanded);
@@ -141,8 +132,6 @@ function ProfilScreen(props: any) {
         setHeaderDescriptionExpanded(true);
       }
     });
-
-    checkSiEnRelation();
 
     return () => {
       scrollY.removeListener(listener);
@@ -167,20 +156,16 @@ function ProfilScreen(props: any) {
       "idReceveur[equals]=": utilisateur.id,
     };
 
-    const receveurRelationsParams = {
-      "idDemandeur[equals]=": utilisateur.id,
-      "idReceveur[equals]=": moi.id,
-    };
-
-    RelationService.GetRelation(demandesRelationsParams).then((response) => {
-      if (response.accepte) {
+    RelationService.GetRelation(demandesRelationsParams).then((response1) => {
+      if (response1?.accepte) {
         setEstEnRelation(true);
-      }
-    });
-
-    RelationService.GetRelation(receveurRelationsParams).then((response) => {
-      if (response.accepte) {
-        setEstEnRelation(true);
+        setRelationEnAttente(false);
+      } else if (response1?.accepte === null) {
+        setEstEnRelation(false);
+        setRelationEnAttente(true);
+      } else {
+        setEstEnRelation(false);
+        setRelationEnAttente(false);
       }
     });
   };
@@ -193,7 +178,6 @@ function ProfilScreen(props: any) {
       typeRelation: 5,
     };
 
-    console.log(params);
     RelationService.DemanderRelation(params).then((response) => {
       console.log(response);
       checkSiEnRelation();
@@ -263,9 +247,9 @@ function ProfilScreen(props: any) {
           {
             height:
               headerDescriptionExpanded && descriptionExpanded
-                ? headerDescriptionHeight
-                : headerHeight,
-            width: autreUtilisateur ? containterAutreUtilisateurWidth : "100%",
+                ? interpolatedValues[1]
+                : interpolatedValues[0],
+            width: autreUtilisateur ? interpolatedValues[7] : "100%",
           },
         ]}
       >
@@ -274,8 +258,8 @@ function ProfilScreen(props: any) {
             style={[
               styles.avatar,
               {
-                height: avatarSize,
-                width: avatarSize,
+                height: interpolatedValues[5],
+                width: interpolatedValues[5],
                 borderRadius: 50,
               },
             ]}
@@ -290,7 +274,7 @@ function ProfilScreen(props: any) {
           >
             <Animated.View
               style={{
-                transform: [{ translateY: titreTranslateY }],
+                transform: [{ translateY: interpolatedValues[4] }],
               }}
             >
               <Text style={styles.title}>
@@ -300,8 +284,8 @@ function ProfilScreen(props: any) {
 
             <Animated.View
               style={{
-                opacity: headerElementsOpacity,
-                transform: [{ translateY: headerElementsTranslateY }],
+                opacity: interpolatedValues[2],
+                transform: [{ translateY: interpolatedValues[3] }],
               }}
             >
               <Description
@@ -317,8 +301,8 @@ function ProfilScreen(props: any) {
 
           <Animated.View
             style={{
-              opacity: headerElementsOpacity,
-              transform: [{ translateY: headerElementsTranslateY }],
+              opacity: interpolatedValues[2],
+              transform: [{ translateY: interpolatedValues[3] }],
               marginTop: 30,
             }}
           >
@@ -335,6 +319,7 @@ function ProfilScreen(props: any) {
     <GestureHandlerRootView>
       <StatusBar translucent backgroundColor="transparent" />
 
+      {/* Banière utilisateur */}
       <View>
         {autreUtilisateur ? (
           <View style={styles.containerAutreUtilisateur}>
@@ -346,16 +331,36 @@ function ProfilScreen(props: any) {
           </SafeAreaView>
         )}
 
-        <View style={styles.relations}>
+        {/* Relations */}
+        <Animated.View
+          style={[
+            styles.relations,
+            {
+              opacity: interpolatedValues[2],
+              transform: [{ translateY: interpolatedValues[3] }],
+              height: interpolatedValues[6],
+            },
+          ]}
+        >
           <Stack direction="row">
-            <Text style={styles.title}>102 Relations</Text>
+            <Text style={styles.title}>X Relations</Text>
             <Spacer />
             {autreUtilisateur && !estEnRelation && (
               <TouchableOpacity
-                style={styles.buttonDemandeConnexion}
+                style={[
+                  styles.buttonDemandeConnexion,
+                  relationEnAttente
+                    ? { backgroundColor: "grey" }
+                    : {
+                        backgroundColor: "#44BE80",
+                      },
+                ]}
                 onPress={demanderConnexionUtilisateur}
+                disabled={relationEnAttente}
               >
-                <Text>Demander connexion</Text>
+                <Text>
+                  {relationEnAttente ? "Demande envoyée" : "Demander connexion"}
+                </Text>
               </TouchableOpacity>
             )}
 
@@ -372,8 +377,9 @@ function ProfilScreen(props: any) {
               </TouchableOpacity>
             )}
           </Stack>
-        </View>
+        </Animated.View>
 
+        {/* Liste des publications */}
         <Animated.FlatList
           style={styles.listePublications}
           removeClippedSubviews={true}
@@ -420,10 +426,8 @@ const styles = StyleSheet.create({
   relations: {
     width: "100%",
     alignSelf: "center",
-    marginVertical: 25,
   },
   buttonDemandeConnexion: {
-    backgroundColor: "#44BE80",
     borderRadius: 5,
     padding: 5,
     marginRight: 10,
