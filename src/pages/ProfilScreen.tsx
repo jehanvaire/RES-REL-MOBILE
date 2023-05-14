@@ -39,6 +39,7 @@ function ProfilScreen(props: any) {
   const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
   // const [listeRelations, setListeRelations] = useState<RelationEntity[]>([]);
   const [estEnRelation, setEstEnRelation] = useState<boolean>(false);
+  const [relationEnAttente, setRelationEnAttente] = useState<boolean>(false);
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
@@ -140,6 +141,9 @@ function ProfilScreen(props: any) {
         setHeaderDescriptionExpanded(true);
       }
     });
+
+    checkSiEnRelation();
+
     return () => {
       scrollY.removeListener(listener);
     };
@@ -157,6 +161,30 @@ function ProfilScreen(props: any) {
     setListePublications(listePublications);
   };
 
+  const checkSiEnRelation = () => {
+    const demandesRelationsParams = {
+      "idDemandeur[equals]=": moi.id,
+      "idReceveur[equals]=": utilisateur.id,
+    };
+
+    const receveurRelationsParams = {
+      "idDemandeur[equals]=": utilisateur.id,
+      "idReceveur[equals]=": moi.id,
+    };
+
+    RelationService.GetRelation(demandesRelationsParams).then((response) => {
+      if (response.accepte) {
+        setEstEnRelation(true);
+      }
+    });
+
+    RelationService.GetRelation(receveurRelationsParams).then((response) => {
+      if (response.accepte) {
+        setEstEnRelation(true);
+      }
+    });
+  };
+
   // TODO: afficher select avec les types de relations
   const demanderConnexionUtilisateur = () => {
     const params = {
@@ -168,6 +196,7 @@ function ProfilScreen(props: any) {
     console.log(params);
     RelationService.DemanderRelation(params).then((response) => {
       console.log(response);
+      checkSiEnRelation();
     });
   };
 
@@ -321,12 +350,25 @@ function ProfilScreen(props: any) {
           <Stack direction="row">
             <Text style={styles.title}>102 Relations</Text>
             <Spacer />
-            {autreUtilisateur && (
+            {autreUtilisateur && !estEnRelation && (
               <TouchableOpacity
                 style={styles.buttonDemandeConnexion}
                 onPress={demanderConnexionUtilisateur}
               >
                 <Text>Demander connexion</Text>
+              </TouchableOpacity>
+            )}
+
+            {estEnRelation && autreUtilisateur && (
+              <TouchableOpacity
+                style={styles.buttonGererConnexion}
+                onPress={() =>
+                  navigation.navigate("GererConnexion", {
+                    utilisateur: utilisateur,
+                  })
+                }
+              >
+                <Text>Gérer connexion</Text>
               </TouchableOpacity>
             )}
           </Stack>
@@ -382,6 +424,12 @@ const styles = StyleSheet.create({
   },
   buttonDemandeConnexion: {
     backgroundColor: "#44BE80",
+    borderRadius: 5,
+    padding: 5,
+    marginRight: 10,
+  },
+  buttonGererConnexion: {
+    backgroundColor: "#F39C12",
     borderRadius: 5,
     padding: 5,
     marginRight: 10,

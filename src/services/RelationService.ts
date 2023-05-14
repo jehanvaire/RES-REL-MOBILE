@@ -1,4 +1,4 @@
-import CommentaireEntity from "../ressources/models/CommentaireEntity";
+import { RelationEntity } from "../ressources/models/RelationEntity";
 import RestClient from "./RestClient";
 
 class RelationService {
@@ -9,12 +9,17 @@ class RelationService {
     this.restClient = new RestClient();
   }
 
-  public async GetRelations(params: any = {}): Promise<CommentaireEntity[]> {
+  public async GetRelation(params: any = {}): Promise<RelationEntity> {
     const response = await this.restClient.get(this.baseUrl, params);
     return response.data;
   }
 
-  public async DemanderRelation(params: any = {}): Promise<CommentaireEntity> {
+  public async GetRelations(params: any = {}): Promise<RelationEntity[]> {
+    const response = await this.restClient.get(this.baseUrl, params);
+    return response.data;
+  }
+
+  public async DemanderRelation(params: any = {}): Promise<RelationEntity> {
     const response = await this.restClient.post(this.baseUrl, params);
     return response;
   }
