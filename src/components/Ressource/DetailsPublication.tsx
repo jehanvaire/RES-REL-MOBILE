@@ -60,9 +60,7 @@ const DetailsPublication = (props: any) => {
       "idRessource[equals]=": id,
     };
     PublicationService.GetFavorisFromPublication(params).then((res) => {
-      console.log(res)
       const userFavori = res.data.find((favori: { idUtilisateur: number | undefined; }) => favori.idUtilisateur === user?.id);
-      console.log(user?.id)
       setFavorisCount(res.data.length);
       if (userFavori) {
         setFavoris(true);
@@ -81,39 +79,23 @@ const DetailsPublication = (props: any) => {
 
 
   function toggleFavori() {
-    console.log('toggleFavori function called');
-
     if (favoris === true) {
-      console.log('Currently liked, removing like...');
-
       if (favoriId) {
-        console.log('FavoriId exists, sending request to remove favorite');
-
         PublicationService.RemoveFavoriFromPublication(favoriId).then(() => {
-          console.log('Favori removed successfully, updating state');
-
           setFavoris(false);
           setFavoriId(null);
           setFavorisCount(favorisCount - 1);
         });
       } else {
-        console.log('FavoriId does not exist, nothing to remove');
       }
     } else {
-      console.log('Currently not liked, adding like...');
-
       PublicationService.AddFavoriToPublication(id).then((newFavoriId) => {
-        console.log('Favori added successfully, updating state');
         setFavoris(true);
         setFavoriId(newFavoriId);
         setFavorisCount(favorisCount + 1);
         loadFavoris();
       }).catch((error) => {
         console.error('Error adding favori: ', error.response);
-
-        if (error.response.status === 422) {
-          loadFavoris();
-        }
       });
     }
   }

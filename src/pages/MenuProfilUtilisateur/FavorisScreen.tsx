@@ -6,6 +6,7 @@ import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "native-base";
 import axios from "axios";
+import RestClient from "../../services/RestClient";
 
 const FavorisScreen = () => {
 
@@ -15,6 +16,8 @@ const FavorisScreen = () => {
   const navigation = useNavigation();
   const PER_PAGE = 15;
   const [items, setItems] = useState<LikeItem[]>([]);
+
+  const restClient = new RestClient();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -50,7 +53,7 @@ const FavorisScreen = () => {
     try {
       console.log(likesApiUrl, { headers, params });
       const response = await axios.get(likesApiUrl, { headers, params });
-      const likes = response.data.data; 
+      const likes = response.data.data;
       //console.log(likes);
 
       likes.forEach((like: any) => {
@@ -66,14 +69,14 @@ const FavorisScreen = () => {
         // ? `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/` 
         // : "", 
         //Check if the ressource is an image or not
-        image: `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/` 
+        image: `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/`
       }));
       setItems(items);
     } catch (error) {
       console.log(error);
     }
   }
-  
+
   interface LikeItem {
     id: number;
     title: string;
@@ -141,11 +144,11 @@ const FavorisScreen = () => {
           <Text></Text>
           {notifications.map((item: LikeItem) => (
             <View key={item.id} style={styles.notificationContainer}>
-              { item.image !== "" ? (
+              {item.image !== "" ? (
                 <Image
-                style={styles.notificationImage}
-                source={{ uri: item.image }}
-              /> ) : null
+                  style={styles.notificationImage}
+                  source={{ uri: item.image }}
+                />) : null
               }
               <View style={styles.notificationTextContainer}>
                 <Text style={styles.notificationTitle}>{item.title}</Text>
