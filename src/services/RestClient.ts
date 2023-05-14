@@ -17,7 +17,7 @@ export default class RestClient {
     }
   }
 
-  async getWithToken(path: string, params = {}): Promise<any> {
+  async getAuthentifie(path: string, params = {}): Promise<any> {
     const url = this.baseUrl + path;
     const response = await axios.get(url, {
       params,

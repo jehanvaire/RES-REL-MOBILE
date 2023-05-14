@@ -20,8 +20,8 @@ export class PublicationService {
   }
 
 
-  public async GetFavorisFromPublication(id: number): Promise<any> {
-    const response = await this.restClient.getWithToken(`favoris?idRessource[equals]=${id}`);
+  public async GetFavorisFromPublication(params: any = {}): Promise<any> {
+    const response = await this.restClient.getAuthentifie(`favoris`, params);
     return response;
   }
 

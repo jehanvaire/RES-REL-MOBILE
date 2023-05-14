@@ -17,6 +17,9 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
+import { storage } from "../../services/AuthentificationService";
+import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
@@ -25,6 +28,8 @@ const DetailsPublication = (props: any) => {
   const [favoris, setFavoris] = useState(false);
   const [favoriId, setFavoriId] = useState<number | null>(null);
   const [favorisCount, setFavorisCount] = useState(0);
+  const user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+  const user = JSON.parse(user_json) as UtilisateurEntity;
 
   const {
     id,
@@ -48,12 +53,17 @@ const DetailsPublication = (props: any) => {
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
   );
 
+
+
   const loadFavoris = () => {
-    PublicationService.GetFavorisFromPublication(id).then((res) => {
+    const params = {
+      "idRessource[equals]=": id,
+    };
+    PublicationService.GetFavorisFromPublication(params).then((res) => {
       console.log(res)
-      const userFavori = res.data.find((favori: { idUtilisateur: any; }) => favori.idUtilisateur === idUtilisateur);
+      const userFavori = res.data.find((favori: { idUtilisateur: number | undefined; }) => favori.idUtilisateur === user?.id);
+      console.log(user?.id)
       setFavorisCount(res.data.length);
-      console.log("RES DATA", res.meta.total)
       if (userFavori) {
         setFavoris(true);
         setFavoriId(userFavori.id);
@@ -224,7 +234,7 @@ const DetailsPublication = (props: any) => {
             ) : (
               <Ionicons name={"heart-outline"} size={25} />
             )}
-            <Text>{favorisCount}</Text>
+            <Text style={styles.favorisCount}>{favorisCount}</Text>
           </TouchableOpacity>
 
           <Spacer />
@@ -283,6 +293,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 10,
     textAlign: "justify",
+  },
+  favorisCount: {
+    fontSize: 16,
+    marginLeft: 9,
   },
   image: {
     marginTop: 10,
