@@ -23,6 +23,7 @@ export default class RestClient {
       params,
       headers: {
         Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json',
       },
     });
     if (response.status >= 200 && response.status < 300) {
@@ -32,11 +33,12 @@ export default class RestClient {
     }
   }
 
-  async post(path: string, body: any): Promise<any> {
+  async post(path: string, body: any, config: any = {}): Promise<any> {
     const url = this.baseUrl + path;
-    // console.log("token", this.token);
     const response = await axios.post(url, body, {
+      ...config,
       headers: {
+        ...config.headers,
         Authorization: `Bearer ${this.token}`,
       },
     });

@@ -20,24 +20,10 @@ export class PublicationService {
   }
 
 
-  public async GetUserFavoris(): Promise<any> {
-    const response = await this.restClient.getWithToken(`favoris?idUtilisateur=${this.user.id}`);
+  public async GetFavorisFromPublication(id: number): Promise<any> {
+    const response = await this.restClient.getWithToken(`favoris?idRessource[equals]=${id}`);
     return response;
   }
-
-  public async GetFavorisFromPublication(id: number): Promise<any> {
-    const response = await this.restClient.getWithToken(`favoris?idUtilisateur=${this.user.id}&idRessource=${id}`);
-    return response.data;
-  }
-
-  public async GetCurrentUserFavorites(): Promise<PublicationEntity[]> {
-    const response = await this.restClient.get(`favoris/${this.user.id}`);
-    const listePublications = response.data.map((publication: any) => {
-      return new PublicationEntity(publication);
-    });
-    return listePublications;
-  }
-
 
   public async AddFavoriToPublication(id: number): Promise<any> {
     const response = await this.restClient.post(
@@ -45,10 +31,15 @@ export class PublicationService {
       {
         idUtilisateur: this.user.id,
         idRessource: id
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
     console.log("Response", response)
-    return response;
+    return response.data;
   }
 
   public async RemoveFavoriFromPublication(id: number): Promise<any> {

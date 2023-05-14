@@ -22,10 +22,9 @@ const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const DetailsPublication = (props: any) => {
-  const [favoris, setFavoris] = useState([]);
+  const [favoris, setFavoris] = useState(false);
   const [favoriId, setFavoriId] = useState<number | null>(null);
   const [favorisCount, setFavorisCount] = useState(0);
-  const [liked, setLiked] = useState(false);
 
   const {
     id,
@@ -51,42 +50,64 @@ const DetailsPublication = (props: any) => {
 
   const loadFavoris = () => {
     PublicationService.GetFavorisFromPublication(id).then((res) => {
-      setFavoris(res.data);
+      console.log(res)
+      const userFavori = res.data.find((favori: { idUtilisateur: any; }) => favori.idUtilisateur === idUtilisateur);
       setFavorisCount(res.data.length);
-      if (res.data.length > 0) {
-        setLiked(true);
-        setFavoriId(res.data[0].id);
+      console.log("RES DATA", res.meta.total)
+      if (userFavori) {
+        setFavoris(true);
+        setFavoriId(userFavori.id);
       } else {
-        setLiked(false);
+        setFavoris(false);
         setFavoriId(null);
       }
     });
   };
-
 
   useEffect(() => {
     loadFavoris();
   }, []);
 
 
+
   function toggleFavori() {
-    if (liked === true) {
+    console.log('toggleFavori function called');
+
+    if (favoris === true) {
+      console.log('Currently liked, removing like...');
+
       if (favoriId) {
+        console.log('FavoriId exists, sending request to remove favorite');
+
         PublicationService.RemoveFavoriFromPublication(favoriId).then(() => {
-          setLiked(false);
+          console.log('Favori removed successfully, updating state');
+
+          setFavoris(false);
           setFavoriId(null);
           setFavorisCount(favorisCount - 1);
-          loadFavoris();
         });
+      } else {
+        console.log('FavoriId does not exist, nothing to remove');
       }
     } else {
-      PublicationService.AddFavoriToPublication(id).then(() => {
-        setLiked(true);
+      console.log('Currently not liked, adding like...');
+
+      PublicationService.AddFavoriToPublication(id).then((newFavoriId) => {
+        console.log('Favori added successfully, updating state');
+        setFavoris(true);
+        setFavoriId(newFavoriId);
         setFavorisCount(favorisCount + 1);
         loadFavoris();
+      }).catch((error) => {
+        console.error('Error adding favori: ', error.response);
+
+        if (error.response.status === 422) {
+          loadFavoris();
+        }
       });
     }
   }
+
 
 
 
@@ -198,11 +219,12 @@ const DetailsPublication = (props: any) => {
 
         <Stack direction="row" style={styles.footer}>
           <TouchableOpacity onPress={toggleFavori}>
-            {liked ? (
+            {favoris ? (
               <Ionicons name={"heart"} size={25} color={"red"} />
             ) : (
               <Ionicons name={"heart-outline"} size={25} />
             )}
+            <Text>{favorisCount}</Text>
           </TouchableOpacity>
 
           <Spacer />
