@@ -1,6 +1,6 @@
-import { Center, Spacer, Avatar, Stack, Text, VStack } from "native-base";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, BackHandler, StatusBar } from "react-native";
+import { Center, Spacer, Stack, Text, VStack } from "native-base";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { StyleSheet, BackHandler, StatusBar, Animated } from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -10,11 +10,17 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Publication from "../components/Ressource/Publication";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
+import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
-const ProfilScreen = (props: any) => {
+const HEADER_MAX_HEIGHT = 150;
+const HEADER_MIN_HEIGHT = 60;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
+function ProfilScreen(props: any) {
   const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
   const utilisateur: UtilisateurEntity = props.route.params.utilisateur;
@@ -25,9 +31,17 @@ const ProfilScreen = (props: any) => {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchListePublicationsUtilisateur();
-  }, []);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [headerDescriptionExpanded, setHeaderDescriptionExpanded] =
+    useState(false);
+
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchListePublicationsUtilisateur();
+    }, [])
+  );
 
   useEffect(() => {
     const retourHandler = BackHandler.addEventListener(
@@ -38,7 +52,68 @@ const ProfilScreen = (props: any) => {
         return true;
       }
     );
+
     return () => retourHandler.remove();
+  }, []);
+
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const headerDescriptionHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
+    extrapolate: "clamp",
+  });
+
+  const headerElementsOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const headerElementsTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, -50],
+    extrapolate: "clamp",
+  });
+
+  const titreTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [0, -10],
+    extrapolate: "clamp",
+  });
+
+  const avatarSize = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [100, 40],
+    extrapolate: "clamp",
+  });
+
+  const containterAutreUtilisateurWidth = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: ["65%", "80%"],
+    extrapolate: "clamp",
+  });
+
+  useEffect(() => {
+    setHeaderDescriptionExpanded(descriptionExpanded);
+  }, [descriptionExpanded]);
+
+  useEffect(() => {
+    const listener = scrollY.addListener((value) => {
+      const scrollPosition = value.value;
+      if (scrollPosition > 0) {
+        setHeaderDescriptionExpanded(false);
+      } else if (descriptionExpanded) {
+        setHeaderDescriptionExpanded(true);
+      }
+    });
+    return () => {
+      scrollY.removeListener(listener);
+    };
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
@@ -48,6 +123,7 @@ const ProfilScreen = (props: any) => {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
+      sortBy: "id,desc",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
@@ -107,43 +183,100 @@ const ProfilScreen = (props: any) => {
     </View>
   );
 
-  return (
-    <GestureHandlerRootView>
-      <StatusBar translucent backgroundColor="transparent" />
-      <View
-        style={
-          autreUtilisateur ? styles.containerAutreUtilisateur : styles.container
-        }
+  const banniereProfilUtilisateur = () => {
+    return (
+      <Animated.View
+        style={[
+          styles.header,
+          styles.shadow,
+          {
+            height:
+              headerDescriptionExpanded && descriptionExpanded
+                ? headerDescriptionHeight
+                : headerHeight,
+            width: autreUtilisateur ? containterAutreUtilisateurWidth : "100%",
+          },
+        ]}
       >
-        <Stack style={[styles.header, styles.shadow]}>
-          <Stack style={styles.flex}>
-            <Avatar
-              size={100}
-              style={styles.avatar}
-              source={{
-                uri: apiURL + "/" + utilisateur.id + "/download",
-              }}
-            ></Avatar>
+        <Stack style={styles.flex}>
+          <Animated.Image
+            style={[
+              styles.avatar,
+              {
+                height: avatarSize,
+                width: avatarSize,
+                borderRadius: 50,
+              },
+            ]}
+            source={{
+              uri: apiURL + "/" + utilisateur.id + "/download",
+            }}
+          />
 
-            <VStack marginLeft={3} style={{ marginTop: 30 }}>
+          <VStack
+            marginLeft={3}
+            style={{ marginTop: 30, alignItems: "center" }}
+          >
+            <Animated.View
+              style={{
+                transform: [{ translateY: titreTranslateY }],
+              }}
+            >
               <Text style={styles.title}>
                 {utilisateur.nom} {utilisateur.prenom}
               </Text>
-              <Description contenu={utilisateur.bio ?? ""}></Description>
-            </VStack>
+            </Animated.View>
 
-            <Spacer />
+            <Animated.View
+              style={{
+                opacity: headerElementsOpacity,
+                transform: [{ translateY: headerElementsTranslateY }],
+              }}
+            >
+              <Description
+                contenu={utilisateur.bio ?? ""}
+                onDescExpand={() =>
+                  setDescriptionExpanded(!descriptionExpanded)
+                }
+              />
+            </Animated.View>
+          </VStack>
 
+          <Spacer />
+
+          <Animated.View
+            style={{
+              opacity: headerElementsOpacity,
+              transform: [{ translateY: headerElementsTranslateY }],
+              marginTop: 30,
+            }}
+          >
             <Center>
-              <MenuHamburgerProfil
-                navigation={navigation}
-              ></MenuHamburgerProfil>
+              <MenuHamburgerProfil navigation={navigation} />
             </Center>
-          </Stack>
+          </Animated.View>
         </Stack>
+      </Animated.View>
+    );
+  };
 
-        <FlatList
-          style={styles.contenu}
+  return (
+    <GestureHandlerRootView>
+      <StatusBar translucent backgroundColor="transparent" />
+
+      <View>
+        {autreUtilisateur ? (
+          <View style={styles.containerAutreUtilisateur}>
+            {banniereProfilUtilisateur()}
+          </View>
+        ) : (
+          <SafeAreaView style={styles.container}>
+            {banniereProfilUtilisateur()}
+          </SafeAreaView>
+        )}
+
+        <Animated.FlatList
+          style={styles.listePublications}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
@@ -154,36 +287,32 @@ const ProfilScreen = (props: any) => {
           refreshing={refreshing}
           onRefresh={handleRefresh}
           renderItem={renderItem}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
         />
       </View>
     </GestureHandlerRootView>
   );
-};
+}
 
 export default ProfilScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#BBBBBB",
-    zIndex: 1,
+    zIndex: 100,
   },
   containerAutreUtilisateur: {
+    alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 50,
-    backgroundColor: "#BBBBBB",
   },
   header: {
-    height: 120,
     alignItems: "center",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 2,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: "space-between",
@@ -199,7 +328,7 @@ const styles = StyleSheet.create({
   shadow: {
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
+      width: 2,
       height: 2,
     },
     shadowOpacity: 1,
@@ -214,7 +343,9 @@ const styles = StyleSheet.create({
   bio: {
     marginBottom: 10,
   },
-  contenu: {
-    paddingTop: 120,
+  listePublications: {
+    width: "100%",
+    alignSelf: "center",
+    marginBottom: 160,
   },
 });

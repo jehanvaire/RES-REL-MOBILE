@@ -22,6 +22,7 @@ const Menu = ({ props }: any) => {
   );
   const [isAutorized, setIsAutorized] = useState(!!utilisateur.id);
   const [loading, setIsLoading] = useState(true);
+  const gestureHandlerRef = React.createRef();
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -99,6 +100,7 @@ const Menu = ({ props }: any) => {
         initialParams={{
           currentUser: true,
           utilisateur: utilisateur,
+          gestureHandlerRef: gestureHandlerRef,
         }}
       />
 

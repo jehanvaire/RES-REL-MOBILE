@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
-import { ScrollView } from "native-base"
+import { ScrollView } from "native-base";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const getNumberOfNotifications = (notifications: any) => {
   let count = 0;
@@ -14,7 +15,6 @@ export const getNumberOfNotifications = (notifications: any) => {
   }
   return count;
 };
-
 
 const NotificationScreen = (props: any) => {
   const [user_storage, setUserStorage] = useState<any | null>(null);
@@ -33,7 +33,6 @@ const NotificationScreen = (props: any) => {
   }
 
   const items: NotificationItem[] = [
-
     {
       id: 1,
       type: "post",
@@ -92,7 +91,10 @@ const NotificationScreen = (props: any) => {
     },
   ];
 
-  const groupBy = (array: NotificationItem[], key: (item: NotificationItem) => string) => {
+  const groupBy = (
+    array: NotificationItem[],
+    key: (item: NotificationItem) => string
+  ) => {
     return array.reduce((result, currentItem) => {
       const keyValue = key(currentItem);
       (result[keyValue] = result[keyValue] || []).push(currentItem);
@@ -100,19 +102,23 @@ const NotificationScreen = (props: any) => {
     }, {} as Record<string, NotificationItem[]>);
   };
 
-
   const groupAndSortNotifications = (array: NotificationItem[]) => {
-    const grouped = groupBy(array, (notification: { date: { toDateString: () => string; }; }) => {
-      const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const isToday = notification.date.toDateString() === today.toDateString();
-      const isYesterday = notification.date.toDateString() === yesterday.toDateString();
+    const grouped = groupBy(
+      array,
+      (notification: { date: { toDateString: () => string } }) => {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const isToday =
+          notification.date.toDateString() === today.toDateString();
+        const isYesterday =
+          notification.date.toDateString() === yesterday.toDateString();
 
-      if (isToday) return "Aujourd'hui";
-      if (isYesterday) return "Hier";
-      return "Il y a plus longtemps";
-    });
+        if (isToday) return "Aujourd'hui";
+        if (isYesterday) return "Hier";
+        return "Il y a plus longtemps";
+      }
+    );
 
     return Object.keys(grouped)
       .sort((groupA, groupB) => {
@@ -128,7 +134,6 @@ const NotificationScreen = (props: any) => {
   };
 
   const sortedGroupedNotifications = groupAndSortNotifications(items);
-
 
   const getFormattedDate = (date: Date) => {
     const now = new Date();
@@ -147,34 +152,40 @@ const NotificationScreen = (props: any) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text>{user_storage}</Text>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Notifications</Text>
-      </View>
-      {Object.entries(sortedGroupedNotifications).map(([group, notifications]: [string, NotificationItem[]]) => (
-        <View key={group}>
-          <Text style={styles.dateHeader}>{group}</Text>
-          {notifications.map((item: NotificationItem) => (
-            <View key={item.id} style={styles.notificationContainer}>
-              <Image
-                style={styles.notificationImage}
-                source={{ uri: item.image }}
-              />
-              <View style={styles.notificationTextContainer}>
-                <Text style={styles.notificationTitle}>{item.title}</Text>
-                <Text style={styles.notificationDescription}>
-                  {item.description}
-                </Text>
-                <Text style={styles.notificationTime}>
-                  {getFormattedDate(item.date)}
-                </Text>
-              </View>
-            </View>
-          ))}
+    <>
+      <SafeAreaView style={{ backgroundColor: "white", height: 110 }}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Notifications</Text>
         </View>
-      ))}
-    </ScrollView>
+      </SafeAreaView>
+
+      <ScrollView style={styles.container}>
+        {Object.entries(sortedGroupedNotifications).map(
+          ([group, notifications]: [string, NotificationItem[]]) => (
+            <View key={group}>
+              <Text style={styles.dateHeader}>{group}</Text>
+              {notifications.map((item: NotificationItem) => (
+                <View key={item.id} style={styles.notificationContainer}>
+                  <Image
+                    style={styles.notificationImage}
+                    source={{ uri: item.image }}
+                  />
+                  <View style={styles.notificationTextContainer}>
+                    <Text style={styles.notificationTitle}>{item.title}</Text>
+                    <Text style={styles.notificationDescription}>
+                      {item.description}
+                    </Text>
+                    <Text style={styles.notificationTime}>
+                      {getFormattedDate(item.date)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )
+        )}
+      </ScrollView>
+    </>
   );
 };
 
@@ -182,32 +193,31 @@ export default NotificationScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#bbbbbb',
+    backgroundColor: "#bbbbbb",
   },
   header: {
     height: 60,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
     paddingHorizontal: 20,
   },
   headerText: {
     fontSize: 24,
-    color: 'black',
-    textAlign: 'center',
+    color: "black",
+    textAlign: "center",
     flex: 1,
   },
   dateHeader: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 8,
     marginLeft: 16,
   },
   notificationContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    flexDirection: "row",
+    backgroundColor: "#f8f8f8",
     borderRadius: 10,
     padding: 16,
     marginBottom: 8,
@@ -223,7 +233,7 @@ const styles = StyleSheet.create({
   },
   notificationTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   notificationDescription: {
@@ -232,8 +242,7 @@ const styles = StyleSheet.create({
   },
   notificationTime: {
     fontSize: 12,
-    color: '#999',
-    alignSelf: 'flex-end',
+    color: "#999",
+    alignSelf: "flex-end",
   },
 });
-

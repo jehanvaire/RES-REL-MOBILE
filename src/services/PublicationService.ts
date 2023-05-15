@@ -103,6 +103,10 @@ export class PublicationService {
   public getRechargerPublications() {
     return this.rechargerPublications.asObservable();
   }
+
+  public getPdfName(id: number): Promise<any> {
+    return this.restClient.head(this.pieceJointeUrl + "/" + id + "/download");
+  }
 }
 
 export default new PublicationService();

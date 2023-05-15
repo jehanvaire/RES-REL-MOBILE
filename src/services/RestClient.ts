@@ -96,12 +96,24 @@ export default class RestClient {
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "multipart/form-data; charset=utf-8;",
       },
     });
 
     if (response.status >= 200 && response.status < 300) {
       return response.data;
+    } else {
+      throw new Error(response.data.error || "Something went wrong");
+    }
+  }
+
+  async head(path: string): Promise<any> {
+    const url = this.baseUrl + path;
+
+    const response = await axios.head(url);
+
+    if (response.status >= 200 && response.status < 300) {
+      return response;
     } else {
       throw new Error(response.data.error || "Something went wrong");
     }
