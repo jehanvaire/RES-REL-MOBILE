@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "native-base";
 import axios from "axios";
 import RestClient from "../../services/RestClient";
+import PublicationService from "../../services/PublicationService";
 
 const FavorisScreen = () => {
 
@@ -33,47 +34,42 @@ const FavorisScreen = () => {
     const token = storage.getString(AuthentificationEnum.ACCESS_TOKEN_KEY) ?? "";
     setToken(token);
 
+    console.log(utilisateurObject.id);
     getLikes();
   }, []
   );
 
   async function getLikes() {
-    const headers = {
-      //Authorization: `Bearer ${token}`,
-      //temporary token
-      Authorization: `Bearer 80|l08wU0thFCZY78oOLOBSBXaE3tpThJcpnfKmQPdq`,
-    };
-    const params = {
-      page: 1,
-      perPage: PER_PAGE,
-      "idUtilisateur[equals]=": utilisateur.id,
-      include: "ressource",
-    };
-
+    // get likes from current user
     try {
-      console.log(likesApiUrl, { headers, params });
-      const response = await axios.get(likesApiUrl, { headers, params });
-      const likes = response.data.data;
-      //console.log(likes);
+      const params = {
+        "idUtilisateur[equals]=": utilisateur.id,
+      };
 
-      likes.forEach((like: any) => {
-        like.dateFav = like.dateFav.replace(" ", "T");
-      });
+      const likes = await PublicationService.GetFavorisFromPublication(params);
+      console.log(likes);
 
-      const items: LikeItem[] = likes.map((like: any) => ({
-        id: like.id,
-        title: like.ressource.titre,
-        contenu: like.ressource.contenu.slice(0, 50) + "...",
-        date: new Date(like.dateFav),
-        // image: like.ressource.typeRessource === "IMAGE"
-        // ? `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/` 
-        // : "", 
-        //Check if the ressource is an image or not
-        image: `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/`
-      }));
-      setItems(items);
+      // Fetch details of each liked publication
+      const likeItems: LikeItem[] = [];
+
+      for (let i = 0; i < likes.data.length; i++) {
+        const like = likes.data[i];
+        const publication = await PublicationService.GetPublications(
+          { "id[equals]": like.idRessource }
+        );
+
+        likeItems.push({
+          id: like.id,
+          title: publication[0].titre,
+          contenu: publication[0].contenu,
+          date: new Date(like.dateFav),
+          image: publication[0].image,
+        });
+      }
+
+      setItems(likeItems);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching likes:", error);
     }
   }
 
