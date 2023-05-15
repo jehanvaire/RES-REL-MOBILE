@@ -72,12 +72,12 @@ function ProfilScreen(props: any) {
     PublicationEntity[]
   >([]);
   const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
-  // const [listeRelations, setListeRelations] = useState<RelationEntity[]>([]);
   const [estEnRelation, setEstEnRelation] = useState<boolean>(false);
   const [relationEnAttente, setRelationEnAttente] = useState<boolean>(false);
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+  const [nombreRelations, setNombreRelations] = useState(0);
 
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [headerDescriptionExpanded, setHeaderDescriptionExpanded] =
@@ -88,6 +88,8 @@ function ProfilScreen(props: any) {
   useFocusEffect(
     useCallback(() => {
       fetchListePublicationsUtilisateur();
+      checkSiEnRelation();
+      getNombreRelations();
     }, [])
   );
 
@@ -96,8 +98,6 @@ function ProfilScreen(props: any) {
 
     var user = JSON.parse(user_json) as UtilisateurEntity;
     setMoi(user);
-
-    checkSiEnRelation();
 
     const retourHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -148,6 +148,16 @@ function ProfilScreen(props: any) {
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
+  };
+
+  const getNombreRelations = async () => {
+    const params = {
+      "idReceveur[equals]=": utilisateur.id,
+      "accepte[equals]": true,
+    };
+    const nombreRelations = await RelationService.GetRelations(params);
+    console.log("infos : ", nombreRelations, utilisateur.id);
+    setNombreRelations(nombreRelations.length);
   };
 
   const checkSiEnRelation = () => {
@@ -343,7 +353,7 @@ function ProfilScreen(props: any) {
           ]}
         >
           <Stack direction="row">
-            <Text style={styles.title}>X Relations</Text>
+            <Text style={styles.title}>{nombreRelations} Relations</Text>
             <Spacer />
             {autreUtilisateur && !estEnRelation && (
               <TouchableOpacity
