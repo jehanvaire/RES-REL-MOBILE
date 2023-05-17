@@ -153,12 +153,6 @@ const NotificationScreen = (props: any) => {
 
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: "white", height: 110 }}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Notifications</Text>
-        </View>
-      </SafeAreaView>
-
       <ScrollView style={styles.container}>
         {Object.entries(sortedGroupedNotifications).map(
           ([group, notifications]: [string, NotificationItem[]]) => (
@@ -194,20 +188,6 @@ export default NotificationScreen;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#bbbbbb",
-  },
-  header: {
-    height: 60,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    paddingHorizontal: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    color: "black",
-    textAlign: "center",
-    flex: 1,
   },
   dateHeader: {
     fontSize: 18,

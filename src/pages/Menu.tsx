@@ -12,6 +12,7 @@ import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { storage } from "../services/AuthentificationService";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { StyleSheet } from "react-native";
+import NotificationTopNavigator from "../components/Navigators/Notifications/NotificationTopNavigator";
 
 const BottomTab = createMaterialBottomTabNavigator();
 
@@ -86,7 +87,7 @@ const Menu = ({ props }: any) => {
       <BottomTab.Screen name="Recherche" component={RechercheScreen} />
       <BottomTab.Screen
         name="Notifications"
-        component={NotificationScreen}
+        component={NotificationTopNavigator}
         options={{ tabBarBadge: 3 }}
       />
       <BottomTab.Screen
