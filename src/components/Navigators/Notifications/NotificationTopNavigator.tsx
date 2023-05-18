@@ -19,7 +19,7 @@ function NotificationTopNavigator() {
 
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: "white", height: 110 }}>
+      <SafeAreaView style={{ backgroundColor: "white" }}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Notifications</Text>
         </View>
@@ -41,9 +41,9 @@ function NotificationTopNavigator() {
             tabBarShowLabel: false,
             tabBarIcon: ({ focused, color }) =>
               focused ? (
-                <Ionicons name="images" color={color} size={25} />
+                <Ionicons name="browsers" color={color} size={25} />
               ) : (
-                <Ionicons name="images-outline" color={color} size={25} />
+                <Ionicons name="browsers-outline" color={color} size={25} />
               ),
           }}
           component={NotifsActivitesNavigator}
@@ -54,9 +54,9 @@ function NotificationTopNavigator() {
             tabBarShowLabel: false,
             tabBarIcon: ({ focused, color }) =>
               focused ? (
-                <Ionicons name="person" color={color} size={25} />
+                <Ionicons name="people" color={color} size={25} />
               ) : (
-                <Ionicons name="person-outline" color={color} size={25} />
+                <Ionicons name="people-outline" color={color} size={25} />
               ),
           }}
           component={NotifsRelationsNavigator}

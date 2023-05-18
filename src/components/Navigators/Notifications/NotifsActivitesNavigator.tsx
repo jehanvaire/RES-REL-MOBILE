@@ -1,8 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import RechercheRessourceScreen from "../../../pages/Rercherche/RechercheRessourceScreen";
 import DetailsPublication from "../../Ressource/DetailsPublication";
 import EspaceCommentaireScreen from "../../../pages/Publication/EspaceCommentaireScreen";
 import PdfView from "../../../pages/PdfView";
+import NotificationScreen from "../../../pages/Notifications/NotificationsActivitesScreen";
 
 const StackNav = createStackNavigator();
 
@@ -16,7 +16,7 @@ const NotifsActivitesNavigator = () => {
     >
       <StackNav.Screen
         name="NotificationsScreen"
-        component={RechercheRessourceScreen}
+        component={NotificationScreen}
         options={{ headerShown: false }}
       />
       <StackNav.Screen

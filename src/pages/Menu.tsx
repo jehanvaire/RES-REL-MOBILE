@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RechercheScreen from "./Rercherche/RechercheScreen";
-import NotificationScreen, {
-  getNumberOfNotifications,
-} from "./NotificationsScreen";
+import { getNumberOfNotifications } from "./Notifications/NotificationsActivitesScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
@@ -54,7 +52,7 @@ const Menu = ({ props }: any) => {
 
   return loading ? null : (
     <BottomTab.Navigator
-      initialRouteName="Recherche"
+      initialRouteName="Notifications"
       barStyle={styles.bottomTabBar}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {

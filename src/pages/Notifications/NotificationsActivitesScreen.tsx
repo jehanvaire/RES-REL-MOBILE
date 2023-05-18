@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
-import { storage } from "../services/AuthentificationService";
+import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
+import { storage } from "../../services/AuthentificationService";
 import { ScrollView } from "native-base";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,7 +16,7 @@ export const getNumberOfNotifications = (notifications: any) => {
   return count;
 };
 
-const NotificationScreen = (props: any) => {
+const NotificationActivitesScreen = (props: any) => {
   const [user_storage, setUserStorage] = useState<any | null>(null);
 
   // useEffect(() => {
@@ -183,7 +183,7 @@ const NotificationScreen = (props: any) => {
   );
 };
 
-export default NotificationScreen;
+export default NotificationActivitesScreen;
 
 const styles = StyleSheet.create({
   container: {
