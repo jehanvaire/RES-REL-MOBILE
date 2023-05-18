@@ -43,7 +43,11 @@ const AuthentificationMenu = ({ navigation }: any) => {
 
       <View style={styles.row}>
         <TouchableOpacity>
-          <Text style={styles.footertext}>Mot de passe oublié?</Text>
+          {/* Only for debug */}
+          <Text 
+            onPress={() => navigation.navigate("ValidationMail")}
+            style={styles.footertext}
+          >Mot de passe oublié?</Text>
         </TouchableOpacity>
         <Text style={styles.footertext}> · </Text>
         <TouchableOpacity>
