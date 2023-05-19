@@ -8,13 +8,13 @@ const StackNav = createStackNavigator();
 const NotifsRelationsNavigator = () => {
   return (
     <StackNav.Navigator
-      initialRouteName="NotificationsRelationsScreen"
+      initialRouteName="NotifsRelationsScreen"
       screenOptions={{
         headerShown: false,
       }}
     >
       <StackNav.Screen
-        name="NotificationsRelationsScreen"
+        name="NotifsRelationsScreen"
         component={NotificationsRelationsScreen}
         options={{ headerShown: false }}
       />
