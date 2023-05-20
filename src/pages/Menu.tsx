@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RechercheScreen from "./Rercherche/RechercheScreen";
-import NotificationScreen, {
-  getNumberOfNotifications,
-} from "./NotificationsScreen";
+import { getNumberOfNotifications } from "./Notifications/NotificationsActivitesScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
@@ -12,6 +10,7 @@ import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { storage } from "../services/AuthentificationService";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { StyleSheet } from "react-native";
+import NotificationTopNavigator from "../components/Navigators/Notifications/NotificationTopNavigator";
 
 const BottomTab = createMaterialBottomTabNavigator();
 
@@ -86,7 +85,7 @@ const Menu = ({ props }: any) => {
       <BottomTab.Screen name="Recherche" component={RechercheScreen} />
       <BottomTab.Screen
         name="Notifications"
-        component={NotificationScreen}
+        component={NotificationTopNavigator}
         options={{ tabBarBadge: 3 }}
       />
       <BottomTab.Screen
