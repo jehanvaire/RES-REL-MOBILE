@@ -1,4 +1,4 @@
-import { Spacer, FlatList } from "native-base";
+import { Spacer, FlatList, Stack, Avatar } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
@@ -6,8 +6,11 @@ import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
 import RelationService from "../../services/RelationService";
+import FastImage from "react-native-fast-image";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const PER_PAGE = 15;
+const utilisateurImageURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const NotificationsRelationsScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -28,14 +31,58 @@ const NotificationsRelationsScreen = (props: any) => {
     };
 
     RelationService.GetRelations(params).then((relations) => {
+      console.log(relations);
       setDemandesRelations(relations);
     });
   }, []);
 
+  const GererDemandeRelation = (idDemande: number, accepte: boolean) => {
+    const params = {
+      accepte: accepte,
+    };
+
+    // RelationService.UpdateRelation(idDemande, params).then((relation) => {
+    //   console.log(relation);
+    // });
+  };
+
   const renderItem = useCallback(
     ({ item }: any) => (
-      <View style={styles.listePublications}>
-        <Text>{item.idDemandeur}</Text>
+      <View style={[styles.demandeRelation, styles.shadow]}>
+        <Stack direction="row" alignItems="center">
+          <FastImage
+            style={styles.avatar}
+            source={{
+              uri: utilisateurImageURL + "/" + item.idDemandeur + "/download",
+            }}
+          />
+          <Text style={styles.textDemande}>
+            <Text style={styles.nomUtilisateur}>Nom utilisateur</Text> vous a
+            envoyé une demande de relation
+          </Text>
+
+          <TouchableOpacity
+            style={styles.bouton}
+            onPress={() => {
+              GererDemandeRelation(item.id, true);
+            }}
+          >
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={30}
+              color="#00FF00"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bouton}
+            onPress={() => {
+              GererDemandeRelation(item.id, false);
+            }}
+          >
+            <Ionicons name="close-circle-outline" size={30} color="#FF0000" />
+          </TouchableOpacity>
+        </Stack>
       </View>
     ),
     []
@@ -73,8 +120,37 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: "#BBBBBB",
   },
-  listePublications: {
+  demandeRelation: {
+    backgroundColor: "#FFFFFF",
     padding: 10,
     width: "100%",
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    marginRight: 10,
+  },
+  nomUtilisateur: {
+    fontWeight: "bold",
+  },
+  textDemande: {
+    flex: 1,
+    flexWrap: "wrap",
+  },
+  bouton: {
+    marginLeft: 10,
   },
 });
