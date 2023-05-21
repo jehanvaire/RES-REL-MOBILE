@@ -31,7 +31,6 @@ const NotificationsRelationsScreen = (props: any) => {
     };
 
     RelationService.GetRelations(params).then((relations) => {
-      console.log(relations);
       setDemandesRelations(relations);
     });
   }, []);
