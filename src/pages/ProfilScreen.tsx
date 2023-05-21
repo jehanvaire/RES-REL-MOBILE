@@ -21,6 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import RelationService from "../services/RelationService";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const PER_PAGE = 10;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
@@ -56,7 +57,7 @@ const HEADER_VALUES = [
   },
   {
     name: "relationHeight",
-    outputRange: [40, 0],
+    outputRange: [30, 0],
   },
   {
     name: "containterAutreUtilisateurWidth",
@@ -74,6 +75,10 @@ function ProfilScreen(props: any) {
   const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
   const [estEnRelation, setEstEnRelation] = useState<boolean>(false);
   const [relationEnAttente, setRelationEnAttente] = useState<boolean>(false);
+  const [
+    relationEnAttenteAutreUtilisateur,
+    setRelationEnAttenteAutreUtilisateur,
+  ] = useState<boolean>(false);
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
@@ -176,6 +181,24 @@ function ProfilScreen(props: any) {
       } else {
         setEstEnRelation(false);
         setRelationEnAttente(false);
+      }
+    });
+
+    const demandesRelationsParams2 = {
+      "idDemandeur[equals]=": utilisateur.id,
+      "idReceveur[equals]=": moi.id,
+    };
+
+    RelationService.GetRelation(demandesRelationsParams2).then((response2) => {
+      if (response2?.accepte) {
+        setEstEnRelation(true);
+        setRelationEnAttenteAutreUtilisateur(false);
+      } else if (response2?.accepte === null) {
+        setEstEnRelation(false);
+        setRelationEnAttenteAutreUtilisateur(true);
+      } else {
+        setEstEnRelation(false);
+        setRelationEnAttenteAutreUtilisateur(false);
       }
     });
   };
@@ -352,39 +375,85 @@ function ProfilScreen(props: any) {
             },
           ]}
         >
-          <Stack direction="row">
-            <Text style={styles.title}>{nombreRelations} Relations</Text>
+          <Stack direction="row" alignItems="center">
+            <Text style={[styles.title, { marginLeft: 10 }]}>
+              {nombreRelations} Relations
+            </Text>
+
             <Spacer />
-            {autreUtilisateur && !estEnRelation && (
-              <TouchableOpacity
-                style={[
-                  styles.buttonDemandeConnexion,
-                  relationEnAttente
-                    ? { backgroundColor: "grey" }
-                    : {
-                        backgroundColor: "#44BE80",
-                      },
-                ]}
-                onPress={demanderConnexionUtilisateur}
-                disabled={relationEnAttente}
-              >
-                <Text>
-                  {relationEnAttente ? "Demande envoyée" : "Demander connexion"}
-                </Text>
-              </TouchableOpacity>
+
+            {autreUtilisateur && !relationEnAttenteAutreUtilisateur && (
+              <>
+                {!estEnRelation && (
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonDemandeConnexion,
+                      relationEnAttente
+                        ? { backgroundColor: "grey" }
+                        : {
+                            backgroundColor: "#44BE80",
+                          },
+                    ]}
+                    onPress={demanderConnexionUtilisateur}
+                    disabled={relationEnAttente}
+                  >
+                    <Text>
+                      {relationEnAttente
+                        ? "Demande envoyée"
+                        : "Demander connexion"}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                {estEnRelation && (
+                  <TouchableOpacity
+                    style={styles.buttonGererConnexion}
+                    onPress={() =>
+                      navigation.navigate("GererConnexion", {
+                        utilisateur: utilisateur,
+                      })
+                    }
+                  >
+                    <Text>Gérer connexion</Text>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
 
-            {estEnRelation && autreUtilisateur && (
-              <TouchableOpacity
-                style={styles.buttonGererConnexion}
-                onPress={() =>
-                  navigation.navigate("GererConnexion", {
-                    utilisateur: utilisateur,
-                  })
-                }
-              >
-                <Text>Gérer connexion</Text>
-              </TouchableOpacity>
+            {autreUtilisateur && relationEnAttenteAutreUtilisateur && (
+              <>
+                {!estEnRelation && relationEnAttenteAutreUtilisateur && (
+                  <>
+                    <Text style={styles.texteDemande}>Accepter demande ?</Text>
+
+                    <TouchableOpacity
+                      style={styles.bouton}
+                      onPress={() => {
+                        // GererDemandeRelation(item.id, true);
+                      }}
+                    >
+                      <Ionicons
+                        name="checkmark-circle-outline"
+                        size={30}
+                        color="#00FF00"
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.bouton}
+                      onPress={() => {
+                        // GererDemandeRelation(item.id, false);
+                      }}
+                    >
+                      <Ionicons
+                        name="close-circle-outline"
+                        size={30}
+                        color="#FF0000"
+                      />
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
             )}
           </Stack>
         </Animated.View>
@@ -477,5 +546,16 @@ const styles = StyleSheet.create({
     width: "100%",
     alignSelf: "center",
     marginBottom: 160,
+  },
+  bouton: {
+    marginLeft: 10,
+  },
+  texteDemande: {
+    // flex: 1,
+    // flexWrap: "wrap",
+    marginLeft: 10,
+  },
+  gras: {
+    fontWeight: "bold",
   },
 });

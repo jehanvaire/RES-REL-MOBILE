@@ -1,4 +1,4 @@
-import { Spacer, FlatList, Stack, Avatar } from "native-base";
+import { Spacer, FlatList, Stack } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
@@ -45,46 +45,60 @@ const NotificationsRelationsScreen = (props: any) => {
     // });
   };
 
+  function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
+    props.navigation.navigate("DetailsAutreUtilisateurRelation", {
+      utilisateur: utilisateurSelectionne,
+    });
+  }
+
   const renderItem = useCallback(
     ({ item }: any) => (
       <View style={[styles.demandeRelation, styles.shadow]}>
-        <Stack direction="row" alignItems="center">
-          <FastImage
-            style={styles.avatar}
-            source={{
-              uri: utilisateurImageURL + "/" + item.idDemandeur + "/download",
-            }}
-          />
-          <Text style={styles.textDemande}>
-            <Text style={styles.nomUtilisateur}>
-              {item.demandeur?.prenom} {item.demandeur?.nom}
-            </Text>{" "}
-            vous a envoyé une demande de relation de type{" "}
-            <Text style={styles.nomUtilisateur}>{item.typeRelation?.nom}</Text>
-          </Text>
-
-          <TouchableOpacity
-            style={styles.bouton}
-            onPress={() => {
-              GererDemandeRelation(item.id, true);
-            }}
-          >
-            <Ionicons
-              name="checkmark-circle-outline"
-              size={30}
-              color="#00FF00"
+        <TouchableOpacity
+          onPress={() => {
+            AfficherUtilisateur(item.demandeur);
+          }}
+        >
+          <Stack direction="row" alignItems="center">
+            <FastImage
+              style={styles.avatar}
+              source={{
+                uri: utilisateurImageURL + "/" + item.idDemandeur + "/download",
+              }}
             />
-          </TouchableOpacity>
+            <Text style={styles.texteDemande}>
+              <Text style={styles.nomUtilisateur}>
+                {item.demandeur?.prenom} {item.demandeur?.nom}
+              </Text>{" "}
+              vous a envoyé une demande de relation de type{" "}
+              <Text style={styles.nomUtilisateur}>
+                {item.typeRelation?.nom}
+              </Text>
+            </Text>
 
-          <TouchableOpacity
-            style={styles.bouton}
-            onPress={() => {
-              GererDemandeRelation(item.id, false);
-            }}
-          >
-            <Ionicons name="close-circle-outline" size={30} color="#FF0000" />
-          </TouchableOpacity>
-        </Stack>
+            <TouchableOpacity
+              style={styles.bouton}
+              onPress={() => {
+                GererDemandeRelation(item.id, true);
+              }}
+            >
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={30}
+                color="#00FF00"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.bouton}
+              onPress={() => {
+                GererDemandeRelation(item.id, false);
+              }}
+            >
+              <Ionicons name="close-circle-outline" size={30} color="#FF0000" />
+            </TouchableOpacity>
+          </Stack>
+        </TouchableOpacity>
       </View>
     ),
     []
@@ -148,7 +162,7 @@ const styles = StyleSheet.create({
   nomUtilisateur: {
     fontWeight: "bold",
   },
-  textDemande: {
+  texteDemande: {
     flex: 1,
     flexWrap: "wrap",
   },
