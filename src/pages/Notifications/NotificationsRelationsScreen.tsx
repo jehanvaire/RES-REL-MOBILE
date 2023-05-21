@@ -27,7 +27,7 @@ const NotificationsRelationsScreen = (props: any) => {
     const params = {
       "idReceveur[equals]=": user.id,
       accepte: null,
-      include: "utilisateur",
+      include: "typeRelation,demandeur",
     };
 
     RelationService.GetRelations(params).then((relations) => {
@@ -57,8 +57,11 @@ const NotificationsRelationsScreen = (props: any) => {
             }}
           />
           <Text style={styles.textDemande}>
-            <Text style={styles.nomUtilisateur}>Nom utilisateur</Text> vous a
-            envoyé une demande de relation
+            <Text style={styles.nomUtilisateur}>
+              {item.demandeur?.prenom} {item.demandeur?.nom}
+            </Text>{" "}
+            vous a envoyé une demande de relation de type{" "}
+            <Text style={styles.nomUtilisateur}>{item.typeRelation?.nom}</Text>
           </Text>
 
           <TouchableOpacity
