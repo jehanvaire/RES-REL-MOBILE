@@ -19,6 +19,10 @@ class RelationService {
     return response.data;
   }
 
+  // public async GetNombreRelations(params: any = {}): Promise<number> {
+  //   const response = await this.restClient.get(this.baseUrl, params);
+  //   return response.meta.total;
+
   public async DemanderRelation(params: any = {}): Promise<RelationEntity> {
     const response = await this.restClient.post(this.baseUrl, params);
     return response;

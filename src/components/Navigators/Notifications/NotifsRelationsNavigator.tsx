@@ -19,9 +19,10 @@ const NotifsRelationsNavigator = () => {
         options={{ headerShown: false }}
       />
       <StackNav.Screen
-        name="DetailUtilisateurRelations"
+        name="DetailsAutreUtilisateurRelation"
         component={ProfilScreen}
         options={{ headerShown: false, title: "" }}
+        initialParams={{ autreUtilisateur: true }}
       />
       <StackNav.Screen name="PdfView" component={PdfView} />
     </StackNav.Navigator>
