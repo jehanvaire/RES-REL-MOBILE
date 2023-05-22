@@ -22,7 +22,7 @@ import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import RelationService from "../services/RelationService";
 
-const PER_PAGE = 10;
+const PER_PAGE = 15;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const HEADER_MAX_HEIGHT = 150;
