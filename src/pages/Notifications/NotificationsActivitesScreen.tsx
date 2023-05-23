@@ -39,7 +39,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Nouveau commentaire",
       description: "utilisateur 1 a commenté votre publication",
       date: new Date("2023-04-18T12:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/12/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/12/download/?getThumbnail=true",
     },
     {
       id: 2,
@@ -47,7 +48,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Nouvelle demande de relation",
       description: "utilisateur 2 veut vous ajouter comme ami",
       date: new Date("2023-04-22T12:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/13/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/13/download/?getThumbnail=true",
     },
     {
       id: 3,
@@ -55,7 +57,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Nouveau commentaire",
       description: "utilisateur 3 a commenté votre publication",
       date: new Date("2023-04-24T09:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/14/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/14/download/?getThumbnail=true",
     },
     {
       id: 4,
@@ -63,7 +66,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Nouvelle demande de relation",
       description: "utilisateur 4 veut vous ajouter comme ami",
       date: new Date("2023-04-23T12:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/15/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/15/download/?getThumbnail=true",
     },
     {
       id: 5,
@@ -71,7 +75,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Nouveau commentaire",
       description: "utilisateur 5 a commenté votre publication",
       date: new Date("2023-04-26T12:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/16/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/16/download/?getThumbnail=true",
     },
     {
       id: 6,
@@ -79,7 +84,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Nouveau commentaire",
       description: "utilisateur 6 a commenté votre publication",
       date: new Date("2023-04-27T09:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/17/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/17/download/?getThumbnail=true",
     },
     {
       id: 7,
@@ -87,7 +93,8 @@ const NotificationActivitesScreen = (props: any) => {
       title: "Notification 7",
       description: "Description de la notification 7",
       date: new Date("2023-04-27T09:00:00"),
-      image: "https://api.victor-gombert.fr/api/v1/utilisateurs/18/download/",
+      image:
+        "https://api.victor-gombert.fr/api/v1/utilisateurs/18/download/?getThumbnail=true",
     },
   ];
 

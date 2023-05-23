@@ -64,7 +64,7 @@ const HEADER_VALUES = [
     outputRange: ["65%", "80%"],
   },
 ];
-
+//! Ajouter animations lors du changement de page
 function ProfilScreen(props: any) {
   const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
@@ -157,14 +157,14 @@ function ProfilScreen(props: any) {
 
   const getNombreRelations = async () => {
     const params = {
-      "idReceveur[equals]=": utilisateur.id,
-      "accepte[equals]": true,
+      fromUtilisateur: utilisateur.id,
     };
     const nombreRelations = await RelationService.GetRelations(params);
     console.log("infos : ", nombreRelations, utilisateur.id);
     setNombreRelations(nombreRelations.length);
   };
 
+  // TODO : A REFAIRE merci copilot :')
   const checkSiEnRelation = () => {
     const demandesRelationsParams = {
       "idDemandeur[equals]=": moi.id,
@@ -297,7 +297,8 @@ function ProfilScreen(props: any) {
               },
             ]}
             source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
+              uri:
+                apiURL + "/" + utilisateur.id + "/download?getThumbnail=true",
             }}
           />
 
