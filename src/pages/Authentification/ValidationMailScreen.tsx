@@ -4,27 +4,41 @@ import { Image } from "native-base";
 import images from "../../ressources/ListeImagesLocales";
 import FooterAuthentification from "./FooterAuthentification";
 import { openInbox } from "react-native-email-link";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ValidationMail = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
-      {/* <Image
-        source={images.resre_logo_slogan}
-        alt="logo_slogan"
-        style={styles.image}
-      /> */}
-
-      <View>
-        <Text>Avant de continuer</Text>
-        <Text>Un mail de confirmation vous a été envoyé</Text>
-
+      <View style={styles.row}>
+      <Ionicons name="mail-unread-outline" size={75} color="#000000" />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.headerText}>Merci pour votre inscription !</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.subText}>Un mail de confirmation vous a été envoyé. Pensez à vérifier vos spams.</Text>
+      </View>
         <TouchableOpacity
           onPress={() => openInbox()}
-          style={[styles.button, styles.shadow]}
+          style={[
+            styles.button, 
+            styles.shadow,
+            { backgroundColor: "rgb(45, 186, 131)" },
+          ]}
         >
-          <Text style={styles.textButton}>Valider mon compte</Text>
+          <Text style={styles.textButton}>Ouvrir mes mails</Text>
         </TouchableOpacity>
-      </View>
+
+        <TouchableOpacity
+          
+          style={[
+            styles.button, 
+            styles.shadow,
+            {  backgroundColor: "rgb(65, 131, 244)" },
+          ]}
+        >
+          <Text style={styles.textButton}>Accéder à l'application</Text>
+        </TouchableOpacity>
     </View >
   );
 };
@@ -32,21 +46,30 @@ const ValidationMail = ({ navigation }: any) => {
 export default ValidationMail;
 
 const styles = StyleSheet.create({
+  subText: {
+    fontSize: 16,
+    marginBottom: 20,
+    marginHorizontal: 40,
+    textAlign: "center",
+  },
+  headerText: {
+    fontSize: 22,
+    marginBottom: 20,
+    textAlign: "center",
+  },
   container: {
-    flex: 1,
+    marginTop: 200,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: "auto",
-    marginBottom: "auto",
+    flex: 1,
+    flexDirection: "column",
   },
   button: {
     borderRadius: 10,
     height: 50,
-    width: "70%",
     marginVertical: 10,
-    backgroundColor: "rgb(45, 186, 131)",
     justifyContent: "center",
     alignItems: "center",
+    width: "70%",
   },
   shadow: {
     shadowColor: "#000",

@@ -15,9 +15,11 @@ import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import DateTimePicker, {
   Event as DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 const SignUpSreen = () => {
   const auth = useAuth();
+  const navigation = useNavigation();
 
   const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -51,7 +53,7 @@ const SignUpSreen = () => {
       setShowDatePicker(false);
     }
   };
-  const onInscription = async () => {
+  const onInscription = async (navigation: NavigationProp<ReactNavigation.RootParamList>) => {
     if (
       isPasswordValid() &&
       checkPasswordLength() &&
@@ -64,6 +66,8 @@ const SignUpSreen = () => {
       setPasswordError(false);
       setMailError(false);
       await auth.inscription(utilisateur);
+      //redirect to ValidationMailScreen
+
     } else {
       isMailValid() ? setMailError(false) : setMailError(true);
       isPasswordValid() ? setPasswordError(false) : setPasswordError(true);
@@ -182,7 +186,7 @@ const SignUpSreen = () => {
         )}
         <Text>* Champs obligatoires</Text>
         <TouchableOpacity
-          onPress={() => onInscription()}
+          onPress={() => onInscription(navigation)}
           style={[styles.button, styles.shadow]}
         >
           <Text style={styles.textButton}>Créer mon compte</Text>
