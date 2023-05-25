@@ -8,19 +8,14 @@ import {
 } from "react-native";
 import { Image, ScrollView } from "native-base";
 import React, { useState } from "react";
-import { useAuth } from "../../services/AuthentificationService";
 import images from "../../ressources/ListeImagesLocales";
 import FooterAuthentification from "./FooterAuthentification";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import DateTimePicker, {
   Event as DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-const SignUpSreen = () => {
-  const auth = useAuth();
-  const navigation = useNavigation();
-
+const CreationCompteScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
@@ -53,7 +48,7 @@ const SignUpSreen = () => {
       setShowDatePicker(false);
     }
   };
-  const onInscription = async (navigation: NavigationProp<ReactNavigation.RootParamList>) => {
+  const onInscription = async () => {
     if (
       isPasswordValid() &&
       checkPasswordLength() &&
@@ -65,9 +60,9 @@ const SignUpSreen = () => {
     ) {
       setPasswordError(false);
       setMailError(false);
-      await auth.inscription(utilisateur);
-      //redirect to ValidationMailScreen
+      props.navigation.navigate("ValidationMail");
 
+      //redirect to ValidationMailScreen
     } else {
       isMailValid() ? setMailError(false) : setMailError(true);
       isPasswordValid() ? setPasswordError(false) : setPasswordError(true);
@@ -186,7 +181,7 @@ const SignUpSreen = () => {
         )}
         <Text>* Champs obligatoires</Text>
         <TouchableOpacity
-          onPress={() => onInscription(navigation)}
+          onPress={() => onInscription()}
           style={[styles.button, styles.shadow]}
         >
           <Text style={styles.textButton}>Créer mon compte</Text>
@@ -197,7 +192,7 @@ const SignUpSreen = () => {
   );
 };
 
-export default SignUpSreen;
+export default CreationCompteScreen;
 
 const styles = StyleSheet.create({
   container: {

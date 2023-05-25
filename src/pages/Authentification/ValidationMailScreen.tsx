@@ -5,41 +5,48 @@ import images from "../../ressources/ListeImagesLocales";
 import FooterAuthentification from "./FooterAuthentification";
 import { openInbox } from "react-native-email-link";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useAuth } from "../../services/AuthentificationService";
 
 const ValidationMail = ({ navigation }: any) => {
+  const auth = useAuth();
+
+  // await auth.inscription(utilisateur);
+
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-      <Ionicons name="mail-unread-outline" size={75} color="#000000" />
+        <Ionicons name="mail-unread-outline" size={75} color="#000000" />
       </View>
       <View style={styles.row}>
         <Text style={styles.headerText}>Merci pour votre inscription !</Text>
       </View>
       <View style={styles.row}>
-        <Text style={styles.subText}>Un mail de confirmation vous a été envoyé. Pensez à vérifier vos spams.</Text>
+        <Text style={styles.subText}>
+          Un mail de confirmation vous a été envoyé. Pensez à vérifier vos
+          spams.
+        </Text>
       </View>
-        <TouchableOpacity
-          onPress={() => openInbox()}
-          style={[
-            styles.button, 
-            styles.shadow,
-            { backgroundColor: "rgb(45, 186, 131)" },
-          ]}
-        >
-          <Text style={styles.textButton}>Ouvrir mes mails</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => openInbox()}
+        style={[
+          styles.button,
+          styles.shadow,
+          { backgroundColor: "rgb(45, 186, 131)" },
+        ]}
+      >
+        <Text style={styles.textButton}>Ouvrir mes mails</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity
-          
-          style={[
-            styles.button, 
-            styles.shadow,
-            {  backgroundColor: "rgb(65, 131, 244)" },
-          ]}
-        >
-          <Text style={styles.textButton}>Accéder à l'application</Text>
-        </TouchableOpacity>
-    </View >
+      <TouchableOpacity
+        style={[
+          styles.button,
+          styles.shadow,
+          { backgroundColor: "rgb(65, 131, 244)" },
+        ]}
+      >
+        <Text style={styles.textButton}>Accéder à l'application</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -94,7 +101,7 @@ const styles = StyleSheet.create({
     color: "#6a6a6a",
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   exitIcon: {
     color: "black",
