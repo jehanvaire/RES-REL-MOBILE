@@ -63,7 +63,11 @@ const NotificationsRelationsScreen = (props: any) => {
             <FastImage
               style={styles.avatar}
               source={{
-                uri: utilisateurImageURL + "/" + item.idDemandeur + "/download",
+                uri:
+                  utilisateurImageURL +
+                  "/" +
+                  item.idDemandeur +
+                  "/download?getThumbnail=true",
               }}
             />
             <Text style={styles.texteDemande}>

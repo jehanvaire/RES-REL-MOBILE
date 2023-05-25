@@ -56,7 +56,7 @@ const RechercheUtilisateurScreen = (props: any) => {
             <Avatar
               style={styles.avatar}
               source={{
-                uri: apiURL + "/" + item.id + "/download",
+                uri: apiURL + "/" + item.id + "/download?getThumbnail=true",
               }}
             ></Avatar>
             <Text style={styles.nomPrenom}>
