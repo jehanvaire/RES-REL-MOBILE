@@ -7,10 +7,13 @@ import { openInbox } from "react-native-email-link";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../services/AuthentificationService";
 
-const ValidationMail = ({ navigation }: any) => {
+const ValidationMail = ({ utilisateur }: any) => {
   const auth = useAuth();
 
-  // await auth.inscription(utilisateur);
+  const checkValidationCompte = async () => {
+    console.log("utilisateur", utilisateur);
+    await auth.inscription(utilisateur);
+  };
 
   return (
     <View style={styles.container}>
@@ -38,6 +41,7 @@ const ValidationMail = ({ navigation }: any) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        onPress={() => checkValidationCompte()}
         style={[
           styles.button,
           styles.shadow,

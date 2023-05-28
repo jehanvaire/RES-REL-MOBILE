@@ -60,7 +60,9 @@ const CreationCompteScreen = (props: any) => {
     ) {
       setPasswordError(false);
       setMailError(false);
-      props.navigation.navigate("ValidationMail");
+      props.navigation.navigate("ValidationMail", {
+        utilisateur: utilisateur,
+      });
 
       //redirect to ValidationMailScreen
     } else {
