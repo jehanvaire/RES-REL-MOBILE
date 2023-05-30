@@ -23,6 +23,7 @@ import Video from "react-native-video";
 import { FormControl, Select } from "native-base";
 import CategorieService from "../../services/CategorieService";
 import { TouchableOpacity } from "react-native";
+import axios from "axios";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -108,18 +109,21 @@ function CreationRessourceScreen() {
 
     filePath = "file://" + filePath;
 
-    console.log("filePath", filePath);
+    const file = {
+      uri: filePath,
+      name: result.name,
+      type: result.type,
+    };
+
+    console.log("file", file);
+
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
       type: result.type,
       titre: result.name,
       taille: result.size,
       uri: filePath,
-      file: {
-        uri: filePath,
-        name: result.name,
-        type: result.type,
-      },
+      file: file,
     } as PieceJointeEntity;
 
     setPieceJointe(nouvellePieceJointe);
@@ -132,29 +136,73 @@ function CreationRessourceScreen() {
       titre: publication.titre,
       idUtilisateur: utilisateur.id,
     } as PublicationEntity).then(async (res) => {
-      console.log("res", res);
       if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
         gererNavigation();
         return;
       }
 
+      let type = "";
+      switch (pieceJointe.type) {
+        case "image/png":
+        case "image/jpeg":
+          type = "IMAGE";
+          break;
+        case "application/pdf":
+          type = "PDF";
+          break;
+        case "video/mp4":
+          type = "VIDEO";
+          break;
+        default:
+          type = "";
+          break;
+      }
+
       const formData = new FormData();
-      formData.append("file", pieceJointe.file, "file");
+      formData.append("file", pieceJointe.file);
       formData.append("titre", pieceJointe.titre);
-      formData.append("type", pieceJointe.type);
+      formData.append("type", type);
       formData.append("idUtilisateur", String(utilisateur.id));
       formData.append("idRessource", String(res.id));
+      formData.append("description", res.description ?? "");
 
       console.log("formData", formData);
 
-      try {
-        PublicationService.AjouterPieceJointe(formData).then((res) => {
-          console.log("pj", res);
-          gererNavigation();
-        });
-      } catch (error) {
-        console.error("Error:", error);
+      const response = await axios.post(
+        "https://api.victor-gombert.fr/api/v1/piecesJointes",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization:
+              "Bearer " + "93|5DeOMsfqq1PPOrKynVmaqc9bYHmnmK8iFyleGfyz",
+          },
+        }
+      );
+
+      console.log("response", response);
+
+      // const response = await fetch(
+      //   "https://api.victor-gombert.fr/api/v1/piecesJointes",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //       Authorization:
+      //         "Bearer " + "93|5DeOMsfqq1PPOrKynVmaqc9bYHmnmK8iFyleGfyz",
+      //     },
+      //     body: formData,
+      //   }
+      // );
+
+      if (response.status === 201) {
+        gererNavigation();
       }
+
+      // PublicationService.AjouterPieceJointe(formData).then((res) => {
+      //   console.log("pj", res);
+      //   gererNavigation();
+      // });
     });
   };
 
