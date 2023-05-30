@@ -130,79 +130,46 @@ function CreationRessourceScreen() {
   };
 
   const soumettre = async () => {
-    await PublicationService.CreerPublication({
-      idCategorie: publication.categorie.id,
-      contenu: publication.contenu,
-      titre: publication.titre,
-      idUtilisateur: utilisateur.id,
-    } as PublicationEntity).then(async (res) => {
-      if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
-        gererNavigation();
-        return;
-      }
+    if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
+      gererNavigation();
+      return;
+    }
 
-      let type = "";
-      switch (pieceJointe.type) {
-        case "image/png":
-        case "image/jpeg":
-          type = "IMAGE";
-          break;
-        case "application/pdf":
-          type = "PDF";
-          break;
-        case "video/mp4":
-          type = "VIDEO";
-          break;
-        default:
-          type = "";
-          break;
-      }
+    let type = "";
+    switch (pieceJointe.type) {
+      case "image/png":
+      case "image/jpeg":
+        type = "IMAGE";
+        break;
+      case "application/pdf":
+        type = "PDF";
+        break;
+      case "video/mp4":
+        type = "VIDEO";
+        break;
+      default:
+        type = "";
+        break;
+    }
 
-      const formData = new FormData();
-      formData.append("file", pieceJointe.file);
-      formData.append("titre", pieceJointe.titre);
-      formData.append("type", type);
-      formData.append("idUtilisateur", String(utilisateur.id));
-      formData.append("idRessource", String(res.id));
-      formData.append("description", res.description ?? "");
+    const formData = new FormData();
+    formData.append("file", pieceJointe.file);
+    formData.append("titre", pieceJointe.titre);
+    formData.append("type", type);
+    formData.append("idUtilisateur", String(utilisateur.id));
 
-      console.log("formData", formData);
+    console.log("formData", formData);
 
-      const response = await axios.post(
-        "https://api.victor-gombert.fr/api/v1/piecesJointes",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization:
-              "Bearer " + "93|5DeOMsfqq1PPOrKynVmaqc9bYHmnmK8iFyleGfyz",
-          },
-        }
-      );
+    PublicationService.AjouterPieceJointe(formData).then(async (res) => {
+      await PublicationService.CreerPublication({
+        idCategorie: publication.categorie.id,
+        contenu: publication.contenu,
+        titre: publication.titre,
+        idUtilisateur: utilisateur.id,
+        idPieceJointe: res.id,
+      } as PublicationEntity);
 
-      console.log("response", response);
-
-      // const response = await fetch(
-      //   "https://api.victor-gombert.fr/api/v1/piecesJointes",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //       Authorization:
-      //         "Bearer " + "93|5DeOMsfqq1PPOrKynVmaqc9bYHmnmK8iFyleGfyz",
-      //     },
-      //     body: formData,
-      //   }
-      // );
-
-      if (response.status === 201) {
-        gererNavigation();
-      }
-
-      // PublicationService.AjouterPieceJointe(formData).then((res) => {
-      //   console.log("pj", res);
-      //   gererNavigation();
-      // });
+      gererNavigation();
     });
   };
 
