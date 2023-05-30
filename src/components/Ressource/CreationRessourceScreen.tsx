@@ -18,13 +18,11 @@ import RNFS from "react-native-fs";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
-import ReactNativeBlobUtil from "react-native-blob-util";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
 import { FormControl, Select } from "native-base";
 import CategorieService from "../../services/CategorieService";
 import { TouchableOpacity } from "react-native";
-import { Buffer } from "buffer";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -108,23 +106,20 @@ function CreationRessourceScreen() {
       }
     }
 
-    const base64File = await ReactNativeBlobUtil.fs.readFile(
-      filePath,
-      "base64"
-    );
-    const buffer = Buffer.from(base64File, "base64");
-    const mimeType = "image/png"; // Set the appropriate MIME type for your file
-    const blob = new Blob([buffer], { type: mimeType });
+    filePath = "file://" + filePath;
 
-    console.log("jusque ici tout va bien");
-
+    console.log("filePath", filePath);
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
       type: result.type,
       titre: result.name,
       taille: result.size,
       uri: filePath,
-      file: blob,
+      file: {
+        uri: filePath,
+        name: result.name,
+        type: result.type,
+      },
     } as PieceJointeEntity;
 
     setPieceJointe(nouvellePieceJointe);
@@ -136,7 +131,8 @@ function CreationRessourceScreen() {
       contenu: publication.contenu,
       titre: publication.titre,
       idUtilisateur: utilisateur.id,
-    } as PublicationEntity).then((res) => {
+    } as PublicationEntity).then(async (res) => {
+      console.log("res", res);
       if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
         gererNavigation();
         return;
@@ -146,27 +142,19 @@ function CreationRessourceScreen() {
       formData.append("file", pieceJointe.file, "file");
       formData.append("titre", pieceJointe.titre);
       formData.append("type", pieceJointe.type);
-      formData.append("idUtilisateur", String(utilisateur));
+      formData.append("idUtilisateur", String(utilisateur.id));
       formData.append("idRessource", String(res.id));
 
-      fetch("https://api.victor-gombert.fr/api/v1/piecesJointes", {
-        method: "POST",
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization:
-            "Bearer " + "93|5DeOMsfqq1PPOrKynVmaqc9bYHmnmK8iFyleGfyz",
-        },
-      })
-        .then((response) => response.text())
-        .then((responseText) => {
-          console.log(responseText);
-        });
+      console.log("formData", formData);
 
-      // PublicationService.AjouterPieceJointe(formData).then((res) => {
-      //   console.log("pj", res);
-      //   gererNavigation();
-      // });
+      try {
+        PublicationService.AjouterPieceJointe(formData).then((res) => {
+          console.log("pj", res);
+          gererNavigation();
+        });
+      } catch (error) {
+        console.error("Error:", error);
+      }
     });
   };
 
@@ -182,7 +170,7 @@ function CreationRessourceScreen() {
 
     const uri =
       Platform.OS === "android"
-        ? "file:///" + pieceJointe.uri.replace("content://", "")
+        ? pieceJointe.uri.replace("content://", "")
         : pieceJointe.uri.replace("content://", "");
 
     if (pieceJointe.type.startsWith("image/")) {
