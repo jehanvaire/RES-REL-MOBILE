@@ -181,7 +181,8 @@ const DetailsPublication = (props: any) => {
           <Stack direction="row" style={styles.header}>
             <Avatar
               source={{
-                uri: apiURL + "/" + idUtilisateur + "/download",
+                uri:
+                  apiURL + "/" + idUtilisateur + "/download?getThumbnail=true",
               }}
             ></Avatar>
 
