@@ -149,7 +149,7 @@ function ProfilScreen(props: any) {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
-      sortBy: "id,desc",
+      orderBy: "dateCreation,desc",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
@@ -226,7 +226,7 @@ function ProfilScreen(props: any) {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
-      zIndex: 10,
+      orderBy: "dateCreation,desc",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications([...listePublications, ...publications]);
@@ -242,6 +242,7 @@ function ProfilScreen(props: any) {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
+      orderBy: "dateCreation,desc",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications(publications);
