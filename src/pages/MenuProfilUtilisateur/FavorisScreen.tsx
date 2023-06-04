@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
@@ -8,15 +8,21 @@ import { ScrollView } from "native-base";
 import axios from "axios";
 import RestClient from "../../services/RestClient";
 import PublicationService from "../../services/PublicationService";
+import ProfilStackNavigator from "../../components/Navigators/ProfilStackNavigator";
+import { LikeEntity } from "../../ressources/models/LikeEntity";
 
-const FavorisScreen = () => {
+
+interface FavorisScreenProps {
+  navigation: any;
+}
+
+const FavorisScreen = ({ navigation }: FavorisScreenProps) => {
 
   const likesApiUrl = "https://api.victor-gombert.fr/api/v1/favoris";
   const [token, setToken] = useState<string>("");
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>({} as UtilisateurEntity);
-  const navigation = useNavigation();
   const PER_PAGE = 15;
-  const [items, setItems] = useState<LikeItem[]>([]);
+  const [items, setItems] = useState<LikeEntity[]>([]);
 
   const restClient = new RestClient();
 
@@ -25,71 +31,75 @@ const FavorisScreen = () => {
       title: 'Favoris',
     });
   }, [navigation]);
-
+  
+  const handlePublicationClick = (idPublication: number) => {
+    // Rediriger vers la page de la publication concernée
+    navigation.navigate("DetailsPublication", { id: idPublication });
+  };
+  
   useEffect(() => {
     const utilisateurJson = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     const utilisateurObject = JSON.parse(utilisateurJson) as UtilisateurEntity;
     setUtilisateur(utilisateurObject);
-
+  
     const token = storage.getString(AuthentificationEnum.ACCESS_TOKEN_KEY) ?? "";
     setToken(token);
-
+  
     console.log(utilisateurObject.id);
     getLikes();
-  }, []
-  );
+  }, [utilisateur.id]);
 
   async function getLikes() {
+    if (!utilisateur.id) {
+      return;
+    }
+  
     // get likes from current user
     try {
       const params = {
         "idUtilisateur[equals]=": utilisateur.id,
       };
-
+  
       const likes = await PublicationService.GetFavorisFromPublication(params);
       console.log(likes);
-
+  
       // Fetch details of each liked publication
-      const likeItems: LikeItem[] = [];
-
+      const likeItems: LikeEntity[] = [];
+  
       for (let i = 0; i < likes.data.length; i++) {
         const like = likes.data[i];
         const publication = await PublicationService.GetPublications(
           { "id[equals]": like.idRessource }
         );
-
-        likeItems.push({
-          id: like.id,
-          title: publication[0].titre,
-          contenu: publication[0].contenu,
-          date: new Date(like.dateFav),
-          image: publication[0].image,
-        });
+  
+        // Vérifier si la publication a été mise en favori par l'utilisateur courant
+        if (like.idUtilisateur === utilisateur.id) {
+          likeItems.push({
+            id: like.id,
+            title: publication[0].titre,
+            contenu: publication[0].contenu,
+            date: new Date(like.dateFav),
+            image: publication[0].image,
+          });
+        }
       }
-
+  
       setItems(likeItems);
     } catch (error) {
       console.error("Error fetching likes:", error);
     }
   }
 
-  interface LikeItem {
-    id: number;
-    title: string;
-    contenu: string;
-    date: Date;
-    image: string;
-  }
 
-  const groupBy = (array: LikeItem[], key: (item: LikeItem) => string) => {
+  const groupBy = (array: LikeEntity[], key: (item: LikeEntity) => string) => {
     return array.reduce((result, currentItem) => {
       const keyValue = key(currentItem);
       (result[keyValue] = result[keyValue] || []).push(currentItem);
       return result;
-    }, {} as Record<string, LikeItem[]>);
+    }, {} as Record<string, LikeEntity[]>);
   };
 
-  const goupAndSortLikes = (array: LikeItem[]) => {
+  const goupAndSortLikes = (array: LikeEntity[]) => {
     const grouped = groupBy(array, (notification: { date: { toDateString: () => string; }; }) => {
       const today = new Date();
       const yesterday = new Date(today);
@@ -112,7 +122,7 @@ const FavorisScreen = () => {
       .reduce((acc, key) => {
         acc[key] = grouped[key];
         return acc;
-      }, {} as Record<string, LikeItem[]>);
+      }, {} as Record<string, LikeEntity[]>);
   };
 
   const sortedGroupedNotifications = goupAndSortLikes(items);
@@ -131,34 +141,38 @@ const FavorisScreen = () => {
     if (diffInDays === 1) return "hier";
     return `le ${date.toLocaleDateString()}`;
   };
-
   return (
     <ScrollView style={styles.container}>
-      {Object.entries(sortedGroupedNotifications).map(([group, notifications]: [string, LikeItem[]]) => (
-        <View key={group}>
-          <Text style={styles.dateHeader}>{group}</Text>
-          <Text></Text>
-          {notifications.map((item: LikeItem) => (
-            <View key={item.id} style={styles.notificationContainer}>
-              {item.image !== "" ? (
-                <Image
-                  style={styles.notificationImage}
-                  source={{ uri: item.image }}
-                />) : null
-              }
-              <View style={styles.notificationTextContainer}>
-                <Text style={styles.notificationTitle}>{item.title}</Text>
-                <Text style={styles.notificationDescription}>
-                  {item.contenu}
-                </Text>
-                <Text style={styles.notificationTime}>
-                  {getFormattedDate(item.date)}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </View>
+      {
+
+  Object.entries(sortedGroupedNotifications).map(([group, notifications]: [string, LikeEntity[]]) => (
+    <View key={group}>
+      <Text style={styles.dateHeader}>{group}</Text>
+      {notifications.map((notification) => (
+        <TouchableOpacity
+          key={notification.id}
+          style={styles.notificationContainer}
+          onPress={() => handlePublicationClick(notification.id)}
+        >
+          <Image
+            source={{ uri: notification.image }}
+            style={styles.notificationImage}
+          />
+          <View style={styles.notificationTextContainer}>
+            <Text style={styles.notificationTitle}>{notification.title}</Text>
+            <Text style={styles.notificationDescription}>
+              {notification.contenu.slice(0, 100)}...
+            </Text>
+            <Text style={styles.notificationTime}>
+              {getFormattedDate(notification.date)}
+            </Text>
+          </View>
+        </TouchableOpacity>
       ))}
+
+      </View>
+  ))}
+
     </ScrollView>
   );
 };
@@ -221,7 +235,3 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
 });
-
-function slice(contenu: any, arg1: number, arg2: number) {
-  throw new Error("Function not implemented.");
-}
