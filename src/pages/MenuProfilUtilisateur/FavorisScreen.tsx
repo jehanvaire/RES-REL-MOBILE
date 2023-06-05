@@ -71,7 +71,7 @@ const FavorisScreen = ({ navigation }: FavorisScreenProps) => {
         const publication = await PublicationService.GetPublications(
           { "id[equals]": like.idRessource }
         );
-  
+          console.log(publication);
         // Vérifier si la publication a été mise en favori par l'utilisateur courant
         if (like.idUtilisateur === utilisateur.id) {
           likeItems.push({
@@ -85,6 +85,7 @@ const FavorisScreen = ({ navigation }: FavorisScreenProps) => {
       }
   
       setItems(likeItems);
+      // console.log(likeItems)
     } catch (error) {
       console.error("Error fetching likes:", error);
     }
@@ -125,7 +126,7 @@ const FavorisScreen = ({ navigation }: FavorisScreenProps) => {
       }, {} as Record<string, LikeEntity[]>);
   };
 
-  const sortedGroupedNotifications = goupAndSortLikes(items);
+  const sortedGroupedFavori = goupAndSortLikes(items);
   const getFormattedDate = (date: Date) => {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -145,26 +146,26 @@ const FavorisScreen = ({ navigation }: FavorisScreenProps) => {
     <ScrollView style={styles.container}>
       {
 
-  Object.entries(sortedGroupedNotifications).map(([group, notifications]: [string, LikeEntity[]]) => (
+  Object.entries(sortedGroupedFavori).map(([group, Favori]: [string, LikeEntity[]]) => (
     <View key={group}>
       <Text style={styles.dateHeader}>{group}</Text>
-      {notifications.map((notification) => (
+      {Favori.map((Favori) => (
         <TouchableOpacity
-          key={notification.id}
-          style={styles.notificationContainer}
-          onPress={() => handlePublicationClick(notification.id)}
+          key={Favori.id}
+          style={styles.FavoriContainer}
+          onPress={() => handlePublicationClick(Favori.id)}
         >
           <Image
-            source={{ uri: notification.image }}
-            style={styles.notificationImage}
+            source={{ uri: Favori.image }}
+            style={styles.FavoriImage}
           />
-          <View style={styles.notificationTextContainer}>
-            <Text style={styles.notificationTitle}>{notification.title}</Text>
-            <Text style={styles.notificationDescription}>
-              {notification.contenu.slice(0, 100)}...
+          <View style={styles.FavoriTextContainer}>
+            <Text style={styles.FavoriTitle}>{Favori.title}</Text>
+            <Text style={styles.FavoriDescription}>
+              {Favori.contenu.slice(0, 100)}...
             </Text>
-            <Text style={styles.notificationTime}>
-              {getFormattedDate(notification.date)}
+            <Text style={styles.FavoriTime}>
+              {getFormattedDate(Favori.date)}
             </Text>
           </View>
         </TouchableOpacity>
@@ -204,32 +205,32 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginLeft: 16,
   },
-  notificationContainer: {
+  FavoriContainer: {
     flexDirection: 'row',
     backgroundColor: '#f8f8f8',
     borderRadius: 10,
     padding: 10,
     marginBottom: 8,
   },
-  notificationImage: {
+  FavoriImage: {
     width: 75,
     height: 75,
     borderRadius: 10,
     marginRight: 10,
   },
-  notificationTextContainer: {
+  FavoriTextContainer: {
     flex: 1,
   },
-  notificationTitle: {
+  FavoriTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 3,
   },
-  notificationDescription: {
+  FavoriDescription: {
     fontSize: 14,
     marginBottom: 4,
   },
-  notificationTime: {
+  FavoriTime: {
     fontSize: 12,
     color: '#999',
     alignSelf: 'flex-end',
