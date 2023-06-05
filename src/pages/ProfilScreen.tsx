@@ -14,7 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const PER_PAGE = 10;
-const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs/";
 
 const HEADER_MAX_HEIGHT = 150;
 const HEADER_MIN_HEIGHT = 60;
@@ -209,7 +209,7 @@ function ProfilScreen(props: any) {
               },
             ]}
             source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
+              uri: apiURL + utilisateur.id + "/download",
             }}
           />
 
