@@ -12,11 +12,13 @@ import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { storage } from "../services/AuthentificationService";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { StyleSheet } from "react-native";
+import { useTheme } from '@react-navigation/native';
 
 const BottomTab = createMaterialBottomTabNavigator();
 
 // The authenticated view
-const Menu = ({ props }: any) => {
+const Menu = () => {
+  const { colors } = useTheme();
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
@@ -31,6 +33,7 @@ const Menu = ({ props }: any) => {
     } else {
       setUtilisateur({} as UtilisateurEntity);
     }
+    console.log(colors)
   }, []);
 
   //TODO: A continuer pour les roles par défaut

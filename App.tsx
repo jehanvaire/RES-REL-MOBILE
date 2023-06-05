@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NativeBaseProvider, StatusBar } from "native-base";
 import { AuthContainer } from "./src/services/AuthentificationService";
 import Authentification from "./src/pages/Authentification/AuthentificationMenuScreen";
@@ -7,16 +7,20 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Connexion from "./src/pages/Authentification/ConnexionScreen";
 import CreationCompte from "./src/pages/Authentification/CreationCompteScreen";
+import { lightTheme, darkTheme, mapNativeBaseToReactNavigationTheme } from './src/ressources/styles/themes';
+
 
 const Stack = createStackNavigator();
 require("moment/locale/fr.js");
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   return (
     <>
       <StatusBar barStyle="dark-content" hidden={false} translucent={true} />
-      <NavigationContainer>
-        <NativeBaseProvider>
+      <NavigationContainer theme={mapNativeBaseToReactNavigationTheme(isDarkMode ? darkTheme : lightTheme)}>
+        <NativeBaseProvider theme={isDarkMode ? darkTheme : lightTheme}>
           <AuthContainer>
             {({ authenticated }: any) => {
               return authenticated ? (
