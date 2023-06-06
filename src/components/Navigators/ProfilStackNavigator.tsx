@@ -51,6 +51,9 @@ const ProfilStackNavigator = (props: any) => {
       <StackNav.Screen
         name="StatistiquesScreen"
         component={StatistiquesScreen}
+        options={
+          { headerShown: true, title: "Statistiques"}
+        }
       />
       <StackNav.Screen name="ParametresScreen" component={ParametresScreen} />
       <StackNav.Screen name="FavorisScreen" component={FavorisScreen} />
