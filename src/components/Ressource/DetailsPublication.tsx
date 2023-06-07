@@ -35,6 +35,8 @@ const DetailsPublication = (props: any) => {
   const [favoris, setFavoris] = useState(false);
   const [favoriId, setFavoriId] = useState<number | null>(null);
   const [favorisCount, setFavorisCount] = useState(0);
+  const [sauvegarder, setSauvegarder] = useState(false);
+  const [sauvegarderID, setSauvegarderID] = useState<number | null>(null);
   const user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
   const user = JSON.parse(user_json) as UtilisateurEntity;
 
@@ -82,8 +84,26 @@ const DetailsPublication = (props: any) => {
     });
   };
 
+  const loadSave = () => {
+    const params = {
+      "idRessource[equals]=": id,
+    };
+    PublicationService.GetFavorisFromPublication(params).then((res) => {
+      const userSave = res.find((favori: { idUtilisateur: number | undefined; }) => favori.idUtilisateur === user?.id);
+      setFavorisCount(res.length);
+      if (userSave) {
+        setSauvegarder(true);
+        setSauvegarderID(userSave.id);
+      } else {
+        setSauvegarder(false);
+        setSauvegarderID(null);
+      }
+    });
+  };
+
   useEffect(() => {
     loadFavoris();
+    loadSave();
   }, []);
 
 
@@ -92,6 +112,27 @@ const DetailsPublication = (props: any) => {
     if (favoris === true) {
       if (favoriId) {
         PublicationService.RemoveFavoriFromPublication(favoriId).then(() => {
+          setSauvegarder(false);
+          setSauvegarderID(null);
+        });
+      } else {
+      }
+    } else {
+      PublicationService.AddFavoriToPublication(id).then((newFavoriId) => {
+        setSauvegarder(true);
+        setSauvegarderID(newFavoriId);
+        loadSave();
+      }).catch((error) => {
+        console.error('Error adding favori: ', error.response);
+      });
+    }
+  }
+
+
+  function ToggleSave(){
+    if (sauvegarder === true) {
+      if (sauvegarderID) {
+        PublicationService.RemoveFavoriFromPublication(sauvegarderID).then(() => {
           setFavoris(false);
           setFavoriId(null);
           setFavorisCount(favorisCount - 1);
@@ -292,7 +333,12 @@ const DetailsPublication = (props: any) => {
             <Spacer />
 
             <TouchableOpacity onPress={SauvegarderPublication}>
-              <Ionicons name={"bookmark-outline"} size={25} />
+              {sauvegarder ? (
+                <Ionicons name={"bookmark"} size={25} color={"blue"} />
+              ) : (
+                <Ionicons name={"bookmark-outline"} size={25} />
+              )}
+              
             </TouchableOpacity>
 
             <Spacer />

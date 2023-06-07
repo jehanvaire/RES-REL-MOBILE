@@ -82,56 +82,6 @@ const FavorisScreen = ({ navigation }: any) => {
   }
 
 
-  // const groupBy = (array: PublicationEntity[], key: (item: PublicationEntity) => string) => {
-  //   return array.reduce((result, currentItem) => {
-  //     const keyValue = key(currentItem);
-  //     (result[keyValue] = result[keyValue] || []).push(currentItem);
-  //     return result;
-  //   }, {} as Record<string, PublicationEntity[]>);
-  // };
-
-  // const goupAndSortLikes = (array: PublicationEntity[]) => {
-  //   const grouped = groupBy(array, (notification: { date: { toDateString: () => string; }; }) => {
-  //     const today = new Date();
-  //     const yesterday = new Date(today);
-  //     yesterday.setDate(yesterday.getDate() - 1);
-  //     const isToday = notification.date.toDateString() === today.toDateString();
-  //     const isYesterday = notification.date.toDateString() === yesterday.toDateString();
-
-  //     if (isToday) return "Aujourd'hui";
-  //     if (isYesterday) return "Hier";
-  //     return "Il y a plus longtemps";
-  //   });
-
-  //   return Object.keys(grouped)
-  //     .sort((groupA, groupB) => {
-  //       if (groupA === "Aujourd'hui") return -1;
-  //       if (groupA === "Hier" && groupB !== "Aujourd'hui") return -1;
-  //       if (groupA === "Il y a plus longtemps") return 1;
-  //       return 0;
-  //     })
-  //     .reduce((acc, key) => {
-  //       acc[key] = grouped[key];
-  //       return acc;
-  //     }, {} as Record<string, PublicationEntity[]>);
-  // };
-
-  // const sortedGroupedFavori = goupAndSortLikes(publicationsFavorites);
-  // const getFormattedDate = (date: Date) => {
-  //   const now = new Date();
-  //   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  //   const diffInMinutes = Math.floor(diffInSeconds / 60);
-  //   const diffInHours = Math.floor(diffInSeconds / 3600);
-  //   const diffInDays = Math.floor(diffInSeconds / 86400);
-
-  //   if (diffInMinutes < 1) return "à l'instant";
-  //   if (diffInMinutes === 1) return "il y a 1 minute";
-  //   if (diffInMinutes < 60) return `il y a ${diffInMinutes} minutes`;
-  //   if (diffInHours === 1) return "il y a 1 heure";
-  //   if (diffInHours < 24) return `il y a ${diffInHours} heures`;
-  //   if (diffInDays === 1) return "hier";
-  //   return `le ${date.toLocaleDateString()}`;
-  // };
   const renderItem = useCallback(
     ({ item }: any) => (
       <TouchableOpacity
