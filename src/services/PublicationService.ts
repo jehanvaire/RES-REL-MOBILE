@@ -22,8 +22,9 @@ export class PublicationService {
 
   public async GetFavorisFromPublication(params: any = {}): Promise<any> {
     const response = await this.restClient.getAuthentifie(`favoris`, params);
-    return response;
+    return response.data;
   }
+
 
   public async AddFavoriToPublication(id: number): Promise<any> {
     const response = await this.restClient.post(

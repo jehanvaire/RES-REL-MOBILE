@@ -70,8 +70,8 @@ const DetailsPublication = (props: any) => {
       "idRessource[equals]=": id,
     };
     PublicationService.GetFavorisFromPublication(params).then((res) => {
-      const userFavori = res.data.find((favori: { idUtilisateur: number | undefined; }) => favori.idUtilisateur === user?.id);
-      setFavorisCount(res.data.length);
+      const userFavori = res.find((favori: { idUtilisateur: number | undefined; }) => favori.idUtilisateur === user?.id);
+      setFavorisCount(res.length);
       if (userFavori) {
         setFavoris(true);
         setFavoriId(userFavori.id);
