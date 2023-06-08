@@ -9,11 +9,12 @@ const AboutScreen = () => {
 
   const navigation = useNavigation();
 
-  useLayoutEffect(() => {
+  useLayoutEffect(() => { 
     navigation.setOptions({
       title: 'A propos',
     });
   }, [navigation]);
+
 
 
   return (
