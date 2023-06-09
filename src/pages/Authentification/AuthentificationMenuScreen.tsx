@@ -40,14 +40,10 @@ const AuthentificationMenu = ({ navigation }: any) => {
         <Text style={styles.textButton}>Mode Invité</Text>
       </TouchableOpacity>
 
-
       <View style={styles.row}>
         <TouchableOpacity>
           {/* Only for debug */}
-          <Text 
-            onPress={() => navigation.navigate("ValidationMail")}
-            style={styles.footertext}
-          >Mot de passe oublié?</Text>
+          <Text style={styles.footertext}>Mot de passe oublié?</Text>
         </TouchableOpacity>
         <Text style={styles.footertext}> · </Text>
         <TouchableOpacity>
@@ -56,9 +52,7 @@ const AuthentificationMenu = ({ navigation }: any) => {
       </View>
 
       <FooterAuthentification />
-
-    </View >
-
+    </View>
   );
 };
 
@@ -103,7 +97,7 @@ const styles = StyleSheet.create({
     color: "#6a6a6a",
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   exitIcon: {
     color: "black",

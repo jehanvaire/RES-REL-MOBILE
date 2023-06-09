@@ -11,6 +11,7 @@ export class UtilisateurEntity {
   codePostal!: string;
   motDePasse!: string;
   dateVerification!: Date;
+  idRole!: number;
 
   constructor(init?: Partial<UtilisateurEntity>) {
     Object.assign(this, init);

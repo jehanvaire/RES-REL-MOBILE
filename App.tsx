@@ -15,7 +15,8 @@ require("moment/locale/fr.js");
 function App() {
   return (
     <>
-      <StatusBar barStyle="dark-content" hidden={false} translucent={true} />
+      <StatusBar backgroundColor="transparent" />
+
       <NavigationContainer>
         <NativeBaseProvider>
           <AuthContainer>
@@ -50,6 +51,7 @@ function App() {
                     name="ModeInvite"
                     component={Menu}
                     options={{ headerShown: false }}
+                    initialParams={{ invite: true }}
                   />
                 </Stack.Navigator>
               );
