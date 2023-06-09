@@ -7,6 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Connexion from "./src/pages/Authentification/ConnexionScreen";
 import CreationCompte from "./src/pages/Authentification/CreationCompteScreen";
+import ValidationMail from "./src/pages/Authentification/ValidationMailScreen";
 
 const Stack = createStackNavigator();
 require("moment/locale/fr.js");
@@ -38,6 +39,11 @@ function App() {
                   <Stack.Screen
                     name="CreationCompte"
                     component={CreationCompte}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="ValidationMail"
+                    component={ValidationMail}
                     options={{ headerShown: false }}
                   />
                   <Stack.Screen
