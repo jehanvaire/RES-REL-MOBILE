@@ -115,8 +115,6 @@ function CreationRessourceScreen() {
       type: result.type,
     };
 
-    console.log("file", file);
-
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
       type: result.type,
@@ -157,8 +155,6 @@ function CreationRessourceScreen() {
     formData.append("titre", pieceJointe.titre);
     formData.append("type", type);
     formData.append("idUtilisateur", String(utilisateur.id));
-
-    console.log("formData", formData);
 
     PublicationService.AjouterPieceJointe(formData).then(async (res) => {
       await PublicationService.CreerPublication({

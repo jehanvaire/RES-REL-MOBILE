@@ -14,6 +14,7 @@ import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import DateTimePicker, {
   Event as DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { useAuth } from "../../services/AuthentificationService";
 
 const CreationCompteScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
@@ -23,6 +24,8 @@ const CreationCompteScreen = (props: any) => {
   const [mailError, setMailError] = useState(false);
   const [champsManquants, setChampsManquants] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const auth = useAuth();
 
   const isMailValid = () => {
     return (
@@ -60,9 +63,9 @@ const CreationCompteScreen = (props: any) => {
     ) {
       setPasswordError(false);
       setMailError(false);
-      props.navigation.navigate("ValidationMail", {
-        utilisateur: utilisateur,
-      });
+      await auth.inscription(utilisateur);
+
+      props.navigation.navigate("ValidationMail");
 
       //redirect to ValidationMailScreen
     } else {

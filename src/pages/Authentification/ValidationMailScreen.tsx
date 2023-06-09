@@ -1,18 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
-import { Image } from "native-base";
-import images from "../../ressources/ListeImagesLocales";
-import FooterAuthentification from "./FooterAuthentification";
 import { openInbox } from "react-native-email-link";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useAuth } from "../../services/AuthentificationService";
+import { storage, useAuth } from "../../services/AuthentificationService";
+import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
+import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 
-const ValidationMail = ({ utilisateur }: any) => {
+const ValidationMail = (props: any) => {
   const auth = useAuth();
 
+  const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
+
+  React.useEffect(() => {
+    const user_json =
+      storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+
+    if (user_json === "") {
+    } else {
+      var user = JSON.parse(user_json) as UtilisateurEntity;
+      setMoi(user);
+    }
+  }, []);
+
   const checkValidationCompte = async () => {
-    console.log("utilisateur", utilisateur);
-    await auth.inscription(utilisateur);
+    auth.validerMail(moi.id);
+
+    if (moi.dateVerification) {
+      props.navigation.navigate("ListePublicationsScreen");
+    }
   };
 
   return (
