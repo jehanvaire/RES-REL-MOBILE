@@ -8,11 +8,12 @@ import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnu
 const StatistiquesScreen = () => {
 
   const [bearer, setBearer] = useState("");
-  const statsUrl = 'https://google.com';
+  const statsUrl = 'https://api.victor-gombert.fr/stats';
+  //const statsUrl = 'http://10.0.2.2:8000/stats';
   const injectedJS = `
   fetch('` + statsUrl + `', {
     headers: {
-      'Authorization': '` + bearer + `',
+      'Authorization': '105|paqmg4KDZvIv3ixPHA0aCQHLJNyWjh8PgMbj6XK6',
     },
   })
   .then(response => response.text())
@@ -28,10 +29,15 @@ const StatistiquesScreen = () => {
 
   return (
     <WebView
-      source={{ uri: statsUrl }}
+      source={{ 
+        uri: statsUrl,
+        headers: {
+            Authorization: "Bearer paqmg4KDZvIv3ixPHA0aCQHLJNyWjh8PgMbj6XK6",
+        },
+      }}
       style={{ flex: 1 }}
       pullToRefreshEnabled={true}
-      injectedJavaScript={injectedJS}
+      //injectedJavaScript={injectedJS}
       startInLoadingState={true}
     />
   );
