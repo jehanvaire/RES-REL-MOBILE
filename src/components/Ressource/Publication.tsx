@@ -215,31 +215,39 @@ const Publication = (props: any) => {
           ></Description>
 
           <Stack direction="row" style={styles.footer}>
-            <TouchableOpacity onPress={LikePublication}>
-              {liked ? (
-                <Ionicons name={"heart"} size={25} color={"red"} />
-              ) : (
-                <Ionicons name={"heart-outline"} size={25} />
-              )}
-            </TouchableOpacity>
+            {props.authentifie && (
+              <>
+                <TouchableOpacity onPress={LikePublication}>
+                  {liked ? (
+                    <Ionicons name={"heart"} size={25} color={"red"} />
+                  ) : (
+                    <Ionicons name={"heart-outline"} size={25} />
+                  )}
+                </TouchableOpacity>
 
-            <Spacer />
+                <Spacer />
+              </>
+            )}
 
             <TouchableOpacity onPress={ShowCommentsSection}>
               <Ionicons name={"chatbubble-outline"} size={25} />
             </TouchableOpacity>
 
-            <Spacer />
+            {props.authentifie && (
+              <>
+                <Spacer />
 
-            <TouchableOpacity onPress={SauvegarderPublication}>
-              <Ionicons name={"bookmark-outline"} size={25} />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={SauvegarderPublication}>
+                  <Ionicons name={"bookmark-outline"} size={25} />
+                </TouchableOpacity>
 
-            <Spacer />
+                <Spacer />
 
-            <TouchableOpacity onPress={AfficherPlusOptions}>
-              <Ionicons name={"ellipsis-vertical"} size={25} />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={AfficherPlusOptions}>
+                  <Ionicons name={"ellipsis-vertical"} size={25} />
+                </TouchableOpacity>
+              </>
+            )}
           </Stack>
         </Box>
       );

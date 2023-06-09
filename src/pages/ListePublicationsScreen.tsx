@@ -1,6 +1,12 @@
 import { View, Image, FlatList } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StatusBar, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -15,6 +21,7 @@ import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import Publication from "../components/Ressource/Publication";
 import DetailsPublication from "../components/Ressource/DetailsPublication";
+import EspaceCommentaireScreen from "./Publication/EspaceCommentaireScreen";
 
 const StackNav = createStackNavigator();
 const PER_PAGE = 15;
@@ -28,7 +35,7 @@ const HeaderComponent = () => {
   );
 };
 
-function ListePublicationsScreen({ navigation }: any) {
+function ListePublicationsScreen(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
   const [publications, setPublications] = useState<PublicationEntity[]>([]);
@@ -40,6 +47,17 @@ function ListePublicationsScreen({ navigation }: any) {
       storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     if (user_json === "") {
       setIsAuthenticated(false);
+
+      const params = {
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        orderBy: "dateCreation,desc",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+
+      PublicationService.GetPublications(params).then((res) => {
+        setPublications(res);
+      });
     } else {
       setIsAuthenticated(true);
       var user = JSON.parse(user_json) as UtilisateurEntity;
@@ -47,6 +65,8 @@ function ListePublicationsScreen({ navigation }: any) {
 
       const params = {
         fromRelations: 3, // Remplacer avec user.id
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
         include: "categorie,utilisateur,pieceJointe",
       };
 
@@ -57,7 +77,7 @@ function ListePublicationsScreen({ navigation }: any) {
   }, []);
 
   const navigateToCreation = () => {
-    navigation.navigate("CreationRessourceScreen");
+    props.navigation.navigate("CreationRessourceScreen");
   };
 
   const [fontsLoaded] = useFonts({
@@ -80,13 +100,24 @@ function ListePublicationsScreen({ navigation }: any) {
     const nextPage = page + 1;
     setPage(nextPage);
 
-    const params = {
-      page: nextPage,
-      perPage: PER_PAGE,
-      "idUtilisateur[equals]=": 3, //moi.id,
-      include: "utilisateur,categorie,pieceJointe",
-      zIndex: 10,
-    };
+    let params = {};
+
+    if (isAuthenticated) {
+      params = {
+        page: nextPage,
+        perPage: PER_PAGE,
+        "idUtilisateur[equals]=": 3, //moi.id,
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "utilisateur,categorie,pieceJointe",
+      };
+    } else {
+      params = {
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+    }
     PublicationService.GetPublications(params).then((publis) => {
       setPublications([...publications, ...publis]);
     });
@@ -96,20 +127,33 @@ function ListePublicationsScreen({ navigation }: any) {
     setRefreshing(true);
     const firstPage = 1;
     setPage(firstPage);
-    const params = {
-      page: firstPage,
-      perPage: PER_PAGE,
-      "idUtilisateur[equals]=": 3, //moi.id,
-      include: "utilisateur,categorie,pieceJointe",
-    };
+    let params = {};
+
+    if (isAuthenticated) {
+      params = {
+        page: firstPage,
+        perPage: PER_PAGE,
+        "idUtilisateur[equals]=": 3, //moi.id,
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "utilisateur,categorie,pieceJointe",
+      };
+    } else {
+      params = {
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+    }
     PublicationService.GetPublications(params).then((publications) => {
+      console.log(publications.length);
       setPublications(publications);
     });
     setRefreshing(false);
   };
 
   const renderItem = ({ item }: any) => (
-    <View key={item.id}>
+    <View key={item.id + item.idPieceJointe + item.idUtilisateur}>
       <Publication
         id={item.idUtilisateur}
         auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
@@ -124,8 +168,9 @@ function ListePublicationsScreen({ navigation }: any) {
         status={item.status}
         raisonRefus={item.raisonRefus}
         dateCreation={item.dateCreation}
-        navigation={navigation}
+        navigation={props.navigation}
         idUtilisateur={item.utilisateur.id}
+        authentifie={isAuthenticated}
       />
     </View>
   );
@@ -136,7 +181,7 @@ function ListePublicationsScreen({ navigation }: any) {
         <HeaderComponent />
       </SafeAreaView>
       <View style={styles.container}>
-        <StatusBar translucent backgroundColor="transparent" />
+        <StatusBar />
 
         <BoutonAjoutPublication
           isAuthenticated={isAuthenticated}
@@ -156,7 +201,6 @@ function ListePublicationsScreen({ navigation }: any) {
             refreshing={refreshing}
             onRefresh={handleRefresh}
             renderItem={renderItem}
-            scrollEventThrottle={16}
           />
         </GestureHandlerRootView>
       </View>
@@ -174,7 +218,7 @@ const BoutonAjoutPublication = ({
   // Show button only if user is logged in
   if (isAuthenticated) {
     return (
-      <TouchableOpacity onPress={onPress} style={styles.customButton}>
+      <TouchableOpacity onPress={onPress} style={styles.ajoutPublicationButton}>
         <Ionicons name="add-outline" size={36} color="#FFFFFF" />
       </TouchableOpacity>
     );
@@ -200,6 +244,10 @@ const ListePublicationStack = () => {
         component={CreationRessourceScreen}
         options={{ headerShown: true, title: "Créer une ressource" }}
       />
+      <StackNav.Screen
+        name="EspaceCommentaireScreen"
+        component={EspaceCommentaireScreen}
+      />
     </StackNav.Navigator>
   );
 };
@@ -214,6 +262,7 @@ const styles = StyleSheet.create({
   vendorHeader: {
     backgroundColor: "#FFFFFF",
     height: 60,
+    overflow: "visible",
     alignItems: "center",
     zIndex: 1000,
     borderBottomRightRadius: 10,
@@ -223,7 +272,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    // fontFamily: "SansitaSwashed-Bold",
+    fontFamily: Platform.OS === "ios" ? "Arial" : "Sansita-Swashed-SemiBold",
     color: "#000000",
     textAlign: "center",
   },
@@ -245,7 +294,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  customButton: {
+  ajoutPublicationButton: {
     position: "absolute",
     right: "4%",
     bottom: "14%",
@@ -266,6 +315,6 @@ const styles = StyleSheet.create({
   listePublications: {
     width: "100%",
     alignSelf: "center",
-    marginBottom: 80,
+    marginBottom: 30,
   },
 });

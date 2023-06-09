@@ -24,7 +24,7 @@ function EspaceCommentaireScreen(props: any) {
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
-      title: 'Commentaires',
+      title: "Commentaires",
     });
   }, [props.navigation]);
 
@@ -40,11 +40,13 @@ function EspaceCommentaireScreen(props: any) {
 
   useEffect(() => {
     const fetchStorage = async () => {
-      const user_json = await storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+      const user_json =
+        storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
       if (user_json !== "") {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
+        console.log("Vous n'êtes pas connecté");
       }
     };
 
@@ -187,51 +189,59 @@ function EspaceCommentaireScreen(props: any) {
 
       <ModalOptionsComponent />
 
-      {reponseA.id && (
-        <Stack direction="row" style={[styles.inputStack, styles.rounded]}>
-          <Text style={styles.textReponse}>
-            Réponse à {reponseA.utilisateur?.prenom} :{" "}
-            {reponseA.contenu.substring(0, 20)}
-          </Text>
-          <Spacer />
-          <TouchableOpacity
-            onPress={() => {
-              CommentaireService.setReponseACommentaire(
-                {} as CommentaireEntity
-              );
-              setReponseA({} as CommentaireEntity);
-            }}
-          >
-            <Ionicons name="close-circle-outline" size={25} color="#4183F4" />
-          </TouchableOpacity>
-        </Stack>
-      )}
+      {isAuthenticated && (
+        <>
+          {reponseA.id && (
+            <Stack direction="row" style={[styles.inputStack, styles.rounded]}>
+              <Text style={styles.textReponse}>
+                Réponse à {reponseA.utilisateur?.prenom} :{" "}
+                {reponseA.contenu.substring(0, 20)}
+              </Text>
+              <Spacer />
+              <TouchableOpacity
+                onPress={() => {
+                  CommentaireService.setReponseACommentaire(
+                    {} as CommentaireEntity
+                  );
+                  setReponseA({} as CommentaireEntity);
+                }}
+              >
+                <Ionicons
+                  name="close-circle-outline"
+                  size={25}
+                  color="#4183F4"
+                />
+              </TouchableOpacity>
+            </Stack>
+          )}
 
-      <Stack
-        direction="row"
-        style={[styles.inputStack, !reponseA.id && styles.rounded]}
-      >
-        <Input
-          mx="3"
-          placeholder="Publier un commentaire..."
-          w="85%"
-          onChangeText={setCommentaire}
-          value={commentaire}
-          ref={inputRef}
-          borderRadius={15}
-          borderWidth={1}
-          borderColor={"gray"}
-          fontSize={15}
-          editable={isAuthenticated}
-        />
-        <TouchableOpacity
-          onPress={() => {
-            reponseA.id ? sendReponseCommentaire() : sendCommentaire();
-          }}
-        >
-          <Ionicons name="send-outline" size={25} color="#000000" />
-        </TouchableOpacity>
-      </Stack>
+          <Stack
+            direction="row"
+            style={[styles.inputStack, !reponseA.id && styles.rounded]}
+          >
+            <Input
+              mx="3"
+              placeholder="Publier un commentaire..."
+              w="85%"
+              onChangeText={setCommentaire}
+              value={commentaire}
+              ref={inputRef}
+              borderRadius={15}
+              borderWidth={1}
+              borderColor={"gray"}
+              fontSize={15}
+              editable={isAuthenticated}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                reponseA.id ? sendReponseCommentaire() : sendCommentaire();
+              }}
+            >
+              <Ionicons name="send-outline" size={25} color="#000000" />
+            </TouchableOpacity>
+          </Stack>
+        </>
+      )}
     </View>
   );
 }

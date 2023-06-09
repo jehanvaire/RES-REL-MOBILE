@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RechercheScreen from "./Rercherche/RechercheScreen";
-import { getNumberOfNotifications } from "./Notifications/NotificationsActivitesScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
@@ -15,40 +14,28 @@ import NotificationTopNavigator from "../components/Navigators/Notifications/Not
 const BottomTab = createMaterialBottomTabNavigator();
 
 // The authenticated view
-const Menu = ({ props }: any) => {
+const Menu = (props: any) => {
+  const { invite } = props.route?.params ?? false;
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
   const [isAutorized, setIsAutorized] = useState(!!utilisateur.id);
-  const [loading, setIsLoading] = useState(true);
   const gestureHandlerRef = React.createRef();
+  const [loading, setIsLoading] = useState(true);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     if (user_json !== "") {
       var user = JSON.parse(user_json) as UtilisateurEntity;
+      user.idRole < 4 ? setIsAutorized(true) : setIsAutorized(false);
+
       setUtilisateur(user);
+      setIsLoading(false);
     } else {
       setUtilisateur({} as UtilisateurEntity);
+      setIsLoading(false);
     }
   }, []);
-
-  //TODO: A continuer pour les roles par défaut
-  // useEffect(() => {
-  //   if (utilisateur.role) {
-  //     setIsAutorized(utilisateur.role >= utilisateur.role);
-  //   } else {
-  //     setIsAutorized(false);
-  //   }
-  // }, [utilisateur]);
-
-  useEffect(() => {
-    setIsAutorized(true);
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [utilisateur]);
 
   return loading ? null : (
     <BottomTab.Navigator
@@ -83,29 +70,33 @@ const Menu = ({ props }: any) => {
     >
       <BottomTab.Screen name="Menu" component={ListePublicationsScreen} />
       <BottomTab.Screen name="Recherche" component={RechercheScreen} />
-      <BottomTab.Screen
-        name="Notifications"
-        component={NotificationTopNavigator}
-        options={{ tabBarBadge: 3 }}
-      />
-      <BottomTab.Screen
-        name="Profil"
-        component={ProfilStackNavigator}
-        initialParams={{
-          currentUser: true,
-          utilisateur: utilisateur,
-          gestureHandlerRef: gestureHandlerRef,
-        }}
-      />
+      {!invite && (
+        <>
+          <BottomTab.Screen
+            name="Notifications"
+            component={NotificationTopNavigator}
+            options={{ tabBarBadge: 3 }}
+          />
+          <BottomTab.Screen
+            name="Profil"
+            component={ProfilStackNavigator}
+            initialParams={{
+              currentUser: true,
+              utilisateur: utilisateur,
+              gestureHandlerRef: gestureHandlerRef,
+            }}
+          />
+        </>
+      )}
 
-      {isAutorized ? (
+      {!invite && isAutorized && (
         <>
           <BottomTab.Screen
             name="Validation ressources"
             component={ValidationRessourcesStackNavigator}
           />
         </>
-      ) : null}
+      )}
     </BottomTab.Navigator>
   );
 };
