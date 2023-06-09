@@ -78,7 +78,7 @@ export default class RestClient {
     const response = await axios.post(url, body, {
       headers: {
         Authorization: `Bearer ${this.token}`,
-        "Content-Type": "multipart/form-data; charset=utf-8;",
+        "Content-Type": "multipart/form-data",
       },
     });
 

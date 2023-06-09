@@ -18,12 +18,12 @@ import RNFS from "react-native-fs";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
-import ReactNativeBlobUtil from "react-native-blob-util";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
 import { FormControl, Select } from "native-base";
 import CategorieService from "../../services/CategorieService";
 import { TouchableOpacity } from "react-native";
+import axios from "axios";
 
 function CreationRessourceScreen() {
   const navigation = useNavigation();
@@ -107,7 +107,15 @@ function CreationRessourceScreen() {
       }
     }
 
-    const fileBlob = await ReactNativeBlobUtil.fs.readFile(filePath, "base64");
+    filePath = "file://" + filePath;
+
+    const file = {
+      uri: filePath,
+      name: result.name,
+      type: result.type,
+    };
+
+    console.log("file", file);
 
     const nouvellePieceJointe = {
       idUtilisateur: utilisateur.id,
@@ -115,35 +123,53 @@ function CreationRessourceScreen() {
       titre: result.name,
       taille: result.size,
       uri: filePath,
-      file: fileBlob,
+      file: file,
     } as PieceJointeEntity;
 
     setPieceJointe(nouvellePieceJointe);
   };
 
   const soumettre = async () => {
-    await PublicationService.CreerPublication({
-      idCategorie: publication.categorie.id,
-      contenu: publication.contenu,
-      titre: publication.titre,
-      idUtilisateur: utilisateur.id,
-    } as PublicationEntity).then((res) => {
-      if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
-        gererNavigation();
-        return;
-      }
+    if (!pieceJointe || !pieceJointe.hasOwnProperty("type")) {
+      gererNavigation();
+      return;
+    }
 
-      const formData = new FormData();
-      formData.append("file", pieceJointe.file);
-      formData.append("titre", pieceJointe.titre);
-      formData.append("type", pieceJointe.type);
-      formData.append("idUtilisateur", String(utilisateur));
-      formData.append("idRessource", String(res.id));
+    let type = "";
+    switch (pieceJointe.type) {
+      case "image/png":
+      case "image/jpeg":
+        type = "IMAGE";
+        break;
+      case "application/pdf":
+        type = "PDF";
+        break;
+      case "video/mp4":
+        type = "VIDEO";
+        break;
+      default:
+        type = "";
+        break;
+    }
 
-      PublicationService.AjouterPieceJointe(formData).then((res) => {
-        console.log("pj", res);
-        gererNavigation();
-      });
+    const formData = new FormData();
+    formData.append("file", pieceJointe.file);
+    formData.append("titre", pieceJointe.titre);
+    formData.append("type", type);
+    formData.append("idUtilisateur", String(utilisateur.id));
+
+    console.log("formData", formData);
+
+    PublicationService.AjouterPieceJointe(formData).then(async (res) => {
+      await PublicationService.CreerPublication({
+        idCategorie: publication.categorie.id,
+        contenu: publication.contenu,
+        titre: publication.titre,
+        idUtilisateur: utilisateur.id,
+        idPieceJointe: res.id,
+      } as PublicationEntity);
+
+      gererNavigation();
     });
   };
 
@@ -159,7 +185,7 @@ function CreationRessourceScreen() {
 
     const uri =
       Platform.OS === "android"
-        ? "file:///" + pieceJointe.uri.replace("content://", "")
+        ? pieceJointe.uri.replace("content://", "")
         : pieceJointe.uri.replace("content://", "");
 
     if (pieceJointe.type.startsWith("image/")) {

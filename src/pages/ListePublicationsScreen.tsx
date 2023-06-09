@@ -1,9 +1,7 @@
-import { ScrollView, View, Image } from "native-base";
+import { View, Image, FlatList } from "native-base";
 import React, { useEffect, useState } from "react";
 import { StatusBar, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Publication from "../components/Ressource/Publication";
-import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -12,8 +10,14 @@ import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
+import PublicationService from "../services/PublicationService";
+import { PublicationEntity } from "../ressources/models/PublicationEntity";
+import Publication from "../components/Ressource/Publication";
+import DetailsPublication from "../components/Ressource/DetailsPublication";
 
 const StackNav = createStackNavigator();
+const PER_PAGE = 15;
 
 const HeaderComponent = () => {
   return (
@@ -26,13 +30,29 @@ const HeaderComponent = () => {
 
 function ListePublicationsScreen({ navigation }: any) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
+  const [publications, setPublications] = useState<PublicationEntity[]>([]);
+  const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     const user_json =
       storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
-    if (user_json !== "") {
-      setIsAuthenticated(true);
-    } else {
+    if (user_json === "") {
       setIsAuthenticated(false);
+    } else {
+      setIsAuthenticated(true);
+      var user = JSON.parse(user_json) as UtilisateurEntity;
+      setMoi(user);
+
+      const params = {
+        fromRelations: 3, // Remplacer avec user.id
+        include: "categorie,utilisateur,pieceJointe",
+      };
+
+      PublicationService.GetPublications(params).then((res) => {
+        setPublications(res);
+      });
     }
   }, []);
 
@@ -56,6 +76,60 @@ function ListePublicationsScreen({ navigation }: any) {
     return null;
   }
 
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+
+    const params = {
+      page: nextPage,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": 3, //moi.id,
+      include: "utilisateur,categorie,pieceJointe",
+      zIndex: 10,
+    };
+    PublicationService.GetPublications(params).then((publis) => {
+      setPublications([...publications, ...publis]);
+    });
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    const firstPage = 1;
+    setPage(firstPage);
+    const params = {
+      page: firstPage,
+      perPage: PER_PAGE,
+      "idUtilisateur[equals]=": 3, //moi.id,
+      include: "utilisateur,categorie,pieceJointe",
+    };
+    PublicationService.GetPublications(params).then((publications) => {
+      setPublications(publications);
+    });
+    setRefreshing(false);
+  };
+
+  const renderItem = ({ item }: any) => (
+    <View key={item.id}>
+      <Publication
+        id={item.idUtilisateur}
+        auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
+        titre={item.titre}
+        categorie={item.categorie.nom}
+        idPieceJointe={item.pieceJointe?.id}
+        typePieceJointe={item.pieceJointe?.type}
+        dateActivite={item.pieceJointe?.dateActivite}
+        lieuActivite={item.pieceJointe?.lieu}
+        codePostalActivite={item.pieceJointe?.codePostal}
+        contenu={item.contenu}
+        status={item.status}
+        raisonRefus={item.raisonRefus}
+        dateCreation={item.dateCreation}
+        navigation={navigation}
+        idUtilisateur={item.utilisateur.id}
+      />
+    </View>
+  );
+
   return (
     <>
       <SafeAreaView>
@@ -64,66 +138,39 @@ function ListePublicationsScreen({ navigation }: any) {
       <View style={styles.container}>
         <StatusBar translucent backgroundColor="transparent" />
 
-        <CustomButton
+        <BoutonAjoutPublication
           isAuthenticated={isAuthenticated}
           onPress={navigateToCreation}
         />
         <GestureHandlerRootView>
-          <ScrollView>
-            <Publication
-              id="1"
-              utilisateurId="2"
-              idPieceJointe="2"
-              auteur="Adrien"
-              titre="Mais quel drip indécent !"
-              categorie="Culture"
-              contenu="Le Pape francois est doté d'un style vestimentaire unique. En effet Gucci a décidé de lui offrir un ensemble de vêtements d'une valeur de 1 000 000 de dollars, pièce unique au monde."
-              status={StatusPublicationEnum.ENATTENTE}
-              typePieceJointe="IMAGE"
-              raisonRefus={undefined}
-              dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
-              navigation={navigation}
-            />
-            <Publication
-              auteur="Adrien"
-              utilisateurId="2"
-              idPieceJointe="2"
-              titre="Sortie au cinéma"
-              categorie="Loisirs"
-              contenu="Le film sortira au cinéma le 28 janvier 2023."
-              dateCreation={new Date(2023, 0, 7, 15, 10, 30)}
-              typePieceJointe="IMAGE"
-              status={StatusPublicationEnum.ENATTENTE}
-              raisonRefus={undefined}
-              navigation={navigation}
-            />
-
-            <Publication
-              auteur="Adrien"
-              utilisateurId="2"
-              idPieceJointe="3"
-              titre="L'art abstrait"
-              categorie="Intelligence émotionnelle"
-              contenu="L'art abstrait est un art qui ne représente pas la réalité, mais qui cherche à exprimer des émotions, des sensations, des idées, des états d'âme, des sentiments, des souvenirs, des rêves et des pensées."
-              status={StatusPublicationEnum.ENATTENTE}
-              raisonRefus={undefined}
-              dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
-              typePieceJointe="IMAGE"
-              navigation={navigation}
-            />
-          </ScrollView>
+          {/* Liste des publications */}
+          <FlatList
+            style={styles.listePublications}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={PER_PAGE}
+            initialNumToRender={PER_PAGE}
+            data={publications}
+            keyExtractor={(item: any) => item.id.toString()}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={PER_PAGE}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            renderItem={renderItem}
+            scrollEventThrottle={16}
+          />
         </GestureHandlerRootView>
       </View>
     </>
   );
 }
-function CustomButton({
+
+const BoutonAjoutPublication = ({
   isAuthenticated,
   onPress,
 }: {
   isAuthenticated: boolean;
   onPress: () => void;
-}) {
+}) => {
   // Show button only if user is logged in
   if (isAuthenticated) {
     return (
@@ -133,7 +180,7 @@ function CustomButton({
     );
   }
   return null;
-}
+};
 
 const ListePublicationStack = () => {
   return (
@@ -144,6 +191,11 @@ const ListePublicationStack = () => {
         options={{ headerShown: false }}
       />
       <StackNav.Screen
+        name="DetailsPublication"
+        component={DetailsPublication}
+        options={{ headerShown: true, title: "" }}
+      />
+      <StackNav.Screen
         name="CreationRessourceScreen"
         component={CreationRessourceScreen}
         options={{ headerShown: true, title: "Créer une ressource" }}
@@ -151,7 +203,9 @@ const ListePublicationStack = () => {
     </StackNav.Navigator>
   );
 };
+
 export default ListePublicationStack;
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#BBBBBB",
@@ -208,5 +262,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  listePublications: {
+    width: "100%",
+    alignSelf: "center",
+    marginBottom: 80,
   },
 });

@@ -1,6 +1,12 @@
 import { Center, Spacer, Stack, Text, VStack } from "native-base";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, BackHandler, StatusBar, Animated } from "react-native";
+import {
+  StyleSheet,
+  BackHandler,
+  StatusBar,
+  Animated,
+  TouchableOpacity,
+} from "react-native";
 import { View } from "native-base";
 import PublicationService from "../services/PublicationService";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
@@ -12,14 +18,53 @@ import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RechercheService from "../services/RechercheService";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
+import { storage } from "../services/AuthentificationService";
+import RelationService from "../services/RelationService";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-const PER_PAGE = 10;
+const PER_PAGE = 15;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const HEADER_MAX_HEIGHT = 150;
 const HEADER_MIN_HEIGHT = 60;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
+const HEADER_VALUES = [
+  {
+    name: "headerHeight",
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+  },
+  {
+    name: "headerDescriptionHeight",
+    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
+  },
+  {
+    name: "headerElementsOpacity",
+    outputRange: [1, 0],
+  },
+  {
+    name: "headerElementsTranslateY",
+    outputRange: [0, -50],
+  },
+  {
+    name: "titreTranslateY",
+    outputRange: [0, -10],
+  },
+  {
+    name: "avatarSize",
+    outputRange: [100, 40],
+  },
+  {
+    name: "relationHeight",
+    outputRange: [30, 0],
+  },
+  {
+    name: "containterAutreUtilisateurWidth",
+    outputRange: ["65%", "80%"],
+  },
+];
+//! Ajouter animations lors du changement de page
 function ProfilScreen(props: any) {
   const { navigation } = props;
   const autreUtilisateur = props.route.params.autreUtilisateur;
@@ -27,9 +72,17 @@ function ProfilScreen(props: any) {
   const [listePublications, setListePublications] = useState<
     PublicationEntity[]
   >([]);
+  const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
+  const [estEnRelation, setEstEnRelation] = useState<boolean>(false);
+  const [relationEnAttente, setRelationEnAttente] = useState<boolean>(false);
+  const [
+    relationEnAttenteAutreUtilisateur,
+    setRelationEnAttenteAutreUtilisateur,
+  ] = useState<boolean>(false);
 
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+  const [nombreRelations, setNombreRelations] = useState(0);
 
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [headerDescriptionExpanded, setHeaderDescriptionExpanded] =
@@ -40,10 +93,17 @@ function ProfilScreen(props: any) {
   useFocusEffect(
     useCallback(() => {
       fetchListePublicationsUtilisateur();
+      checkSiEnRelation();
+      getNombreRelations();
     }, [])
   );
 
   useEffect(() => {
+    var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+
+    var user = JSON.parse(user_json) as UtilisateurEntity;
+    setMoi(user);
+
     const retourHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
@@ -56,47 +116,13 @@ function ProfilScreen(props: any) {
     return () => retourHandler.remove();
   }, []);
 
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-    extrapolate: "clamp",
-  });
-
-  const headerDescriptionHeight = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [HEADER_MAX_HEIGHT + 100, HEADER_MIN_HEIGHT + 100],
-    extrapolate: "clamp",
-  });
-
-  const headerElementsOpacity = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [1, 0],
-    extrapolate: "clamp",
-  });
-
-  const headerElementsTranslateY = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [0, -50],
-    extrapolate: "clamp",
-  });
-
-  const titreTranslateY = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [0, -10],
-    extrapolate: "clamp",
-  });
-
-  const avatarSize = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: [100, 40],
-    extrapolate: "clamp",
-  });
-
-  const containterAutreUtilisateurWidth = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE],
-    outputRange: ["65%", "80%"],
-    extrapolate: "clamp",
-  });
+  const interpolatedValues = HEADER_VALUES.map(({ name, outputRange }) =>
+    scrollY.interpolate({
+      inputRange: [0, HEADER_SCROLL_DISTANCE],
+      outputRange,
+      extrapolate: "clamp",
+    })
+  );
 
   useEffect(() => {
     setHeaderDescriptionExpanded(descriptionExpanded);
@@ -111,22 +137,84 @@ function ProfilScreen(props: any) {
         setHeaderDescriptionExpanded(true);
       }
     });
+
     return () => {
       scrollY.removeListener(listener);
     };
   }, []);
 
   const fetchListePublicationsUtilisateur = async () => {
-    // Get the list of publications
     const params = {
       page: 1,
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
-      sortBy: "id,desc",
+      orderBy: "dateCreation,desc",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublications(listePublications);
+  };
+
+  const getNombreRelations = async () => {
+    const params = {
+      fromUtilisateur: utilisateur.id,
+    };
+    const nombreRelations = await RelationService.GetRelations(params);
+    console.log("infos : ", nombreRelations, utilisateur.id);
+    setNombreRelations(nombreRelations.length);
+  };
+
+  // TODO : A REFAIRE merci copilot :')
+  const checkSiEnRelation = () => {
+    const demandesRelationsParams = {
+      "idDemandeur[equals]=": moi.id,
+      "idReceveur[equals]=": utilisateur.id,
+    };
+
+    RelationService.GetRelation(demandesRelationsParams).then((response1) => {
+      if (response1?.accepte) {
+        setEstEnRelation(true);
+        setRelationEnAttente(false);
+      } else if (response1?.accepte === null) {
+        setEstEnRelation(false);
+        setRelationEnAttente(true);
+      } else {
+        setEstEnRelation(false);
+        setRelationEnAttente(false);
+      }
+    });
+
+    const demandesRelationsParams2 = {
+      "idDemandeur[equals]=": utilisateur.id,
+      "idReceveur[equals]=": moi.id,
+    };
+
+    RelationService.GetRelation(demandesRelationsParams2).then((response2) => {
+      if (response2?.accepte) {
+        setEstEnRelation(true);
+        setRelationEnAttenteAutreUtilisateur(false);
+      } else if (response2?.accepte === null) {
+        setEstEnRelation(false);
+        setRelationEnAttenteAutreUtilisateur(true);
+      } else {
+        setEstEnRelation(false);
+        setRelationEnAttenteAutreUtilisateur(false);
+      }
+    });
+  };
+
+  // TODO: afficher select avec les types de relations
+  const demanderConnexionUtilisateur = () => {
+    const params = {
+      idDemandeur: moi.id,
+      idReceveur: utilisateur.id,
+      typeRelation: 5,
+    };
+
+    RelationService.DemanderRelation(params).then((response) => {
+      console.log(response);
+      checkSiEnRelation();
+    });
   };
 
   const handleLoadMore = () => {
@@ -138,7 +226,7 @@ function ProfilScreen(props: any) {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
-      zIndex: 10,
+      orderBy: "dateCreation,desc",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications([...listePublications, ...publications]);
@@ -154,6 +242,7 @@ function ProfilScreen(props: any) {
       perPage: PER_PAGE,
       "idUtilisateur[equals]=": utilisateur.id,
       include: "utilisateur,categorie,pieceJointe",
+      orderBy: "dateCreation,desc",
     };
     PublicationService.GetPublications(params).then((publications) => {
       setListePublications(publications);
@@ -192,9 +281,9 @@ function ProfilScreen(props: any) {
           {
             height:
               headerDescriptionExpanded && descriptionExpanded
-                ? headerDescriptionHeight
-                : headerHeight,
-            width: autreUtilisateur ? containterAutreUtilisateurWidth : "100%",
+                ? interpolatedValues[1]
+                : interpolatedValues[0],
+            width: autreUtilisateur ? interpolatedValues[7] : "100%",
           },
         ]}
       >
@@ -203,13 +292,14 @@ function ProfilScreen(props: any) {
             style={[
               styles.avatar,
               {
-                height: avatarSize,
-                width: avatarSize,
+                height: interpolatedValues[5],
+                width: interpolatedValues[5],
                 borderRadius: 50,
               },
             ]}
             source={{
-              uri: apiURL + "/" + utilisateur.id + "/download",
+              uri:
+                apiURL + "/" + utilisateur.id + "/download?getThumbnail=true",
             }}
           />
 
@@ -219,7 +309,7 @@ function ProfilScreen(props: any) {
           >
             <Animated.View
               style={{
-                transform: [{ translateY: titreTranslateY }],
+                transform: [{ translateY: interpolatedValues[4] }],
               }}
             >
               <Text style={styles.title}>
@@ -229,8 +319,8 @@ function ProfilScreen(props: any) {
 
             <Animated.View
               style={{
-                opacity: headerElementsOpacity,
-                transform: [{ translateY: headerElementsTranslateY }],
+                opacity: interpolatedValues[2],
+                transform: [{ translateY: interpolatedValues[3] }],
               }}
             >
               <Description
@@ -246,8 +336,8 @@ function ProfilScreen(props: any) {
 
           <Animated.View
             style={{
-              opacity: headerElementsOpacity,
-              transform: [{ translateY: headerElementsTranslateY }],
+              opacity: interpolatedValues[2],
+              transform: [{ translateY: interpolatedValues[3] }],
               marginTop: 30,
             }}
           >
@@ -264,6 +354,7 @@ function ProfilScreen(props: any) {
     <GestureHandlerRootView>
       <StatusBar translucent backgroundColor="transparent" />
 
+      {/* Banière utilisateur */}
       <View>
         {autreUtilisateur ? (
           <View style={styles.containerAutreUtilisateur}>
@@ -275,13 +366,108 @@ function ProfilScreen(props: any) {
           </SafeAreaView>
         )}
 
+        {/* Relations */}
+        <Animated.View
+          style={[
+            styles.relations,
+            {
+              opacity: interpolatedValues[2],
+              transform: [{ translateY: interpolatedValues[3] }],
+              height: interpolatedValues[6],
+            },
+          ]}
+        >
+          <Stack direction="row" alignItems="center">
+            <Text style={[styles.title, { marginLeft: 10 }]}>
+              {nombreRelations} Relations
+            </Text>
+
+            <Spacer />
+
+            {autreUtilisateur && !relationEnAttenteAutreUtilisateur && (
+              <>
+                {!estEnRelation && (
+                  <TouchableOpacity
+                    style={[
+                      styles.buttonDemandeConnexion,
+                      relationEnAttente
+                        ? { backgroundColor: "grey" }
+                        : {
+                            backgroundColor: "#44BE80",
+                          },
+                    ]}
+                    onPress={demanderConnexionUtilisateur}
+                    disabled={relationEnAttente}
+                  >
+                    <Text>
+                      {relationEnAttente
+                        ? "Demande envoyée"
+                        : "Demander connexion"}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                {estEnRelation && (
+                  <TouchableOpacity
+                    style={styles.buttonGererConnexion}
+                    onPress={() =>
+                      navigation.navigate("GererConnexion", {
+                        utilisateur: utilisateur,
+                      })
+                    }
+                  >
+                    <Text>Gérer connexion</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
+
+            {autreUtilisateur && relationEnAttenteAutreUtilisateur && (
+              <>
+                {!estEnRelation && relationEnAttenteAutreUtilisateur && (
+                  <>
+                    <Text style={styles.texteDemande}>Accepter demande ?</Text>
+
+                    <TouchableOpacity
+                      style={styles.bouton}
+                      onPress={() => {
+                        // GererDemandeRelation(item.id, true);
+                      }}
+                    >
+                      <Ionicons
+                        name="checkmark-circle-outline"
+                        size={30}
+                        color="#00FF00"
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.bouton}
+                      onPress={() => {
+                        // GererDemandeRelation(item.id, false);
+                      }}
+                    >
+                      <Ionicons
+                        name="close-circle-outline"
+                        size={30}
+                        color="#FF0000"
+                      />
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
+            )}
+          </Stack>
+        </Animated.View>
+
+        {/* Liste des publications */}
         <Animated.FlatList
           style={styles.listePublications}
           removeClippedSubviews={true}
           maxToRenderPerBatch={PER_PAGE}
           initialNumToRender={PER_PAGE}
           data={listePublications}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item: any) => item.id.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={PER_PAGE}
           refreshing={refreshing}
@@ -318,6 +504,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
   },
+  relations: {
+    width: "100%",
+    alignSelf: "center",
+  },
+  buttonDemandeConnexion: {
+    borderRadius: 5,
+    padding: 5,
+    marginRight: 10,
+  },
+  buttonGererConnexion: {
+    backgroundColor: "#F39C12",
+    borderRadius: 5,
+    padding: 5,
+    marginRight: 10,
+  },
   flex: {
     flexDirection: "row",
   },
@@ -347,5 +548,16 @@ const styles = StyleSheet.create({
     width: "100%",
     alignSelf: "center",
     marginBottom: 160,
+  },
+  bouton: {
+    marginLeft: 10,
+  },
+  texteDemande: {
+    // flex: 1,
+    // flexWrap: "wrap",
+    marginLeft: 10,
+  },
+  gras: {
+    fontWeight: "bold",
   },
 });
