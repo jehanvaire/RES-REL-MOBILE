@@ -21,7 +21,10 @@ export class PublicationService {
 
 
   public async GetFavorisFromPublication(params: any = {}): Promise<any> {
-    const response = await this.restClient.getAuthentifie(`favoris`, params);
+    const response = await this.restClient.getAuthentifie(
+      `favoris`,
+       params
+      );
     return response.data;
   }
 
@@ -50,14 +53,36 @@ export class PublicationService {
     return response;
   }
 
+  public async getSavedPublications(params: any = {}): Promise<any> {
+    const response = await this.restClient.getAuthentifie(
+      `marquePages`,
+      params
+    );
+    return response.data;
+  }
+
 
   public async SauvegarderPublication(id: number): Promise<any> {
-    // const response = await fetch(`${this.baseUrl}/${id}/save`, {
-    //   method: "POST",
-    // });
-    // const data = await response.json();
-    const data = "Publication sauvegardée";
-    return data;
+    const response = await this.restClient.post(
+      `marquePages`,
+      {
+        idUtilisateur: this.user.id,
+        idRessource: id
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  }
+
+  public async SupprimerSauvegardePublication(id: number): Promise<any> {
+    const response = await this.restClient.delete(
+      `marquePages/${id}`
+    );
+    return response;
   }
 
   public async GetPublications(params: any = {}): Promise<PublicationEntity[]> {

@@ -88,9 +88,9 @@ const DetailsPublication = (props: any) => {
     const params = {
       "idRessource[equals]=": id,
     };
-    PublicationService.GetFavorisFromPublication(params).then((res) => {
-      const userSave = res.find((favori: { idUtilisateur: number | undefined; }) => favori.idUtilisateur === user?.id);
-      setFavorisCount(res.length);
+    PublicationService.getSavedPublications(params).then((res) => {
+      const userSave = res.find((sauvegarder: { idUtilisateur: number | undefined; }) => sauvegarder.idUtilisateur === user?.id);
+      console.log("USER SAVEEEEEE", userSave)
       if (userSave) {
         setSauvegarder(true);
         setSauvegarderID(userSave.id);
@@ -108,31 +108,31 @@ const DetailsPublication = (props: any) => {
 
 
 
-  function ToggleFavori() {
-    if (favoris === true) {
-      if (favoriId) {
-        PublicationService.RemoveFavoriFromPublication(favoriId).then(() => {
+  function ToggleSave() {
+    if (sauvegarder === true) {
+      if (sauvegarderID) {
+        PublicationService.SupprimerSauvegardePublication(sauvegarderID).then(() => {
           setSauvegarder(false);
           setSauvegarderID(null);
         });
       } else {
       }
     } else {
-      PublicationService.AddFavoriToPublication(id).then((newFavoriId) => {
+      PublicationService.SauvegarderPublication(id).then((newSaveId) => {
         setSauvegarder(true);
-        setSauvegarderID(newFavoriId);
+        setSauvegarderID(newSaveId);
         loadSave();
       }).catch((error) => {
-        console.error('Error adding favori: ', error.response);
+        console.error('Error adding save: ', error.response);
       });
     }
   }
 
 
-  function ToggleSave(){
-    if (sauvegarder === true) {
-      if (sauvegarderID) {
-        PublicationService.RemoveFavoriFromPublication(sauvegarderID).then(() => {
+  function ToggleFavori(){
+    if (favoris === true) {
+      if (favoriId) {
+        PublicationService.RemoveFavoriFromPublication(favoriId).then(() => {
           setFavoris(false);
           setFavoriId(null);
           setFavorisCount(favorisCount - 1);
@@ -162,12 +162,6 @@ const DetailsPublication = (props: any) => {
 
     props.navigation.setOptions({
       title: "Commentaires",
-    });
-  }
-
-  function SauvegarderPublication() {
-    PublicationService.SauvegarderPublication(1).then((res) => {
-      console.log("TODO: sauvegarder publication");
     });
   }
 
@@ -332,7 +326,7 @@ const DetailsPublication = (props: any) => {
 
             <Spacer />
 
-            <TouchableOpacity onPress={SauvegarderPublication}>
+            <TouchableOpacity onPress={ToggleSave}>
               {sauvegarder ? (
                 <Ionicons name={"bookmark"} size={25} color={"blue"} />
               ) : (

@@ -12,14 +12,14 @@ import FastImage from "react-native-fast-image";
 const PER_PAGE = 15;
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
-const FavorisScreen = ({ navigation }: any) => {
+const PublicationEnregistreesScreen = ({ navigation }: any) => {
 
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>({} as UtilisateurEntity);
-  const [publicationsFavorites, setPublicationsFavorites] = useState<PublicationEntity[]>([]);
+  const [publicationsMisDeCote, setPublicationsMisDeCote] = useState<PublicationEntity[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Favoris',
+      title: 'Mis de coté',
     });
   }, [navigation]);
 
@@ -51,34 +51,35 @@ const FavorisScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (utilisateur.id) {
-      getLikes();
+      getSaved();
     }
   }, [utilisateur.id]);
 
-  async function getLikes() {
+  async function getSaved() {
     const params = {
       "idUtilisateur[equals]=": utilisateur.id,
     };
 
-    const ressourcesFav = await PublicationService.GetFavorisFromPublication(params);
+    const ressourcesMisDeCote = await PublicationService.getSavedPublications(params);
 
-    const listePublicationsFavorites = [] as PublicationEntity[];
+    const listePublicationsMisDeCote= [] as PublicationEntity[];
 
     await Promise.all(
-      ressourcesFav.map(async (ressource: any) => {
-        const paramsFavoris = {
+      ressourcesMisDeCote.map(async (ressource: any) => {
+        const paramsMisDeCote = {
           "id[equals]=": ressource.id,
           include: "pieceJointe,utilisateur,categorie",
         };
 
-        const publication = await PublicationService.GetPublications(paramsFavoris);
+        const publication = await PublicationService.GetPublications(paramsMisDeCote);
 
-        listePublicationsFavorites.push(publication[0]);
+        listePublicationsMisDeCote.push(publication[0]);
       })
     );
 
-    console.log(listePublicationsFavorites);
-    setPublicationsFavorites(listePublicationsFavorites);
+    console.log(listePublicationsMisDeCote);
+    setPublicationsMisDeCote(listePublicationsMisDeCote);
+    console.log("Publication mises de cote",publicationsMisDeCote)
   }
   
   const renderItem = useCallback(
@@ -117,8 +118,8 @@ const FavorisScreen = ({ navigation }: any) => {
   return (
 
     <View style={styles.container}>
-      {publicationsFavorites.length === 0 ? (
-        <Text>Aucun favori trouvé</Text>
+      {publicationsMisDeCote.length === 0 ? (
+        <Text>Aucun mis de coté trouvé</Text>
       ) : (
         <>
           <FlatList
@@ -126,7 +127,7 @@ const FavorisScreen = ({ navigation }: any) => {
             removeClippedSubviews={true}
             maxToRenderPerBatch={PER_PAGE}
             initialNumToRender={PER_PAGE}
-            data={publicationsFavorites}
+            data={publicationsMisDeCote}
             renderItem={renderItem}
             keyExtractor={(item: any) => item.id.toString()}
           />
@@ -136,7 +137,7 @@ const FavorisScreen = ({ navigation }: any) => {
     </View>
   );
 }
-export default FavorisScreen;
+export default PublicationEnregistreesScreen;
 
 const styles = StyleSheet.create({
   container: {
