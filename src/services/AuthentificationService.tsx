@@ -71,7 +71,7 @@ export const AuthContainer = ({ children }: any) => {
       : null;
 
     // Ajoutez cette ligne pour définir le rôle par défaut
-    utilisateur.role = ROLE_UTILISATEUR_PAR_DEFAUT;
+    utilisateur.idRole = ROLE_UTILISATEUR_PAR_DEFAUT;
 
     const response = await axios.post(
       "https://api.victor-gombert.fr/api/v1/inscription",
@@ -83,7 +83,7 @@ export const AuthContainer = ({ children }: any) => {
         nom: utilisateur.nom,
         prenom: utilisateur.prenom,
         bio: utilisateur.bio,
-        role: utilisateur.role, // Ajoutez cette ligne pour envoyer le rôle à l'API
+        role: utilisateur.idRole, // Ajoutez cette ligne pour envoyer le rôle à l'API
       }
     );
 

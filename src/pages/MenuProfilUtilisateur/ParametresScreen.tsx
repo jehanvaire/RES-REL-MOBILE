@@ -7,6 +7,7 @@ import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnu
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import RestClient from "../../services/RestClient";
+import { useAuth } from "../../services/AuthentificationService";
 
 const ParametresScreen = (props: any) => {
 
@@ -15,6 +16,7 @@ const ParametresScreen = (props: any) => {
   const deleteAPIUrl = "utilisateurs/";
   const [token, setToken] = useState<string>("");
   const restClient = new RestClient();
+  const { logout } = useAuth();
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Paramètres',
@@ -49,16 +51,12 @@ const ParametresScreen = (props: any) => {
     restClient.delete(deleteAPIUrl + userID)
       .then((response) => {
         if (response.status === 200) {
-          // Delete the user from the storage
-          storage.delete(AuthentificationEnum.CURRENT_USER);
-          storage.delete(AuthentificationEnum.ACCESS_TOKEN_KEY);
-          // Navigate to the login screen
-          props.navigation.navigate('LoginScreen');
+          logout();
         }
       }
       )
   };
-  
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.parameterItem}>
@@ -73,8 +71,8 @@ const ParametresScreen = (props: any) => {
         <Ionicons name={"chevron-forward-outline"} size={30} />
       </TouchableOpacity> */}
 
-      <TouchableOpacity 
-        onPress={() => props.navigation.navigate('ThemeScreen') }
+      <TouchableOpacity
+        onPress={() => props.navigation.navigate('ThemeScreen')}
         style={styles.parameterItem}
       >
         <Ionicons name={"sunny-outline"} size={30} />
@@ -83,9 +81,9 @@ const ParametresScreen = (props: any) => {
       </TouchableOpacity>
 
 
-      <TouchableOpacity 
-      onPress={() => props.navigation.navigate('AboutScreen') } 
-      style={styles.parameterItem}
+      <TouchableOpacity
+        onPress={() => props.navigation.navigate('AboutScreen')}
+        style={styles.parameterItem}
       >
         <Ionicons name={"information-circle-outline"} size={30} />
         <Text style={styles.parameterText}>A propos</Text>
@@ -101,7 +99,7 @@ const ParametresScreen = (props: any) => {
         <Text style={styles.parameterText}>Supprimer mon compte</Text>
         <Ionicons name={"chevron-forward-outline"} size={30} />
       </TouchableOpacity>
-      
+
     </View>
   );
 };
