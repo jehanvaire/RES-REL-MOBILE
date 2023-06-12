@@ -2,7 +2,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import FavorisScreen from "../../pages/MenuProfilUtilisateur/FavorisScreen";
 import GestionCategoriesScreen from "../../pages/MenuProfilUtilisateur/GestionCategoriesScreen";
 import GestionComptesAdministrateursScreen from "../../pages/MenuProfilUtilisateur/GestionComptesAdministrateursScreen";
-import GestionComptesUtilisateursScreen from "../../pages/MenuProfilUtilisateur/GestionComptesUtilisateursScreen";
 import ParametresScreen from "../../pages/MenuProfilUtilisateur/ParametresScreen";
 import PublicationsEnregistreesScreen from "../../pages/MenuProfilUtilisateur/PublicationsEnregistrees";
 import StatistiquesScreen from "../../pages/MenuProfilUtilisateur/StatistiquesScreen";
@@ -12,6 +11,7 @@ import Publication from "../Ressource/Publication";
 import React from "react";
 import PdfView from "../../pages/PdfView";
 import EspaceCommentaireScreen from "../../pages/Publication/EspaceCommentaireScreen";
+import GestionUtilisateursTopNavigator from "./GestionUtilisateurs/GestionUtilisateursTopNavigator";
 
 export const StackNav = createStackNavigator();
 
@@ -46,7 +46,8 @@ const ProfilStackNavigator = (props: any) => {
       />
       <StackNav.Screen
         name="GestionComptesUtilisateursScreen"
-        component={GestionComptesUtilisateursScreen}
+        component={GestionUtilisateursTopNavigator}
+        options={{ headerShown: true, title: "Gestion des comptes" }}
       />
       <StackNav.Screen
         name="StatistiquesScreen"
