@@ -87,7 +87,7 @@ const GestionComptesBannisScreen = (props: any) => {
         </>
       ) : (
         <View>
-          <Text>Effectuez une recherche pour trouver d'autres citoyens</Text>
+          <Text>Effectuez une recherche pour trouver des comptes bannis</Text>
         </View>
       )}
     </View>

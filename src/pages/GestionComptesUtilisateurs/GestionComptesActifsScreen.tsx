@@ -92,7 +92,7 @@ const GestionComptesActifsScreen = (props: any) => {
   return (
     <View style={styles.container}>
       {listeResultats.length === 0 ? (
-        <Text>Effectuez une recherche pour trouver des ressources</Text>
+        <Text>Effectuez une recherche pour trouver des comptes actifs</Text>
       ) : (
         <>
           <FlatList

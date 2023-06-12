@@ -30,26 +30,16 @@ function GestionUtilisateursTopNavigator() {
       <TopNav.Screen
         name="UtilisateursActifsScreen"
         options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({ focused, color }) =>
-            focused ? (
-              <Ionicons name="images" color={color} size={25} />
-            ) : (
-              <Ionicons name="images-outline" color={color} size={25} />
-            ),
+          tabBarShowLabel: true,
+          tabBarLabel: "Comptes actifs",
         }}
         component={GestionUtilisateursActifsNavigator}
       />
       <TopNav.Screen
         name="UtilisateursBannisScreen"
         options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({ focused, color }) =>
-            focused ? (
-              <Ionicons name="person" color={color} size={25} />
-            ) : (
-              <Ionicons name="person-outline" color={color} size={25} />
-            ),
+          tabBarShowLabel: true,
+          tabBarLabel: "Comptes bannis",
         }}
         component={GestionUtilisateursBannisNavigator}
       />

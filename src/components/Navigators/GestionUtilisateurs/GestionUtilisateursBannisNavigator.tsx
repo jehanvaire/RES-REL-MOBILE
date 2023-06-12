@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import RechercheUtilisateurScreen from "../../../pages/Rercherche/RechercheUtilisateurScreen";
 import ProfilScreen from "../../../pages/ProfilScreen";
+import GestionComptesBannisScreen from "../../../pages/GestionComptesUtilisateurs/GestionComptesBannisScreen";
 
 const StackNav = createStackNavigator();
 
@@ -14,7 +14,7 @@ const GestionUtilisateursBannisNavigator = () => {
     >
       <StackNav.Screen
         name="ListeUtilisateurs"
-        component={RechercheUtilisateurScreen}
+        component={GestionComptesBannisScreen}
         options={{ headerShown: false }}
       />
       <StackNav.Screen
