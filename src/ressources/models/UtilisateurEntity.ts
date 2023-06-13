@@ -2,6 +2,8 @@ export class UtilisateurEntity {
   id!: number;
   nom!: string;
   prenom!: string;
+  compteActif!: number;
+  raisonBan!: string;
   mail!: string;
   bio!: string;
   dateNaissance!: Date;

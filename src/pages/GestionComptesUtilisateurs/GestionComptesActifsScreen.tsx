@@ -1,16 +1,15 @@
-import { Spacer, Stack, FlatList } from "native-base";
+import { Spacer, Stack, FlatList, Avatar } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import { PublicationEntity } from "../../ressources/models/PublicationEntity";
 import RechercheService from "../../services/RechercheService";
-import FastImage from "react-native-fast-image";
+import UtilisateurService from "../../services/UtilisateurService";
 
 const PER_PAGE = 15;
-const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
+const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 
 const GestionComptesActifsScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -28,9 +27,9 @@ const GestionComptesActifsScreen = (props: any) => {
       setUtilisateur({} as UtilisateurEntity);
     }
 
-    RechercheService.GetListeResRessources().subscribe((result) => {
-      if (result) {
-        result = result.filter((item) => item.titre);
+    UtilisateurService.GetComptesActifs().subscribe((result) => {
+      if (result !== undefined) {
+        result = result.filter((item) => item.mail);
         setListeResultats(result);
       } else {
         setListeResultats([]);
@@ -38,22 +37,10 @@ const GestionComptesActifsScreen = (props: any) => {
     });
   }, []);
 
-  function AfficherPublication(publication: PublicationEntity) {
-    props.navigation.navigate("DetailsPublication", {
-      id: publication.id,
-      titre: publication.titre,
-      contenu: publication.contenu,
-      status: publication.status,
-      raisonRefus: publication.raisonRefus,
-      dateCreation: publication.dateCreation,
-      datePublication: publication.datePublication,
-      idPieceJointe: publication.idPieceJointe,
-      typePj: publication.pieceJointe.type,
-      lienImage: publication.image,
-      categorie: publication.categorie.nom,
-      idUtilisateur: publication.idUtilisateur,
-      auteur:
-        publication.utilisateur.nom + " " + publication.utilisateur.prenom,
+  function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
+    RechercheService.SetAfficheHeader(false);
+    props.navigation.navigate("DetailsAutreUtilisateur", {
+      utilisateur: utilisateurSelectionne,
     });
   }
 
@@ -62,26 +49,21 @@ const GestionComptesActifsScreen = (props: any) => {
       <TouchableOpacity
         key={item.id}
         onPress={() => {
-          AfficherPublication(item);
+          AfficherUtilisateur(item);
         }}
       >
-        {item.titre ? (
-          <Stack style={styles.publicationPreview} direction="row">
-            <Text style={styles.titrePreview}>
-              {item.titre.substring(0, 20)}
-              {item.titre.length > 20 ? "..." : ""}
+        {item.mail ? (
+          <Stack style={styles.utilisateurPreview} direction="row">
+            <Avatar
+              style={styles.avatar}
+              source={{
+                uri: apiURL + "/" + item.id + "/download?getThumbnail=true",
+              }}
+            ></Avatar>
+            <Text style={styles.nomPrenom}>
+              {item.prenom} {item.nom}
             </Text>
             <Spacer />
-            <Text style={styles.auteurPrewiew}>
-              {item.utilisateur?.nom} {item.utilisateur?.prenom}
-            </Text>
-            <FastImage
-              style={styles.imagePrewiew}
-              source={{
-                uri: piecesJointesURL + "/" + item.idPieceJointe + "/download",
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
           </Stack>
         ) : null}
       </TouchableOpacity>
@@ -91,9 +73,7 @@ const GestionComptesActifsScreen = (props: any) => {
 
   return (
     <View style={styles.container}>
-      {listeResultats.length === 0 ? (
-        <Text>Effectuez une recherche pour trouver des comptes actifs</Text>
-      ) : (
+      {listeResultats.length > 0 ? (
         <>
           <FlatList
             style={{ width: "100%" }}
@@ -106,6 +86,10 @@ const GestionComptesActifsScreen = (props: any) => {
           />
           <Spacer />
         </>
+      ) : (
+        <View>
+          <Text>Effectuez une recherche pour trouver des comptes bannis</Text>
+        </View>
       )}
     </View>
   );
@@ -121,36 +105,20 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: "#BBBBBB",
   },
-  listePublications: {
-    padding: 10,
-    width: "100%",
-  },
-  publicationPreview: {
+  utilisateurPreview: {
     backgroundColor: "white",
-    height: 50,
+    height: 70,
     width: "100%",
     marginBottom: 10,
     borderRadius: 10,
+    alignItems: "center",
   },
-  titrePreview: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 10,
+  nomPrenom: {
+    fontSize: 20,
+    marginVertical: 15,
+    marginHorizontal: 10,
+  },
+  avatar: {
     marginLeft: 10,
-  },
-  auteurPrewiew: {
-    fontSize: 15,
-    marginTop: 15,
-    marginBottom: 15,
-    marginRight: 10,
-  },
-  imagePrewiew: {
-    height: 42,
-    width: 42,
-    borderRadius: 10,
-    marginTop: 4,
-    marginBottom: 4,
-    marginRight: 4,
   },
 });

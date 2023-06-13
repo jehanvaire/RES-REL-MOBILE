@@ -11,7 +11,7 @@ import Publication from "../Ressource/Publication";
 import React from "react";
 import PdfView from "../../pages/PdfView";
 import EspaceCommentaireScreen from "../../pages/Publication/EspaceCommentaireScreen";
-import GestionUtilisateursTopNavigator from "./GestionUtilisateurs/GestionUtilisateursTopNavigator";
+import GestionComptesScreen from "../../pages/GestionComptesUtilisateurs/GestionComptesScreen";
 
 export const StackNav = createStackNavigator();
 
@@ -46,7 +46,7 @@ const ProfilStackNavigator = (props: any) => {
       />
       <StackNav.Screen
         name="GestionComptesUtilisateursScreen"
-        component={GestionUtilisateursTopNavigator}
+        component={GestionComptesScreen}
         options={{ headerShown: true, title: "Gestion des comptes" }}
       />
       <StackNav.Screen

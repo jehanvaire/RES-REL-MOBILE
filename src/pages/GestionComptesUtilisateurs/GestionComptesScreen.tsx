@@ -11,11 +11,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { storage } from "../../services/AuthentificationService";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
-import RechercheService from "../../services/RechercheService";
-import Filtre from "../../components/Filtre";
-import FiltreService from "../../services/FiltreService";
-import RechercheScreenTopNavigator from "../../components/Navigators/Recherche/RerchercheScreenTopNavigator";
-import { SafeAreaView } from "react-native-safe-area-context";
+import GestionUtilisateursTopNavigator from "../../components/Navigators/GestionUtilisateurs/GestionUtilisateursTopNavigator";
+import UtilisateurService from "../../services/UtilisateurService";
 
 const GestionComptesScreen = () => {
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
@@ -23,8 +20,6 @@ const GestionComptesScreen = () => {
   );
 
   const [searchValue, setSearchValue] = useState("");
-
-  const [filtres, setFiltres] = useState<FiltreEntity>({} as FiltreEntity);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
@@ -34,35 +29,30 @@ const GestionComptesScreen = () => {
     } else {
       setUtilisateur({} as UtilisateurEntity);
     }
-
-    FiltreService.getFiltres().subscribe((nouveauxFiltres) => {
-      setFiltres(nouveauxFiltres);
-      startSearch();
-    });
   }, []);
 
   const startSearch = () => {
     if (searchValue !== "") {
       const params = {
         query: {
-          // TODO: attendre demain que Victor fasse son taf
-          ressource: {
-            "datePublication[greaterThanEquals]=": filtres.dateDebut,
-            "datePublication[lowerThanEquals]=": filtres.dateFin,
-            "idCategorie[equals]=": filtres.categorie,
-            "partage[equals]=": "PUBLIC",
-            "status[equals]=": "APPROVED",
-            q: searchValue,
-            include: ["utilisateur", "categorie", "pieceJointe"],
-          },
           utilisateur: {
             q: searchValue,
           },
         },
       };
-      RechercheService.Chercher(params).then((listeResultats) => {
-        RechercheService.SetListeResRessources(listeResultats.ressources);
-        RechercheService.SetListeResUtilisateurs(listeResultats.utilisateurs);
+      UtilisateurService.ChercherUtilisateurs(params).then((listeResultats) => {
+        const comptesActifs = listeResultats.data.filter(
+          (utilisateur: UtilisateurEntity) => {
+            return utilisateur.raisonBan === null;
+          }
+        );
+        const comptesBannis = listeResultats.data.filter(
+          (utilisateur: UtilisateurEntity) => {
+            return utilisateur.raisonBan !== null;
+          }
+        );
+        UtilisateurService.SetComptesActifs(comptesActifs);
+        UtilisateurService.SetComptesBannis(comptesBannis);
       });
     }
   };
@@ -97,12 +87,10 @@ const GestionComptesScreen = () => {
                 style={[styles.searchIcon]}
               />
             </TouchableOpacity>
-
-            <Filtre></Filtre>
           </Stack>
         </Center>
       </View>
-      <RechercheScreenTopNavigator></RechercheScreenTopNavigator>
+      <GestionUtilisateursTopNavigator></GestionUtilisateursTopNavigator>
     </>
   );
 };

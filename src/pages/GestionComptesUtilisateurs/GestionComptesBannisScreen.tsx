@@ -6,6 +6,7 @@ import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
 import RechercheService from "../../services/RechercheService";
+import UtilisateurService from "../../services/UtilisateurService";
 
 const PER_PAGE = 15;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
@@ -26,7 +27,7 @@ const GestionComptesBannisScreen = (props: any) => {
       setUtilisateur({} as UtilisateurEntity);
     }
 
-    RechercheService.GetListeResUtilisateurs().subscribe((result) => {
+    UtilisateurService.GetComptesBannis().subscribe((result) => {
       if (result !== undefined) {
         result = result.filter((item) => item.mail);
         setListeResultats(result);
