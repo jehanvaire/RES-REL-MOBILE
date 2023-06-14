@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, FlatList } from "react-native";
+import { StyleSheet, FlatList, Text } from "react-native";
 import { View } from "native-base";
 import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
@@ -7,6 +7,7 @@ import { storage } from "../services/AuthentificationService";
 import PublicationService from "../services/PublicationService";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import ValidationPublicationComponent from "../components/Ressource/ValidationPublicationComponent";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PER_PAGE = 15;
 
@@ -42,7 +43,7 @@ const ValidationRessourcesScreen = (props: any) => {
       perPage: PER_PAGE,
       "status[equals]=": "PENDING",
       "partage[equals]=": "PUBLIC",
-      include: "utilisateur,pieceJointe",
+      include: "utilisateur,pieceJointe,categorie",
     };
     const listePublications = await PublicationService.GetPublications(params);
     setListePublicationsEnAttente(listePublications);
@@ -57,7 +58,7 @@ const ValidationRessourcesScreen = (props: any) => {
         perPage: PER_PAGE,
         "status[equals]=": "PENDING",
         "partage[equals]=": "PUBLIC",
-        include: "utilisateur,pieceJointe",
+        include: "utilisateur,pieceJointe,categorie",
       };
       PublicationService.GetPublications(params).then((publications) => {
         setListePublicationsEnAttente([
@@ -78,7 +79,7 @@ const ValidationRessourcesScreen = (props: any) => {
         perPage: PER_PAGE,
         "status[equals]=": "PENDING",
         "partage[equals]=": "PUBLIC",
-        include: "utilisateur,pieceJointe",
+        include: "utilisateur,pieceJointe,categorie",
       };
       PublicationService.GetPublications(params).then((publications) => {
         setListePublicationsEnAttente(publications);
@@ -103,20 +104,27 @@ const ValidationRessourcesScreen = (props: any) => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={listePublicationsEnAttente}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={PER_PAGE}
-        initialNumToRender={PER_PAGE}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={PER_PAGE}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-      />
-    </View>
+    <>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Validation de ressources</Text>
+        </View>
+      </SafeAreaView>
+      <View style={styles.container}>
+        <FlatList
+          data={listePublicationsEnAttente}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={PER_PAGE}
+          initialNumToRender={PER_PAGE}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={PER_PAGE}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+      </View>
+    </>
   );
 };
 
@@ -124,11 +132,25 @@ export default ValidationRessourcesScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
+    backgroundColor: "#bbbbbb",
+  },
+  headerText: {
+    fontSize: 24,
+    color: "black",
+    textAlign: "center",
+    flex: 1,
+  },
+  header: {
+    height: 60,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    paddingHorizontal: 20,
   },
 
   listePublications: {

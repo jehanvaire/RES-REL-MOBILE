@@ -78,10 +78,7 @@ const ProfilStackNavigator = (props: any) => {
         name="EspaceCommentaireScreen"
         component={EspaceCommentaireScreen}
       />
-      <StackNav.Screen
-        name="PdfView"
-        component={PdfView}
-      />
+      <StackNav.Screen name="PdfView" component={PdfView} />
     </StackNav.Navigator>
   );
 };

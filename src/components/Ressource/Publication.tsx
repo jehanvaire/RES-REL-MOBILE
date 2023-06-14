@@ -16,7 +16,6 @@ import { DoubleTap } from "../DoubleTap";
 import moment from "moment";
 import FastImage from "react-native-fast-image";
 import Video from "react-native-video";
-import axios from "axios";
 
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
 const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
@@ -71,21 +70,13 @@ const Publication = (props: any) => {
   }
 
   async function fetchPdfName() {
-    try {
-      const response = await axios.head(
-        "https://api.victor-gombert.fr/api/v1/piecesJointes/" +
-          props.idPieceJointe +
-          "/download"
-      );
-      const contentDisposition = response.headers["content-disposition"];
-      const regex = /filename=([^;]+)/;
-      const match = contentDisposition?.match(regex);
+    const response = await PublicationService.getPdfName(props.idPieceJointe);
+    const contentDisposition = response.headers["content-disposition"];
+    const regex = /filename=([^;]+)/;
+    const match = contentDisposition?.match(regex);
 
-      if (match && match[1]) {
-        setFileName(match[1]);
-      }
-    } catch (error) {
-      console.error("Error fetching PDF name:", error);
+    if (match && match[1]) {
+      setFileName(match[1]);
     }
   }
 
@@ -98,7 +89,7 @@ const Publication = (props: any) => {
 
   const image = () => {
     return (
-      <View key={props.idPieceJointe}>
+      <View key={props.id}>
         <FastImage
           style={styles.image}
           source={{
@@ -113,7 +104,7 @@ const Publication = (props: any) => {
 
   const video = () => {
     return (
-      <View key={props.idPieceJointe}>
+      <View key={props.id}>
         <Video
           source={{
             uri: piecesJointesURL + "/" + props.idPieceJointe + "/download",
@@ -171,7 +162,11 @@ const Publication = (props: any) => {
           <Stack direction="row" style={styles.header}>
             <Avatar
               source={{
-                uri: apiURL + "/" + props.idUtilisateur + "/download",
+                uri:
+                  apiURL +
+                  "/" +
+                  props.idUtilisateur +
+                  "/download?getThumbnail=true",
               }}
             ></Avatar>
 
@@ -214,34 +209,45 @@ const Publication = (props: any) => {
             )}
           </View>
 
-          <Description contenu={props.contenu}></Description>
+          <Description
+            contenu={props.contenu}
+            onDescExpand={() => {}}
+          ></Description>
 
           <Stack direction="row" style={styles.footer}>
-            <TouchableOpacity onPress={LikePublication}>
-              {liked ? (
-                <Ionicons name={"heart"} size={25} color={"red"} />
-              ) : (
-                <Ionicons name={"heart-outline"} size={25} />
-              )}
-            </TouchableOpacity>
+            {props.authentifie && (
+              <>
+                <TouchableOpacity onPress={LikePublication}>
+                  {liked ? (
+                    <Ionicons name={"heart"} size={25} color={"red"} />
+                  ) : (
+                    <Ionicons name={"heart-outline"} size={25} />
+                  )}
+                </TouchableOpacity>
 
-            <Spacer />
+                <Spacer />
+              </>
+            )}
 
             <TouchableOpacity onPress={ShowCommentsSection}>
               <Ionicons name={"chatbubble-outline"} size={25} />
             </TouchableOpacity>
 
-            <Spacer />
+            {props.authentifie && (
+              <>
+                <Spacer />
 
-            <TouchableOpacity onPress={SauvegarderPublication}>
-              <Ionicons name={"bookmark-outline"} size={25} />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={SauvegarderPublication}>
+                  <Ionicons name={"bookmark-outline"} size={25} />
+                </TouchableOpacity>
 
-            <Spacer />
+                <Spacer />
 
-            <TouchableOpacity onPress={AfficherPlusOptions}>
-              <Ionicons name={"ellipsis-vertical"} size={25} />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={AfficherPlusOptions}>
+                  <Ionicons name={"ellipsis-vertical"} size={25} />
+                </TouchableOpacity>
+              </>
+            )}
           </Stack>
         </Box>
       );
@@ -358,6 +364,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: undefined,
     aspectRatio: 1,
+    borderRadius: 10,
   },
   video: {
     marginTop: 0,

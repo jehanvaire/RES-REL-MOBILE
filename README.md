@@ -65,3 +65,5 @@ Activer le débogage USB
 (Voir ce [lien](https://www.frandroid.com/comment-faire/tutoriaux/229753_questcequelemodedebogageusb) pour voir comment faire)
 
 Pour lancer l'application, lancer la commande `yarn run android`
+
+# Partie 2 : Installation sur iOS

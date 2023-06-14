@@ -88,13 +88,23 @@ export const AuthContainer = ({ children }: any) => {
     );
 
     if (!response.data == null) {
-      console.log("Log de la réponse:", response.data);
       throw new Error("Erreur lors de l'inscription");
     }
 
     return response.data;
   };
 
+  const validerMail = async (idUtilisateur: number) => {
+    const response = await axios.get(
+      "https://api.victor-gombert.fr/api/v1/utilisateurs/" + idUtilisateur
+    );
+
+    if (!response.data == null) {
+      throw new Error("Erreur lors de la validation du mail");
+    }
+
+    return response.data;
+  };
 
   const facade = useMemo(
     () => ({
@@ -113,8 +123,12 @@ export const AuthContainer = ({ children }: any) => {
         const result = await inscription(utilisateur);
         storage.set(ACCESS_TOKEN_KEY, String(result.token));
         storage.set(CURRENT_USER, JSON.stringify(result.response));
-
-        dispatch({ type: AUTHENTICATED });
+      },
+      validerMail: async (idUtilisateur: number) => {
+        const result = await validerMail(idUtilisateur);
+        if (result.data.dateVerification !== null) {
+          dispatch({ type: AUTHENTICATED });
+        }
       },
       resume: async () => {
         const token = storage.getString(ACCESS_TOKEN_KEY);

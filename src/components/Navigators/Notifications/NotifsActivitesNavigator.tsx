@@ -1,22 +1,22 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import RechercheRessourceScreen from "../../../pages/Rercherche/RechercheRessourceScreen";
 import DetailsPublication from "../../Ressource/DetailsPublication";
 import EspaceCommentaireScreen from "../../../pages/Publication/EspaceCommentaireScreen";
 import PdfView from "../../../pages/PdfView";
+import NotificationScreen from "../../../pages/Notifications/NotificationsActivitesScreen";
 
 const StackNav = createStackNavigator();
 
-const RessourceStackNavigator = () => {
+const NotifsActivitesNavigator = () => {
   return (
     <StackNav.Navigator
-      initialRouteName="RechercheScreen"
+      initialRouteName="NotificationsScreen"
       screenOptions={{
         headerShown: false,
       }}
     >
       <StackNav.Screen
-        name="RechercheScreen"
-        component={RechercheRessourceScreen}
+        name="NotificationsScreen"
+        component={NotificationScreen}
         options={{ headerShown: false }}
       />
       <StackNav.Screen
@@ -34,4 +34,4 @@ const RessourceStackNavigator = () => {
   );
 };
 
-export default RessourceStackNavigator;
+export default NotifsActivitesNavigator;

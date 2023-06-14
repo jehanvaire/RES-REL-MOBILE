@@ -8,17 +8,15 @@ import {
 } from "react-native";
 import { Image, ScrollView } from "native-base";
 import React, { useState } from "react";
-import { useAuth } from "../../services/AuthentificationService";
 import images from "../../ressources/ListeImagesLocales";
 import FooterAuthentification from "./FooterAuthentification";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import DateTimePicker, {
   Event as DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { useAuth } from "../../services/AuthentificationService";
 
-const SignUpSreen = () => {
-  const auth = useAuth();
-
+const CreationCompteScreen = (props: any) => {
   const [utilisateur, setUtilisateur] = useState({} as UtilisateurEntity);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
@@ -26,6 +24,8 @@ const SignUpSreen = () => {
   const [mailError, setMailError] = useState(false);
   const [champsManquants, setChampsManquants] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const auth = useAuth();
 
   const isMailValid = () => {
     return (
@@ -64,6 +64,10 @@ const SignUpSreen = () => {
       setPasswordError(false);
       setMailError(false);
       await auth.inscription(utilisateur);
+
+      props.navigation.navigate("ValidationMail");
+
+      //redirect to ValidationMailScreen
     } else {
       isMailValid() ? setMailError(false) : setMailError(true);
       isPasswordValid() ? setPasswordError(false) : setPasswordError(true);
@@ -193,7 +197,7 @@ const SignUpSreen = () => {
   );
 };
 
-export default SignUpSreen;
+export default CreationCompteScreen;
 
 const styles = StyleSheet.create({
   container: {

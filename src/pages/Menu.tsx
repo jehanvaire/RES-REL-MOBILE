@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import RechercheScreen from "./Rercherche/RechercheScreen";
-import NotificationScreen, {
-  getNumberOfNotifications,
-} from "./NotificationsScreen";
 import ListePublicationsScreen from "./ListePublicationsScreen";
 import ProfilStackNavigator from "../components/Navigators/ProfilStackNavigator";
 import ValidationRessourcesStackNavigator from "../components/Navigators/ValidationRessourcesStackNavigator";
@@ -12,51 +9,33 @@ import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
 import { storage } from "../services/AuthentificationService";
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { StyleSheet } from "react-native";
-import { useTheme } from '@react-navigation/native';
+import NotificationTopNavigator from "../components/Navigators/Notifications/NotificationTopNavigator";
 
 const BottomTab = createMaterialBottomTabNavigator();
 
 // The authenticated view
-const Menu = () => {
-  const { colors } = useTheme();
+const Menu = (props: any) => {
+  const { invite } = props.route?.params ?? false;
   const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
     {} as UtilisateurEntity
   );
   const [isAutorized, setIsAutorized] = useState(!!utilisateur.id);
+  const gestureHandlerRef = React.createRef();
   const [loading, setIsLoading] = useState(true);
 
   useEffect(() => {
     var user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     if (user_json !== "") {
       var user = JSON.parse(user_json) as UtilisateurEntity;
+      user.idRole < 4 ? setIsAutorized(true) : setIsAutorized(false);
+
       setUtilisateur(user);
+      setIsLoading(false);
     } else {
       setUtilisateur({} as UtilisateurEntity);
+      setIsLoading(false);
     }
-    console.log(colors)
   }, []);
-
-  //TODO: A continuer pour les roles par défaut
-  // useEffect(() => {
-  //   if (utilisateur.role) {
-  //     setIsAutorized(utilisateur.role >= utilisateur.role);
-  //   } else {
-  //     setIsAutorized(false);
-  //   }
-  // }, [utilisateur]);
-
-  useEffect(() => {
-    // console.log(utilisateur.idRole)
-    if (utilisateur.idRole != 4 && utilisateur.idRole != undefined) {
-      setIsAutorized(true);
-    } else {
-      setIsAutorized(false);
-    }
-  }, [utilisateur]);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [utilisateur]);
 
   return loading ? null : (
     <BottomTab.Navigator
@@ -91,28 +70,33 @@ const Menu = () => {
     >
       <BottomTab.Screen name="Menu" component={ListePublicationsScreen} />
       <BottomTab.Screen name="Recherche" component={RechercheScreen} />
-      <BottomTab.Screen
-        name="Notifications"
-        component={NotificationScreen}
-        options={{ tabBarBadge: 3 }}
-      />
-      <BottomTab.Screen
-        name="Profil"
-        component={ProfilStackNavigator}
-        initialParams={{
-          currentUser: true,
-          utilisateur: utilisateur,
-        }}
-      />
+      {!invite && (
+        <>
+          <BottomTab.Screen
+            name="Notifications"
+            component={NotificationTopNavigator}
+            options={{ tabBarBadge: 3 }}
+          />
+          <BottomTab.Screen
+            name="Profil"
+            component={ProfilStackNavigator}
+            initialParams={{
+              currentUser: true,
+              utilisateur: utilisateur,
+              gestureHandlerRef: gestureHandlerRef,
+            }}
+          />
+        </>
+      )}
 
-      {isAutorized ? (
+      {!invite && isAutorized && (
         <>
           <BottomTab.Screen
             name="Validation ressources"
             component={ValidationRessourcesStackNavigator}
           />
         </>
-      ) : null}
+      )}
     </BottomTab.Navigator>
   );
 };

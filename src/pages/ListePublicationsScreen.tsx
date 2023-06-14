@@ -1,19 +1,30 @@
-import { Box, ScrollView, View, Image } from "native-base";
+import { View, Image, FlatList } from "native-base";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-import Publication from "../components/Ressource/Publication";
-import { StatusPublicationEnum } from "../ressources/enums/StatusPublicationEnum";
 import CreationRessourceScreen from "../components/Ressource/CreationRessourceScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { Provider as PaperProvider } from "react-native-paper";
 import images from "../ressources/ListeImagesLocales";
-//importe mode invité de AuthentificationMenuScreen
 import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 import { storage } from "../services/AuthentificationService";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
+import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
+import PublicationService from "../services/PublicationService";
+import { PublicationEntity } from "../ressources/models/PublicationEntity";
+import Publication from "../components/Ressource/Publication";
+import DetailsPublication from "../components/Ressource/DetailsPublication";
+import EspaceCommentaireScreen from "./Publication/EspaceCommentaireScreen";
+
+const StackNav = createStackNavigator();
+const PER_PAGE = 15;
 
 const HeaderComponent = () => {
   return (
@@ -24,20 +35,49 @@ const HeaderComponent = () => {
   );
 };
 
-function ListePublicationsScreen({ navigation }: any) {
+function ListePublicationsScreen(props: any) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [moi, setMoi] = useState<UtilisateurEntity>({} as UtilisateurEntity);
+  const [publications, setPublications] = useState<PublicationEntity[]>([]);
+  const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     const user_json =
       storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
-    if (user_json !== "") {
-      setIsAuthenticated(true);
-    } else {
+    if (user_json === "") {
       setIsAuthenticated(false);
+
+      const params = {
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        orderBy: "dateCreation,desc",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+
+      PublicationService.GetPublications(params).then((res) => {
+        setPublications(res);
+      });
+    } else {
+      setIsAuthenticated(true);
+      var user = JSON.parse(user_json) as UtilisateurEntity;
+      setMoi(user);
+
+      const params = {
+        fromRelations: 3, // Remplacer avec user.id
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+
+      PublicationService.GetPublications(params).then((res) => {
+        setPublications(res);
+      });
     }
   }, []);
 
   const navigateToCreation = () => {
-    navigation.navigate("CreationRessourceScreen");
+    props.navigation.navigate("CreationRessourceScreen");
   };
 
   const [fontsLoaded] = useFonts({
@@ -56,99 +96,135 @@ function ListePublicationsScreen({ navigation }: any) {
     return null;
   }
 
-  return (
-    <Box style={styles.container}>
-      <CustomButton
-        isAuthenticated={isAuthenticated}
-        onPress={navigateToCreation}
-      />
-      <HeaderComponent />
-      <GestureHandlerRootView>
-        <ScrollView style={styles.scrollView}>
-          <Publication
-            id="1"
-            idUtilisateur="2"
-            idPieceJointe="2"
-            auteur="Adrien"
-            titre="Mais quel drip indécent !"
-            categorie="Culture"
-            contenu="Le Pape francois est doté d'un style vestimentaire unique. En effet Gucci a décidé de lui offrir un ensemble de vêtements d'une valeur de 1 000 000 de dollars, pièce unique au monde."
-            status={StatusPublicationEnum.ENATTENTE}
-            typePieceJointe="IMAGE"
-            raisonRefus={undefined}
-            dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
-            lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
-            navigation={navigation}
-          />
-          <Publication
-            auteur="Adrien"
-            idUtilisateur="2"
-            titre="Concert de Johnny Hallyday"
-            categorie="Loisirs"
-            lieuActivite="Dijon"
-            dateActivite={new Date(2023, 0, 28, 15, 10, 30)}
-            codePostalActivite="21000"
-            contenu=""
-            dateCreation={new Date(2023, 0, 7, 15, 10, 30)}
-            typePieceJointe="ACTIVITE"
-            status={StatusPublicationEnum.ENATTENTE}
-            raisonRefus={undefined}
-            lienImage="https://fr.web.img3.acsta.net/r_654_368/newsv7/21/04/29/14/22/0010719.jpg"
-            navigation={navigation}
-          />
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
 
-          <Publication
-            auteur="Adrien"
-            idUtilisateur="2"
-            idPieceJointe="3"
-            titre="L'art abstrait"
-            categorie="Intelligence émotionnelle"
-            contenu="L'art abstrait est un art qui ne représente pas la réalité, mais qui cherche à exprimer des émotions, des sensations, des idées, des états d'âme, des sentiments, des souvenirs, des rêves et des pensées."
-            status={StatusPublicationEnum.ENATTENTE}
-            raisonRefus={undefined}
-            dateCreation={new Date(2023, 0, 28, 15, 10, 30)}
-            typePieceJointe="IMAGE"
-            lienImage="https://voi.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2Fprismamedia_people.2F2017.2F06.2F30.2F598687b0-716f-4a58-9d64-1d07df43565b.2Ejpeg/2048x1536/quality/80/louis-de-funes.jpeg"
-            navigation={navigation}
+    let params = {};
+
+    if (isAuthenticated) {
+      params = {
+        page: nextPage,
+        perPage: PER_PAGE,
+        "idUtilisateur[equals]=": 3, //moi.id,
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "utilisateur,categorie,pieceJointe",
+      };
+    } else {
+      params = {
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+    }
+    PublicationService.GetPublications(params).then((publis) => {
+      setPublications([...publications, ...publis]);
+    });
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    const firstPage = 1;
+    setPage(firstPage);
+    let params = {};
+
+    if (isAuthenticated) {
+      params = {
+        page: firstPage,
+        perPage: PER_PAGE,
+        "idUtilisateur[equals]=": 3, //moi.id,
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "utilisateur,categorie,pieceJointe",
+      };
+    } else {
+      params = {
+        "partage[equals]=": "PUBLIC",
+        "status[equals]=": "APPROVED",
+        include: "categorie,utilisateur,pieceJointe",
+      };
+    }
+    PublicationService.GetPublications(params).then((publications) => {
+      console.log(publications.length);
+      setPublications(publications);
+    });
+    setRefreshing(false);
+  };
+
+  const renderItem = ({ item }: any) => (
+    <View key={item.id + item.idPieceJointe + item.idUtilisateur}>
+      <Publication
+        id={item.idUtilisateur}
+        auteur={item.utilisateur.nom + " " + item.utilisateur.prenom}
+        titre={item.titre}
+        categorie={item.categorie.nom}
+        idPieceJointe={item.pieceJointe?.id}
+        typePieceJointe={item.pieceJointe?.type}
+        dateActivite={item.pieceJointe?.dateActivite}
+        lieuActivite={item.pieceJointe?.lieu}
+        codePostalActivite={item.pieceJointe?.codePostal}
+        contenu={item.contenu}
+        status={item.status}
+        raisonRefus={item.raisonRefus}
+        dateCreation={item.dateCreation}
+        navigation={props.navigation}
+        idUtilisateur={item.utilisateur.id}
+        authentifie={isAuthenticated}
+      />
+    </View>
+  );
+
+  return (
+    <>
+      <SafeAreaView>
+        <HeaderComponent />
+      </SafeAreaView>
+      <View style={styles.container}>
+        <StatusBar />
+
+        <BoutonAjoutPublication
+          isAuthenticated={isAuthenticated}
+          onPress={navigateToCreation}
+        />
+        <GestureHandlerRootView>
+          {/* Liste des publications */}
+          <FlatList
+            style={styles.listePublications}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={PER_PAGE}
+            initialNumToRender={PER_PAGE}
+            data={publications}
+            keyExtractor={(item: any) => item.id.toString()}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={PER_PAGE}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            renderItem={renderItem}
           />
-        </ScrollView>
-      </GestureHandlerRootView>
-    </Box>
+        </GestureHandlerRootView>
+      </View>
+    </>
   );
 }
-function CustomButton({
+
+const BoutonAjoutPublication = ({
   isAuthenticated,
   onPress,
 }: {
   isAuthenticated: boolean;
   onPress: () => void;
-}) {
+}) => {
   // Show button only if user is logged in
   if (isAuthenticated) {
     return (
-      <TouchableOpacity onPress={onPress} style={styles.customButton}>
+      <TouchableOpacity onPress={onPress} style={styles.ajoutPublicationButton}>
         <Ionicons name="add-outline" size={36} color="#FFFFFF" />
       </TouchableOpacity>
     );
   }
   return null;
-}
-
-const StackNav = createStackNavigator();
-
-const withPaperProvider = (WrappedComponent: React.ComponentType<any>) => {
-  return (props: any) => {
-    return (
-      <PaperProvider>
-        <WrappedComponent {...props} />
-      </PaperProvider>
-    );
-  };
 };
-
-const WrappedCreationRessourceScreen = withPaperProvider(
-  CreationRessourceScreen
-);
 
 const ListePublicationStack = () => {
   return (
@@ -159,30 +235,35 @@ const ListePublicationStack = () => {
         options={{ headerShown: false }}
       />
       <StackNav.Screen
+        name="DetailsPublication"
+        component={DetailsPublication}
+        options={{ headerShown: true, title: "" }}
+      />
+      <StackNav.Screen
         name="CreationRessourceScreen"
-        component={WrappedCreationRessourceScreen}
+        component={CreationRessourceScreen}
+        options={{ headerShown: true, title: "Créer une ressource" }}
+      />
+      <StackNav.Screen
+        name="EspaceCommentaireScreen"
+        component={EspaceCommentaireScreen}
       />
     </StackNav.Navigator>
   );
 };
+
 export default ListePublicationStack;
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#BBBBBB",
-    marginTop: 35,
     height: "96%",
-  },
-  scrollView: {
-    paddingTop: 60,
   },
   vendorHeader: {
     backgroundColor: "#FFFFFF",
     height: 60,
+    overflow: "visible",
     alignItems: "center",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
     zIndex: 1000,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
@@ -191,7 +272,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    fontFamily: "Sansita-Swashed-SemiBold",
+    fontFamily: Platform.OS === "ios" ? "Arial" : "Sansita-Swashed-SemiBold",
     color: "#000000",
     textAlign: "center",
   },
@@ -213,22 +294,27 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  customButton: {
+  ajoutPublicationButton: {
     position: "absolute",
-    right: 5,
-    bottom: 16,
+    right: "4%",
+    bottom: "14%",
     backgroundColor: "#4183F4",
     borderRadius: 50,
     width: 56,
     height: 56,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 100,
+    zIndex: 999,
   },
   buttonText: {
     fontSize: 36,
     color: "#FFFFFF",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  listePublications: {
+    width: "100%",
+    alignSelf: "center",
+    marginBottom: 30,
   },
 });
