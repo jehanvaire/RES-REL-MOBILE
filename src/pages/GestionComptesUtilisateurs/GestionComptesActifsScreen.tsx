@@ -5,8 +5,8 @@ import { View } from "native-base";
 import { UtilisateurEntity } from "../../ressources/models/UtilisateurEntity";
 import { AuthentificationEnum } from "../../ressources/enums/AuthentificationEnum";
 import { storage } from "../../services/AuthentificationService";
-import RechercheService from "../../services/RechercheService";
 import UtilisateurService from "../../services/UtilisateurService";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const PER_PAGE = 15;
 const apiURL = "https://api.victor-gombert.fr/api/v1/utilisateurs";
@@ -38,7 +38,6 @@ const GestionComptesActifsScreen = (props: any) => {
   }, []);
 
   function AfficherUtilisateur(utilisateurSelectionne: UtilisateurEntity) {
-    RechercheService.SetAfficheHeader(false);
     props.navigation.navigate("DetailsAutreUtilisateur", {
       utilisateur: utilisateurSelectionne,
     });
@@ -52,7 +51,7 @@ const GestionComptesActifsScreen = (props: any) => {
           AfficherUtilisateur(item);
         }}
       >
-        {item.mail ? (
+        {item.mail && (
           <Stack style={styles.utilisateurPreview} direction="row">
             <Avatar
               style={styles.avatar}
@@ -64,8 +63,20 @@ const GestionComptesActifsScreen = (props: any) => {
               {item.prenom} {item.nom}
             </Text>
             <Spacer />
+
+            <TouchableOpacity style={styles.bouton} onPress={() => {}}>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={30}
+                color="#00FF00"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.bouton} onPress={() => {}}>
+              <Ionicons name="close-circle-outline" size={30} color="#FF0000" />
+            </TouchableOpacity>
           </Stack>
-        ) : null}
+        )}
       </TouchableOpacity>
     ),
     []
@@ -120,5 +131,8 @@ const styles = StyleSheet.create({
   },
   avatar: {
     marginLeft: 10,
+  },
+  bouton: {
+    marginHorizontal: 10,
   },
 });

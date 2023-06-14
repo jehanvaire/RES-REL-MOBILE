@@ -313,7 +313,7 @@ function ProfilScreen(props: any) {
               }}
             >
               <Text style={styles.title}>
-                {utilisateur.nom} {utilisateur.prenom}
+                {utilisateur.prenom} {utilisateur.nom}
               </Text>
             </Animated.View>
 
