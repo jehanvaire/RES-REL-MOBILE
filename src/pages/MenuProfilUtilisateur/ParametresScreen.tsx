@@ -35,7 +35,6 @@ const ParametresScreen = (props: any) => {
       [
         {
           text: "Annuler",
-          onPress: () => console.log("Annulation de la suppression du compte"),
           style: "cancel",
         },
         {
