@@ -160,7 +160,6 @@ function ProfilScreen(props: any) {
       fromUtilisateur: utilisateur.id,
     };
     const nombreRelations = await RelationService.GetRelations(params);
-    console.log("infos : ", nombreRelations, utilisateur.id);
     setNombreRelations(nombreRelations.length);
   };
 
@@ -393,8 +392,8 @@ function ProfilScreen(props: any) {
                       relationEnAttente
                         ? { backgroundColor: "grey" }
                         : {
-                            backgroundColor: "#44BE80",
-                          },
+                          backgroundColor: "#44BE80",
+                        },
                     ]}
                     onPress={demanderConnexionUtilisateur}
                     disabled={relationEnAttente}
