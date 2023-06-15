@@ -8,31 +8,33 @@ import { ScrollView } from "native-base";
 import axios from "axios";
 
 const FavorisScreen = () => {
-
   const likesApiUrl = "https://api.victor-gombert.fr/api/v1/favoris";
   const [token, setToken] = useState<string>("");
-  const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>({} as UtilisateurEntity);
+  const [utilisateur, setUtilisateur] = useState<UtilisateurEntity>(
+    {} as UtilisateurEntity
+  );
   const navigation = useNavigation();
   const PER_PAGE = 15;
   const [items, setItems] = useState<LikeItem[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Favoris',
+      title: "Favoris",
     });
   }, [navigation]);
 
   useEffect(() => {
-    const utilisateurJson = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
+    const utilisateurJson =
+      storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
     const utilisateurObject = JSON.parse(utilisateurJson) as UtilisateurEntity;
     setUtilisateur(utilisateurObject);
 
-    const token = storage.getString(AuthentificationEnum.ACCESS_TOKEN_KEY) ?? "";
+    const token =
+      storage.getString(AuthentificationEnum.ACCESS_TOKEN_KEY) ?? "";
     setToken(token);
 
     getLikes();
-  }, []
-  );
+  }, []);
 
   async function getLikes() {
     const headers = {
@@ -50,7 +52,7 @@ const FavorisScreen = () => {
     try {
       console.log(likesApiUrl, { headers, params });
       const response = await axios.get(likesApiUrl, { headers, params });
-      const likes = response.data.data; 
+      const likes = response.data.data;
       //console.log(likes);
 
       likes.forEach((like: any) => {
@@ -63,17 +65,17 @@ const FavorisScreen = () => {
         contenu: like.ressource.contenu.slice(0, 50) + "...",
         date: new Date(like.dateFav),
         // image: like.ressource.typeRessource === "IMAGE"
-        // ? `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/` 
-        // : "", 
+        // ? `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/`
+        // : "",
         //Check if the ressource is an image or not
-        image: `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/` 
+        image: `https://api.victor-gombert.fr/api/v1/piecesJointes/${like.ressource.idPieceJointe}/download/`,
       }));
       setItems(items);
     } catch (error) {
       console.log(error);
     }
   }
-  
+
   interface LikeItem {
     id: number;
     title: string;
@@ -91,17 +93,22 @@ const FavorisScreen = () => {
   };
 
   const goupAndSortLikes = (array: LikeItem[]) => {
-    const grouped = groupBy(array, (notification: { date: { toDateString: () => string; }; }) => {
-      const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const isToday = notification.date.toDateString() === today.toDateString();
-      const isYesterday = notification.date.toDateString() === yesterday.toDateString();
+    const grouped = groupBy(
+      array,
+      (notification: { date: { toDateString: () => string } }) => {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const isToday =
+          notification.date.toDateString() === today.toDateString();
+        const isYesterday =
+          notification.date.toDateString() === yesterday.toDateString();
 
-      if (isToday) return "Aujourd'hui";
-      if (isYesterday) return "Hier";
-      return "Il y a plus longtemps";
-    });
+        if (isToday) return "Aujourd'hui";
+        if (isYesterday) return "Hier";
+        return "Il y a plus longtemps";
+      }
+    );
 
     return Object.keys(grouped)
       .sort((groupA, groupB) => {
@@ -135,31 +142,33 @@ const FavorisScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {Object.entries(sortedGroupedNotifications).map(([group, notifications]: [string, LikeItem[]]) => (
-        <View key={group}>
-          <Text style={styles.dateHeader}>{group}</Text>
-          <Text></Text>
-          {notifications.map((item: LikeItem) => (
-            <View key={item.id} style={styles.notificationContainer}>
-              { item.image !== "" ? (
-                <Image
-                style={styles.notificationImage}
-                source={{ uri: item.image }}
-              /> ) : null
-              }
-              <View style={styles.notificationTextContainer}>
-                <Text style={styles.notificationTitle}>{item.title}</Text>
-                <Text style={styles.notificationDescription}>
-                  {item.contenu}
-                </Text>
-                <Text style={styles.notificationTime}>
-                  {getFormattedDate(item.date)}
-                </Text>
+      {Object.entries(sortedGroupedNotifications).map(
+        ([group, notifications]: [string, LikeItem[]]) => (
+          <View key={group}>
+            <Text style={styles.dateHeader}>{group}</Text>
+            <Text></Text>
+            {notifications.map((item: LikeItem) => (
+              <View key={item.id} style={styles.notificationContainer}>
+                {item.image !== "" ? (
+                  <Image
+                    style={styles.notificationImage}
+                    source={{ uri: item.image }}
+                  />
+                ) : null}
+                <View style={styles.notificationTextContainer}>
+                  <Text style={styles.notificationTitle}>{item.title}</Text>
+                  <Text style={styles.notificationDescription}>
+                    {item.contenu}
+                  </Text>
+                  <Text style={styles.notificationTime}>
+                    {getFormattedDate(item.date)}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
-      ))}
+            ))}
+          </View>
+        )
+      )}
     </ScrollView>
   );
 };
@@ -169,31 +178,31 @@ export default FavorisScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#bbbbbb',
+    backgroundColor: "#bbbbbb",
   },
   header: {
     height: 60,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
     paddingHorizontal: 20,
   },
   headerText: {
     fontSize: 24,
-    color: 'black',
-    textAlign: 'center',
+    color: "black",
+    textAlign: "center",
     flex: 1,
   },
   dateHeader: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 8,
     marginLeft: 16,
   },
   notificationContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#f8f8f8',
+    flexDirection: "row",
+    backgroundColor: "#f8f8f8",
     borderRadius: 10,
     padding: 10,
     marginBottom: 8,
@@ -209,7 +218,7 @@ const styles = StyleSheet.create({
   },
   notificationTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 3,
   },
   notificationDescription: {
@@ -218,8 +227,8 @@ const styles = StyleSheet.create({
   },
   notificationTime: {
     fontSize: 12,
-    color: '#999',
-    alignSelf: 'flex-end',
+    color: "#999",
+    alignSelf: "flex-end",
   },
 });
 

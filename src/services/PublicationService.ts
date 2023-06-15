@@ -1,17 +1,12 @@
 import { BehaviorSubject } from "rxjs";
 import { PublicationEntity } from "../ressources/models/PublicationEntity";
 import RestClient from "./RestClient";
-import { UtilisateurEntity } from "../ressources/models/UtilisateurEntity";
-import { storage } from "./AuthentificationService";
-import { AuthentificationEnum } from "../ressources/enums/AuthentificationEnum";
 
 export class PublicationService {
   private baseUrl = "ressources";
   private pieceJointeUrl = "piecesJointes";
 
   private restClient: RestClient;;
-  private user_json = storage.getString(AuthentificationEnum.CURRENT_USER) ?? "";
-  private user = JSON.parse(this.user_json) as UtilisateurEntity;
 
   private rechargerPublications = new BehaviorSubject<boolean>(false);
 
@@ -20,9 +15,9 @@ export class PublicationService {
   }
 
 
-  public async GetUserFavoris(): Promise<any> {
+  public async GetUserFavoris(params= {}): Promise<any> {
     const response = await this.restClient.get(`favoris`, {
-      idUtilisateur: this.user.id,
+      idUtilisateur: 3, // params.idUtilisateur,
     });
     return response;
   }
@@ -31,7 +26,7 @@ export class PublicationService {
     const response = await this.restClient.post(
       `favoris`,
       {
-        idUtilisateur: this.user.id,
+        idUtilisateur: 3, // params.idUtilisateur,
         idRessource: id
       }
     );
@@ -44,7 +39,6 @@ export class PublicationService {
     );
     return response;
   }
-
 
   public async SauvegarderPublication(id: number): Promise<any> {
     // const response = await fetch(`${this.baseUrl}/${id}/save`, {

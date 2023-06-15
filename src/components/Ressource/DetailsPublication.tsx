@@ -30,7 +30,6 @@ const piecesJointesURL = "https://api.victor-gombert.fr/api/v1/piecesJointes";
 
 const DetailsPublication = (props: any) => {
   const [liked, setLiked] = React.useState(false);
-  const [favoris, setFavoris] = useState([]);
 
   const {
     id,
@@ -57,26 +56,14 @@ const DetailsPublication = (props: any) => {
     Date.parse(dayjs(datePublication).format("YYYY-MM-DDTHH:mm:ss"))
   );
 
-  const loadFavoris = () => {
-    PublicationService.GetUserFavoris().then((favorisList) => {
-      setFavoris(favorisList);
-    });
-  };
-
-  useEffect(() => {
-    loadFavoris();
-  }, []);
-
   function LikePublication() {
     if (liked) {
       PublicationService.RemoveFavoriFromPublication(id).then(() => {
         setLiked(false);
-        loadFavoris();
       });
     } else {
       PublicationService.AddFavoriToPublication(id).then(() => {
         setLiked(true);
-        loadFavoris();
       });
     }
   }

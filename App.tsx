@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React from "react";
 import { NativeBaseProvider, StatusBar } from "native-base";
 import { AuthContainer } from "./src/services/AuthentificationService";
 import Authentification from "./src/pages/Authentification/AuthentificationMenuScreen";
@@ -13,12 +13,6 @@ const Stack = createStackNavigator();
 require("moment/locale/fr.js");
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   return (
     <>
       <StatusBar backgroundColor="transparent" />
